@@ -1,0 +1,9 @@
+Base path: 'D:/Program Files/Unity/Hub/Editor/2022.1.0b8/Editor/Data', plugins path 'D:/Program Files/Unity/Hub/Editor/2022.1.0b8/Editor/Data/PlaybackEngines'
+Cmd: initializeCompiler
+
+Cmd: compileComputeKernel
+  insize=12252 file=C:/Users/edand/Unity files/Chess3D/Unity Files/Library/PackageCache/com.unity.render-pipelines.high-definition@13.1.5/Runtime/PostProcessing/Shaders/LutBuilder3D.compute kernel=KBuild ppOnly=0 stripLineD=0 buildPlatform=19 km=<UNITY_VERSION=202210> pKW=UNITY_ENABLE_REFLECTION_BUFFERS UNITY_USE_DITHER_MASK_FOR_ALPHABLENDED_SHADOWS UNITY_PBS_USE_BRDF1 UNITY_SPECCUBE_BOX_PROJECTION UNITY_SPECCUBE_BLENDING UNITY_ENABLE_DETAIL_NORMALMAP SHADER_API_DESKTOP UNITY_LIGHT_PROBE_PROXY_VOLUME UNITY_LIGHTMAP_FULL_HDR uKW=TONEMAPPING_NONE GRADE_IN_ACESCG SHADER_STAGE_COMPUTE platform=d3d11 flags=0 reqs=16385 forceDXC=0 forceFXC=0 ok=1 outsize=8916
+
+Unhandled exception: Protocol error - failed to read magic number (error -2147483644, transferred 0/4)
+
+Quitting shader compiler process

@@ -258,3 +258,134 @@ AssetImportParameters requested are different than current active one (requested
   custom:container-demuxer-ogg: 62fdf1f143b41e24485cea50d1cbac27 -> 
   custom:video-decoder-webm-vp8: 9c59270c3fd7afecdb556c50c9e8de78 -> 
   custom:audio-decoder-ogg-vorbis: bf7c407c2cedff20999df2af8eb42d56 -> 
+========================================================================
+Received Import Request.
+  Time since last request: 525.095667 seconds.
+  path: Assets
+  artifactKey: Guid(00000000000000001000000000000000) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets using Guid(00000000000000001000000000000000) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '643dbe22ecb75e7bba7c4df53f6b1cbf') in 0.019117 seconds 
+========================================================================
+Received Import Request.
+  Time since last request: 5.727353 seconds.
+  path: Assets/Scripts
+  artifactKey: Guid(462533eedab639f48ae9c4300c43adcf) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Scripts using Guid(462533eedab639f48ae9c4300c43adcf) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '8bdc104d18c02482a31727054056b96c') in 0.007735 seconds 
+========================================================================
+Received Import Request.
+  Time since last request: 5.815402 seconds.
+  path: Assets/Materials
+  artifactKey: Guid(ce0a3403306ac8d4f9df37e555b3297c) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Materials using Guid(ce0a3403306ac8d4f9df37e555b3297c) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'aba56bc832f597b37dd8c626cdb2d4f5') in 0.008185 seconds 
+========================================================================
+Received Import Request.
+  Time since last request: 3.824229 seconds.
+  path: Assets/Models
+  artifactKey: Guid(cd4363e6ee2126744abeff2a789a68b2) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Models using Guid(cd4363e6ee2126744abeff2a789a68b2) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'c55ed2aa3e19e9850f0ceabe0feeebdf') in 0.007727 seconds 
+========================================================================
+Received Import Request.
+  Time since last request: 85.276715 seconds.
+  path: Assets/Models/Chess Set.fbx
+  artifactKey: Guid(c36b03ec3d251734884f6fb596894252) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Models/Chess Set.fbx using Guid(c36b03ec3d251734884f6fb596894252) Importer(815301076,1909f56bfc062723c751e8b465ee728b) Launched and connected shader compiler UnityShaderCompiler.exe after 0.12 seconds
+ -> (artifact id: '2c8e790dadbdd28cda7f4edd1479dc46') in 5.452895 seconds 
+========================================================================
+Received Import Request.
+  Time since last request: 169.739052 seconds.
+  path: Assets/Prefabs
+  artifactKey: Guid(9786889a27b933b4b9d0e15648f11ac1) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Prefabs using Guid(9786889a27b933b4b9d0e15648f11ac1) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '79f58970bf33ed74b48be0ac6fc2d5c4') in 0.007188 seconds 
+========================================================================
+Received Import Request.
+  Time since last request: 94.171093 seconds.
+  path: Assets/Pawn  Black 6.mesh
+  artifactKey: Guid(6365bef60ba06b34e84666c38a938d8f) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Pawn  Black 6.mesh using Guid(6365bef60ba06b34e84666c38a938d8f) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '8dfd77dd58e3bb593261f6a472459f89') in 0.055168 seconds 
+========================================================================
+Received Import Request.
+  Time since last request: 46.294026 seconds.
+  path: Assets/Materials/Black Piece.mat
+  artifactKey: Guid(b03ebd9f00ffe084799664e3bc40588d) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Materials/Black Piece.mat using Guid(b03ebd9f00ffe084799664e3bc40588d) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '7e811f2d9a403c0fad78a6455e3c6190') in 0.025617 seconds 
+========================================================================
+Received Import Request.
+  Time since last request: 278.318185 seconds.
+  path: Assets/Materials/Green Felt.mat
+  artifactKey: Guid(16967897b1e05e94081629bf27662895) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Materials/Green Felt.mat using Guid(16967897b1e05e94081629bf27662895) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '60b72dc01b3301997a2451ff4095d72a') in 0.023981 seconds 
+========================================================================
+Received Import Request.
+  Time since last request: 84.742701 seconds.
+  path: Assets/Models/Black Pieces
+  artifactKey: Guid(ed522d102f194f0449cddf502ba2b857) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Models/Black Pieces using Guid(ed522d102f194f0449cddf502ba2b857) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '1f290f58a851c0e100f94accbc765989') in 0.007052 seconds 
+========================================================================
+Received Import Request.
+  Time since last request: 6.552508 seconds.
+  path: Assets/Models/White Pieces
+  artifactKey: Guid(7adc4f19f8a0a624d84722a87f04ac0a) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Models/White Pieces using Guid(7adc4f19f8a0a624d84722a87f04ac0a) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '208abc79e010a923b190893271b064a6') in 0.007150 seconds 
+========================================================================
+Received Import Request.
+  Time since last request: 6.394876 seconds.
+  path: Assets/Models/New Folder
+  artifactKey: Guid(9c64e5e76682ebf4292bd5f172a3142b) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Models/New Folder using Guid(9c64e5e76682ebf4292bd5f172a3142b) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '03a65eab30eaad5fe8e710dffac61286') in 0.007174 seconds 
+========================================================================
+Received Import Request.
+  Time since last request: 61.128561 seconds.
+  path: Assets/Models/Black Pieces/Bishop  Black.mesh
+  artifactKey: Guid(4554a5d161111614ea1c67b105cf597a) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Models/Black Pieces/Bishop  Black.mesh using Guid(4554a5d161111614ea1c67b105cf597a) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'c49702acbe2bfd4255c8557b78958d3d') in 0.221828 seconds 
+========================================================================
+Received Import Request.
+  Time since last request: 0.000031 seconds.
+  path: Assets/Models/Black Pieces/Rock  Black 2.mesh
+  artifactKey: Guid(15525475288e191429880d370d72a239) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Models/Black Pieces/Rock  Black 2.mesh using Guid(15525475288e191429880d370d72a239) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '6201fe26c0f71133d940a5bb52819028') in 0.142237 seconds 
+========================================================================
+Received Import Request.
+  Time since last request: 0.000045 seconds.
+  path: Assets/Models/Black Pieces/Pawn  Black 5.mesh
+  artifactKey: Guid(45f6a0a2c104a954e9a5e76088647e43) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Models/Black Pieces/Pawn  Black 5.mesh using Guid(45f6a0a2c104a954e9a5e76088647e43) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '23a762920027ea5040192c34297f820c') in 0.046156 seconds 
+========================================================================
+Received Import Request.
+  Time since last request: 0.000056 seconds.
+  path: Assets/Models/Black Pieces/Queen  Black.mesh
+  artifactKey: Guid(d9600e60bcdb231488b22441a369451d) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Models/Black Pieces/Queen  Black.mesh using Guid(d9600e60bcdb231488b22441a369451d) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'c3a17b06839a454117450591ecb04d4a') in 0.184148 seconds 
+========================================================================
+Received Import Request.
+  Time since last request: 0.000033 seconds.
+  path: Assets/Models/Black Pieces/Knight  Black.mesh
+  artifactKey: Guid(7677b71281a237e4cb1a022b441497b3) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Models/Black Pieces/Knight  Black.mesh using Guid(7677b71281a237e4cb1a022b441497b3) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '70afd0d4ba592e03d26c57a40bcf6b77') in 0.158543 seconds 
+========================================================================
+Received Import Request.
+  Time since last request: 57.847121 seconds.
+  path: Assets/Models/White Pieces/King White.mesh
+  artifactKey: Guid(8083317b358722c43affb53bba843d45) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Models/White Pieces/King White.mesh using Guid(8083317b358722c43affb53bba843d45) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'd242de35ec3eb90f33bf23a68783ad2c') in 0.299373 seconds 
+========================================================================
+Received Import Request.
+  Time since last request: 0.000037 seconds.
+  path: Assets/Models/White Pieces/Pawn White 6.mesh
+  artifactKey: Guid(6f656e8546d054549bd295a20bec05d6) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Models/White Pieces/Pawn White 6.mesh using Guid(6f656e8546d054549bd295a20bec05d6) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '0720f9eab5fafb3be9292207f8711ac3') in 0.048961 seconds 
+========================================================================
+Received Import Request.
+  Time since last request: 206.338473 seconds.
+  path: Assets/Textures/Black Piece/4K-wood_fine_6-diffuse.jpg
+  artifactKey: Guid(95ce57dce6caf6643854ba0b2c3f1d79) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Textures/Black Piece/4K-wood_fine_6-diffuse.jpg using Guid(95ce57dce6caf6643854ba0b2c3f1d79) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'a746bb41c734332bc1b2b58b9d6abc70') in 0.072348 seconds 
+========================================================================
+Received Import Request.
+  Time since last request: 0.000045 seconds.
+  path: Assets/Textures/Black Piece/4K-wood_fine_6-normal.jpg
+  artifactKey: Guid(4f734cfe2a57c0645809111c5acf7d80) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Textures/Black Piece/4K-wood_fine_6-normal.jpg using Guid(4f734cfe2a57c0645809111c5acf7d80) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '1834c86b1308f8b34585ee435d3168fa') in 0.019770 seconds 
+Editor requested this worker to shutdown with reason: Scaling down because of idle timeout
+AssetImportWorker is now disconnected from the server
+Process exiting
+Exiting without the bug reporter. Application will terminate with return code 0

@@ -228,3 +228,25 @@ AssetImportParameters requested are different than current active one (requested
   custom:container-demuxer-ogg: 62fdf1f143b41e24485cea50d1cbac27 -> 
   custom:video-decoder-webm-vp8: 9c59270c3fd7afecdb556c50c9e8de78 -> 
   custom:audio-decoder-ogg-vorbis: bf7c407c2cedff20999df2af8eb42d56 -> 
+========================================================================
+Received Import Request.
+  Time since last request: 1378.831393 seconds.
+  path: Assets/Models/Black Pieces/King  Black.mesh
+  artifactKey: Guid(dfb78531d351d1a478bf6dc9e4a12a84) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Models/Black Pieces/King  Black.mesh using Guid(dfb78531d351d1a478bf6dc9e4a12a84) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'bbf451a09afa2ef2bd0b5b15f8ef2484') in 1.051965 seconds 
+========================================================================
+Received Import Request.
+  Time since last request: 57.521097 seconds.
+  path: Assets/Models/White Pieces/Knight White.mesh
+  artifactKey: Guid(d7ade473385c1c74691b3ebb5cc9c3e3) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Models/White Pieces/Knight White.mesh using Guid(d7ade473385c1c74691b3ebb5cc9c3e3) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'b863f04c2ba1b19a413f70b1f9a916d5') in 0.187351 seconds 
+========================================================================
+Received Import Request.
+  Time since last request: 0.000027 seconds.
+  path: Assets/Models/White Pieces/Rock White 2.mesh
+  artifactKey: Guid(760c48c6989bbcd479bc4369019275c6) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Models/White Pieces/Rock White 2.mesh using Guid(760c48c6989bbcd479bc4369019275c6) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '4e960077b2edf8450c423af40cc21d90') in 0.145611 seconds 
+Editor requested this worker to shutdown with reason: Scaling down because of idle timeout
+AssetImportWorker is now disconnected from the server
+Process exiting
+Exiting without the bug reporter. Application will terminate with return code 0
