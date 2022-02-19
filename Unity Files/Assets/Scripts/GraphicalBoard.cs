@@ -1,23 +1,27 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
 
 namespace Assets.Scripts {
-    internal class GraphicalBoard : Board {
-        public GameObject[,] BoardGameObjects;
-
-        public new void AddPiece(IPiece piece, Vector2Int pos) {
+    internal class GraphicalBoard : Board
+    {
+        public Dictionary<IPiece, GameObject> GameObjects = new();
+        public override void AddPiece(IPiece piece, Vector2Int pos) {
             base.AddPiece(piece, pos);
-            BoardGameObjects[pos.x, pos.y] = Object.Instantiate(piece.Model,
-                new Vector3((pos.x - 3.5f) * 0.6f, 0, (pos.y - 3.5f) * 0.6f), piece.Model.transform.rotation);
+            GameObjects.Add(piece, Object.Instantiate(piece.Model,
+                ObjectLoader.GetRealCoords(pos), piece.Model.transform.rotation));
         }
+        public override void MovePiece(Vector2Int from, Vector2Int to) {
+            if (GameObjects.ContainsKey(Data[from.x, from.y]))
+            {
+                GameObjects[Data[from.x, from.y]].transform.position = ObjectLoader.GetRealCoords(to);
+            }
 
-        public new void MovePiece(Vector2Int from, Vector2Int to) {
+            if (GameObjects.ContainsKey(Data[to.x, to.y]))
+            {
+                Object.Destroy(GameObjects[Data[to.x, to.y]]);
+                GameObjects.Remove(Data[to.x, to.y]);
+            }
             base.MovePiece(from, to);
-            if (BoardGameObjects[to.x, to.y] != null) Object.Destroy(BoardGameObjects[to.x, to.y]);
-
-            BoardGameObjects[to.x, to.y] = BoardGameObjects[from.x, from.y];
-            BoardGameObjects[to.x, to.y].transform.position =
-                new Vector3((to.x - 3.5f) * 0.6f, 0, (to.y - 3.5f) * 0.6f);
-            if (BoardGameObjects[from.x, from.y] != null) Object.Destroy(BoardGameObjects[from.x, from.y]);
         }
     }
 }

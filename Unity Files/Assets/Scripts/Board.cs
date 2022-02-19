@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace Assets.Scripts {
@@ -5,18 +6,39 @@ namespace Assets.Scripts {
         public static readonly Vector2Int Size = new(8, 8);
         public IPiece[,] Data;
         public bool MoveMade = false;
-
-        public Board() {
-            Data = new IPiece[Size.x, Size.y];
-        }
-
-        public void AddPiece(IPiece piece, Vector2Int pos) {
+        public virtual void AddPiece(IPiece piece, Vector2Int pos) {
             Data[pos.x, pos.y] = piece;
         }
 
-        public void MovePiece(Vector2Int from, Vector2Int to) {
+        public virtual void MovePiece(Vector2Int from, Vector2Int to) {
             Data[to.x, to.y] = Data[from.x, from.y];
             Data[from.x, from.y] = null;
+        }
+        
+        public Board() {
+            Data = new IPiece[Size.x, Size.y];
+            AddPiece(new King(true), new Vector2Int(4, 0));
+            AddPiece(new King(false), new Vector2Int(4, 7));
+            AddPiece(new Queen(true), new Vector2Int(3, 0));
+            AddPiece(new Queen(false), new Vector2Int(3, 7));
+            AddPiece(new Bishop(true), new Vector2Int(2,0));
+            AddPiece(new Bishop(true), new Vector2Int(5,0));
+            AddPiece(new Bishop(false), new Vector2Int(2,7));
+            AddPiece(new Bishop(false), new Vector2Int(5,7));
+            AddPiece(new Knight(true), new Vector2Int(1,0));
+            AddPiece(new Knight(true), new Vector2Int(6,0));
+            AddPiece(new Knight(false), new Vector2Int(1,7));
+            AddPiece(new Knight(false), new Vector2Int(6,7));
+            AddPiece(new Rook(true), new Vector2Int(0,0));
+            AddPiece(new Rook(true), new Vector2Int(7,0));
+            AddPiece(new Rook(false), new Vector2Int(0,7));
+            AddPiece(new Rook(false), new Vector2Int(7,7));
+
+            for (int i = 0; i < 8; i++)
+            {
+                AddPiece(new Pawn(true), new Vector2Int(i, 1));
+                AddPiece(new Pawn(false), new Vector2Int(i, 6));
+            }
         }
     }
 }
