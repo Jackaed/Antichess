@@ -1,14 +1,53 @@
 ﻿using UnityEngine;
 
-namespace Assets.Scripts {
-    public class BoardRenderer : MonoBehaviour {
-        
-        private GraphicalBoard _board;
+public class BoardRenderer : MonoBehaviour
+{
+    private GraphicalBoard _board;
 
-        
-        private void Start()
+    private Vector2Int _from;
+    private bool _hasFrom;
+
+    private void Start()
+    {
+        _board = new GraphicalBoard();
+    }
+
+    private void Update()
+    {
+        if (Input.GetMouseButtonDown(0))
         {
-            _board = new GraphicalBoard();
+            var mouseRay = Camera.main!.ScreenPointToRay(Input.mousePosition);
+            if (Physics.Raycast(mouseRay, out var hit))
+            {
+                var pos = getPosFromRaycast(hit);
+                if (!_hasFrom)
+                {
+                    if (_board.PieceAt(pos) != null)
+                    {
+                        _from = pos;
+                        _hasFrom = true;
+                    }
+                }
+                else
+                {
+                    if (pos != _from) _board.MovePiece(_from, pos);
+                    _hasFrom = false;
+                }
+            }
         }
+
+        for (var x = 0; x < _board.PiecesToMove.Count; x++)
+            if (_board.PiecesToMove[x].Piece.transform.position !=
+                ObjectLoader.GetRealCoords(_board.PiecesToMove[x].To))
+                _board.PiecesToMove[x].Piece.transform.position =
+                    Vector3.MoveTowards(_board.PiecesToMove[x].Piece.transform.position,
+                        ObjectLoader.GetRealCoords(_board.PiecesToMove[x].To), 25 * Time.deltaTime);
+            else
+                _board.PiecesToMove.RemoveAt(x);
+    }
+
+    private Vector2Int getPosFromRaycast(RaycastHit hit)
+    {
+        return ObjectLoader.GetBoardCoords(hit.point);
     }
 }
