@@ -19,7 +19,7 @@ public class BoardRenderer : MonoBehaviour
             var mouseRay = Camera.main!.ScreenPointToRay(Input.mousePosition);
             if (Physics.Raycast(mouseRay, out var hit))
             {
-                var pos = getPosFromRaycast(hit);
+                var pos = GetPosFromRaycast(hit);
                 if (!_hasFrom)
                 {
                     if (_board.PieceAt(pos) != null)
@@ -37,16 +37,18 @@ public class BoardRenderer : MonoBehaviour
         }
 
         for (var x = 0; x < _board.PiecesToMove.Count; x++)
-            if (_board.PiecesToMove[x].Piece.transform.position !=
-                ObjectLoader.GetRealCoords(_board.PiecesToMove[x].To))
-                _board.PiecesToMove[x].Piece.transform.position =
-                    Vector3.MoveTowards(_board.PiecesToMove[x].Piece.transform.position,
-                        ObjectLoader.GetRealCoords(_board.PiecesToMove[x].To), 25 * Time.deltaTime);
-            else
-                _board.PiecesToMove.RemoveAt(x);
+        {
+            var pieceToMove = _board.PiecesToMove[x];
+            if (pieceToMove.Piece.transform.position != ObjectLoader.GetRealCoords(pieceToMove.To))
+            {
+                pieceToMove.Piece.transform.position = Vector3.MoveTowards(pieceToMove.Piece.transform.position,
+                        ObjectLoader.GetRealCoords(pieceToMove.To), 25 * Time.deltaTime);
+            }
+            else _board.PiecesToMove.RemoveAt(x);
+        }
     }
 
-    private Vector2Int getPosFromRaycast(RaycastHit hit)
+    private static Vector2Int GetPosFromRaycast(RaycastHit hit)
     {
         return ObjectLoader.GetBoardCoords(hit.point);
     }

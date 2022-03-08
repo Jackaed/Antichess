@@ -36,12 +36,12 @@ public class Board
         }
     }
 
-    public virtual IPiece PieceAt(Vector2Int pos)
+    public IPiece PieceAt(Vector2Int pos)
     {
         return Data[pos.x, pos.y];
     }
 
-    public virtual void AddPiece(IPiece piece, Vector2Int pos)
+    protected virtual void AddPiece(IPiece piece, Vector2Int pos)
     {
         Data[pos.x, pos.y] = piece;
     }
