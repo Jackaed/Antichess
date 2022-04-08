@@ -13,17 +13,17 @@ internal class GraphicalBoard : Board
             ObjectLoader.GetRealCoords(pos), piece.Model.transform.rotation));
     }
 
-    public override void MovePiece(Vector2Int from, Vector2Int to)
+    public override void MovePiece(Move move)
     {
-        if (_gameObjects.ContainsKey(Data[from.x, from.y]))
-            PiecesToMove.Add(new MovingPiece(to, _gameObjects[Data[from.x, from.y]]));
+        if (_gameObjects.ContainsKey(Data[move.from.x, move.from.y]))
+            PiecesToMove.Add(new MovingPiece(move.to, _gameObjects[Data[move.from.x, move.from.y]]));
 
-        if (Data[to.x, to.y] != null)
+        if (Data[move.to.x, move.to.y] != null)
         {
-            Object.Destroy(_gameObjects[Data[to.x, to.y]]);
-            _gameObjects.Remove(Data[to.x, to.y]);
+            Object.Destroy(_gameObjects[Data[move.to.x, move.to.y]]);
+            _gameObjects.Remove(Data[move.to.x, move.to.y]);
         }
 
-        base.MovePiece(from, to);
+        base.MovePiece(move);
     }
 }

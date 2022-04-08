@@ -30,7 +30,7 @@ public class BoardRenderer : MonoBehaviour
                 }
                 else
                 {
-                    if (pos != _from) _board.MovePiece(_from, pos);
+                    if (pos != _from) _board.MovePiece(new Move(_from, pos));
                     _hasFrom = false;
                 }
             }
@@ -40,10 +40,8 @@ public class BoardRenderer : MonoBehaviour
         {
             var pieceToMove = _board.PiecesToMove[x];
             if (pieceToMove.Piece.transform.position != ObjectLoader.GetRealCoords(pieceToMove.To))
-            {
                 pieceToMove.Piece.transform.position = Vector3.MoveTowards(pieceToMove.Piece.transform.position,
-                        ObjectLoader.GetRealCoords(pieceToMove.To), 25 * Time.deltaTime);
-            }
+                    ObjectLoader.GetRealCoords(pieceToMove.To), 25 * Time.deltaTime);
             else _board.PiecesToMove.RemoveAt(x);
         }
     }

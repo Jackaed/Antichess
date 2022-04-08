@@ -6,7 +6,7 @@ public class Board
 {
     private static readonly Vector2Int Size = new(8, 8);
     protected readonly IPiece[,] Data;
-    public bool MoveMade = false;
+    public bool WhitesMove;
 
     protected Board()
     {
@@ -46,9 +46,9 @@ public class Board
         Data[pos.x, pos.y] = piece;
     }
 
-    public virtual void MovePiece(Vector2Int from, Vector2Int to)
+    public virtual void MovePiece(Move move)
     {
-        Data[to.x, to.y] = Data[from.x, from.y];
-        Data[from.x, from.y] = null;
+        Data[move.to.x, move.to.y] = Data[move.from.x, move.from.y];
+        Data[move.from.x, move.from.y] = null;
     }
 }
