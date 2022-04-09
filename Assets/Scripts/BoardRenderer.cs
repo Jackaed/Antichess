@@ -32,12 +32,13 @@ namespace Antichess
                     }
                     else
                     {
-                        if (pos != _from) _board.MovePiece(_from, pos);
+                        if (pos != _from) _board.MovePiece(new Move(_from, pos));
                         _hasFrom = false;
                     }
                 }
             }
-
+            
+            //  Smoothly moves pieces to destination
             for (var x = 0; x < _board.PiecesToMove.Count; x++)
             {
                 var pieceToMove = _board.PiecesToMove[x];

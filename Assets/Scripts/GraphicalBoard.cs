@@ -16,18 +16,18 @@ namespace Antichess
                 ObjectLoader.GetRealCoords(pos), piece.Model.transform.rotation));
         }
 
-        public override void MovePiece(Vector2Int from, Vector2Int to)
+        public override void MovePiece(Move move)
         {
-            if (_gameObjects.ContainsKey(Data[from.x, from.y]))
-                PiecesToMove.Add(new MovingPiece(to, _gameObjects[Data[from.x, from.y]]));
+            if (_gameObjects.ContainsKey(Data[move.From.x, move.From.y]))
+                PiecesToMove.Add(new MovingPiece(move.To, _gameObjects[Data[move.From.x, move.From.y]]));
 
-            if (Data[to.x, to.y] != null)
+            if (Data[move.To.x, move.To.y] != null)
             {
-                Object.Destroy(_gameObjects[Data[to.x, to.y]]);
-                _gameObjects.Remove(Data[to.x, to.y]);
+                Object.Destroy(_gameObjects[Data[move.To.x, move.To.y]]);
+                _gameObjects.Remove(Data[move.To.x, move.To.y]);
             }
 
-            base.MovePiece(from, to);
+            base.MovePiece(move);
         }
     }
 }

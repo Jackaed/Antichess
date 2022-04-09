@@ -49,10 +49,10 @@ namespace Antichess
             Data[pos.x, pos.y] = piece;
         }
 
-        public virtual void MovePiece(Vector2Int from, Vector2Int to)
+        public virtual void MovePiece(Move move)
         {
-            Data[to.x, to.y] = Data[from.x, from.y];
-            Data[from.x, from.y] = null;
+            Data[move.To.x, move.To.y] = Data[move.From.x, move.From.y];
+            Data[move.From.x, move.From.y] = null;
         }
     }
 }
