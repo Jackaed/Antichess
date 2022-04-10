@@ -42,9 +42,12 @@ namespace Antichess
             for (var x = 0; x < _board.PiecesToMove.Count; x++)
             {
                 var pieceToMove = _board.PiecesToMove[x];
-                if (pieceToMove.Piece.transform.position != ObjectLoader.GetRealCoords(pieceToMove.To))
-                    pieceToMove.Piece.transform.position = Vector3.MoveTowards(pieceToMove.Piece.transform.position,
+                var currentPos = pieceToMove.Piece.transform.position;
+                if (currentPos != ObjectLoader.GetRealCoords(pieceToMove.To))
+                {
+                    pieceToMove.Piece.transform.position = Vector3.MoveTowards(currentPos, 
                         ObjectLoader.GetRealCoords(pieceToMove.To), 25 * Time.deltaTime);
+                }
                 else _board.PiecesToMove.RemoveAt(x);
             }
         }
