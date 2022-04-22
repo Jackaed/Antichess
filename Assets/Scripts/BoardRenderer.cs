@@ -5,53 +5,61 @@ namespace Antichess
     public class BoardRenderer : MonoBehaviour
     {
         private GraphicalBoard _board;
-
+        private Camera _cam;
         private Vector2Int _from;
         private bool _hasFrom;
 
         private void Start()
         {
             _board = new GraphicalBoard();
+            _cam = Camera.main;
         }
 
         private void Update()
         {
-            if (Input.GetMouseButtonDown(0))
-            {
-                var mouseRay = Camera.main!.ScreenPointToRay(Input.mousePosition);
-                if (Physics.Raycast(mouseRay, out var hit))
-                {
-                    var pos = GetPosFromRaycast(hit);
-                    if (!_hasFrom)
-                    {
-                        if (_board.PieceAt(pos) != null)
-                        {
-                            _from = pos;
-                            _hasFrom = true;
-                        }
-                    }
-                    else
-                    {
-                        if (pos != _from) _board.MovePiece(new Move(_from, pos));
-                        _hasFrom = false;
-                    }
-                }
-            }
-            
-            //  Smoothly moves pieces to destination
+            GetInputs();
+            MovePieces();
+        }
+
+        private void MovePieces ()
+        {
             for (var x = 0; x < _board.PiecesToMove.Count; x++)
             {
                 var pieceToMove = _board.PiecesToMove[x];
                 var currentPos = pieceToMove.Piece.transform.position;
                 if (currentPos != ObjectLoader.GetRealCoords(pieceToMove.To))
                 {
-                    pieceToMove.Piece.transform.position = Vector3.MoveTowards(currentPos, 
+                    pieceToMove.Piece.transform.position = Vector3.MoveTowards(currentPos,
                         ObjectLoader.GetRealCoords(pieceToMove.To), 25 * Time.deltaTime);
                 }
                 else _board.PiecesToMove.RemoveAt(x);
             }
         }
 
+        private void GetInputs()
+        {
+            if (!Input.GetMouseButtonDown(0)) return;
+            Debug.Log("Mouse1 pressed");
+            var mouseRay = _cam!.ScreenPointToRay(Input.mousePosition);
+            if (!Physics.Raycast(mouseRay, out var hit)) return;
+            Debug.Log("Raycast collided");
+            var pos = GetPosFromRaycast(hit);
+            if (_hasFrom)
+            {
+                Debug.Log("Move suggested");
+                _board.MovePiece(new Move(_from, pos));
+                _hasFrom = false;
+            }
+            else
+            {
+                Debug.Log("Initial piece suggested");
+                if (_board.PieceAt(pos) == null) return;
+                Debug.Log("Piece found at position");
+                _from = pos;
+                _hasFrom = true;
+            }
+        }
+        
         private static Vector2Int GetPosFromRaycast(RaycastHit hit)
         {
             return ObjectLoader.GetBoardCoords(hit.point);

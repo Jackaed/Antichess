@@ -1,4 +1,4 @@
-using System;
+using System.Collections.Generic;
 using Antichess.Pieces;
 using UnityEngine;
 
@@ -9,70 +9,94 @@ namespace Antichess
     public class Board
     {
         private static readonly Vector2Int Size = new(8, 8);
-        protected readonly IPiece[,] Data;
-        public bool WhitesMove { get; private set; }
+        private readonly IPiece[,] _data;
 
-        public Board()
+        private List<Move> LegalMoves
         {
-            Data = new IPiece[Size.x, Size.y];
-            ProcessFenString("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
+            get
+            {
+                bool canTake = false;
+                var moves = new List<Move>();
+                for(var x = 0 ; x < Size.x; x++)
+                {
+                    for (var y = 0; y < Size.y; y++)
+                    {
+                        var pos = new Vector2Int(x, y);
+                        moves.AddRange(PieceAt(pos).GetLegalMoves(pos, this));
+                    }
+                }
+
+                return moves;
+            }
         }
+
+        private bool IsLegal(Move move)
+        {
+            var pieceFrom = PieceAt(move.From);
+            var pieceTo = PieceAt(move.To);
+            return (pieceFrom != null && pieceFrom.IsWhite == WhitesMove &&
+                    (pieceTo == null || pieceTo.IsWhite != WhitesMove));
+        }
+        
+        protected Board()
+        {
+            _data = new IPiece[Size.x, Size.y];
+            // ReSharper disable StringLiteralTypo
+            ProcessFenString("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
+            // ReSharper restore StringLiteralTypo
+        }
+
+        public bool WhitesMove { get; private set; }
 
         public IPiece PieceAt(Vector2Int pos)
         {
-            return Data[pos.x, pos.y];
-        }
-
-        public virtual void AddPiece(IPiece piece, Vector2Int pos)
-        {
-            Data[pos.x, pos.y] = piece;
-        }
-
-        public virtual void MovePiece(Move move)
-        {
-            Data[move.To.x, move.To.y] = Data[move.From.x, move.From.y];
-            Data[move.From.x, move.From.y] = null;
+            return _data[pos.x, pos.y];
         }
         
-        private static IPiece GetPieceFromChar (char character)
+
+
+        protected virtual void AddPiece(IPiece piece, Vector2Int pos)
+        {
+            _data[pos.x, pos.y] = piece;
+        }
+
+        public virtual bool MovePiece(Move move)
+        {
+            if (!IsLegal(move))
+            {
+                Debug.Log("Illegal move");
+                return false;
+            }
+            _data[move.To.x, move.To.y] = PieceAt(move.From);
+            _data[move.From.x, move.From.y] = null;
+            return true;
+
+        }
+
+        private static IPiece GetPieceFromChar(char character)
         {
             var isWhite = char.IsUpper(character);
-            IPiece piece;
-            
-            switch (Char.ToLower(character))
+
+            IPiece piece = char.ToLower(character) switch
             {
-                case 'p':
-                    piece = new Pawn(isWhite);
-                    break;
-                case 'b':
-                    piece = new Bishop(isWhite);
-                    break;
-                case 'k':
-                    piece = new King(isWhite);
-                    break;
-                case 'n':
-                    piece = new Knight(isWhite);
-                    break;
-                case 'q':
-                    piece = new Queen(isWhite);
-                    break;
-                case 'r':
-                    piece = new Rook(isWhite);
-                    break;
-                default:
-                    piece = null;
-                    break;
-            }
+                'p' => new Pawn(isWhite),
+                'b' => new Bishop(isWhite),
+                'k' => new King(isWhite),
+                'n' => new Knight(isWhite),
+                'q' => new Queen(isWhite),
+                'r' => new Rook(isWhite),
+                _ => null
+            };
 
             return piece;
         }
-        
-        public void ProcessFenString(String fenString)
+
+        private void ProcessFenString(string fenString)
         {
-            //  Returns a board from a fenstring.
+            //  Returns a board from a FEN string.
             // Note that there is no castling in antichess, so these sections of the fen string are ignored.
 
-            var y = 7;
+            var y = Size.y - 1;
             var x = 0;
             var i = 0;
             while (fenString[i] != ' ')
