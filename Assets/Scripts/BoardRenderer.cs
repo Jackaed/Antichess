@@ -39,22 +39,17 @@ namespace Antichess
         private void GetInputs()
         {
             if (!Input.GetMouseButtonDown(0)) return;
-            Debug.Log("Mouse1 pressed");
             var mouseRay = _cam!.ScreenPointToRay(Input.mousePosition);
             if (!Physics.Raycast(mouseRay, out var hit)) return;
-            Debug.Log("Raycast collided");
             var pos = GetPosFromRaycast(hit);
             if (_hasFrom)
             {
-                Debug.Log("Move suggested");
                 _board.MovePiece(new Move(_from, pos));
                 _hasFrom = false;
             }
             else
             {
-                Debug.Log("Initial piece suggested");
                 if (_board.PieceAt(pos) == null) return;
-                Debug.Log("Piece found at position");
                 _from = pos;
                 _hasFrom = true;
             }

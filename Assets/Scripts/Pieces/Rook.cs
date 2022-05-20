@@ -2,15 +2,10 @@
 
 namespace Antichess.Pieces
 {
-    public class Rook : IPiece
+    public class Rook : Piece
     {
-        public Rook(bool isWhite)
-        {
-            IsWhite = isWhite;
-        }
-
-        public bool IsWhite { get; }
-
-        public GameObject Model => IsWhite ? ObjectLoader.Instance.wRook : ObjectLoader.Instance.bRook;
+        public Rook(bool isWhite) : base(isWhite) {}
+        protected override GameObject BlackModel => ObjectLoader.Instance.bRook;
+        protected override GameObject WhiteModel => ObjectLoader.Instance.wRook;
     }
 }

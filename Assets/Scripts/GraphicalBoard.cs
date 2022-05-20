@@ -6,10 +6,10 @@ namespace Antichess
 {
     internal class GraphicalBoard : Board 
     {
-        private readonly Dictionary<IPiece, GameObject> _gameObjects = new();
+        private readonly Dictionary<Piece, GameObject> _gameObjects = new();
         public readonly List<MovingPiece> PiecesToMove = new();
         
-        protected override void AddPiece(IPiece piece, Vector2Int pos)
+        protected override void AddPiece(Piece piece, Vector2Int pos)
         {
             base.AddPiece(piece, pos);
             _gameObjects.Add(piece, Object.Instantiate(piece.Model,
@@ -18,14 +18,16 @@ namespace Antichess
 
         public override bool MovePiece(Move move)
         {
+            var pieceFrom = PieceAt(move.From);
+            var pieceTo = PieceAt(move.To);
             if (!base.MovePiece(move)) return false;
-            if (_gameObjects.ContainsKey(PieceAt(move.From)))
-                PiecesToMove.Add(new MovingPiece(move.To, _gameObjects[PieceAt(move.From)]));
+            if (_gameObjects.ContainsKey(pieceFrom))
+                PiecesToMove.Add(new MovingPiece(move.To, _gameObjects[pieceFrom]));
 
-            if (PieceAt(move.To) != null)
+            if (pieceTo != null)
             {
-                Object.Destroy(_gameObjects[PieceAt(move.To)]);
-                _gameObjects.Remove(PieceAt(move.To));
+                Object.Destroy(_gameObjects[pieceTo]);
+                _gameObjects.Remove(pieceTo);
             }
 
             return true;

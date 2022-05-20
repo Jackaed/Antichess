@@ -44,7 +44,7 @@ namespace Antichess
         
         public static Vector2Int GetBoardCoords(Vector3 realCoords)
         {
-            return new Vector2Int(GetBoardCoord(realCoords.x), GetBoardCoord(realCoords.y));
+            return new Vector2Int(GetBoardCoord(realCoords.x), GetBoardCoord(realCoords.z));
         }
     }
 }

@@ -2,14 +2,10 @@
 
 namespace Antichess.Pieces
 {
-    public class Queen : IPiece
+    public class Queen : Piece
     {
-        public Queen(bool isWhite)
-        {
-            IsWhite = isWhite;
-        }
-
-        public bool IsWhite { get; }
-        public GameObject Model => IsWhite ? ObjectLoader.Instance.wQueen : ObjectLoader.Instance.bQueen;
+        public Queen(bool isWhite) : base(isWhite) {}
+        protected override GameObject BlackModel => ObjectLoader.Instance.bQueen;
+        protected override GameObject WhiteModel => ObjectLoader.Instance.wQueen;
     }
 }
