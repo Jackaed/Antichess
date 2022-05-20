@@ -15,18 +15,24 @@ namespace Antichess.Pieces
         {
             List<Move> moveList = new();
             Vector2Int to = new Vector2Int(pos.x, pos.y) + increments;
-            while (to.x < Board.Size.x && to.x > 0 && to.y < Board.Size.y && to.y > 0)
+            while (to.x < Board.Size.x && to.x >= 0 && to.y < Board.Size.y && to.y >= 0)
             {
                 if (boardRef.PieceAt(to) == null)
                 {
                     moveList.Add(new Move(pos, to));
                 }
-
+                
                 else if (boardRef.PieceAt(to).IsWhite != IsWhite)
                 {
                     moveList.Add(new Move(pos, to));
                     break;
                 }
+
+                else
+                {
+                    break;
+                }
+                
                 to += increments;
             }
             

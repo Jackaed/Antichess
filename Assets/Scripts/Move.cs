@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.UIElements;
 
 namespace Antichess
 {
@@ -10,6 +11,11 @@ namespace Antichess
         {
             From = from;
             To = to;
+        }
+
+        public override string ToString()
+        {
+            return From + " , " + To;
         }
     }
 }

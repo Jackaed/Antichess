@@ -1,4 +1,6 @@
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using Antichess.Pieces;
 using UnityEngine;
 
@@ -10,50 +12,40 @@ namespace Antichess
     {
         public static readonly Vector2Int Size = new(8, 8);
         private readonly Piece[,] _data;
+        private List<Move> _legalMoves;
 
-        private List<Move> LegalMoves
+        private void UpdateLegalMoves()
         {
-            get
+            var moves = new List<Move>();
+            for(var x = 0 ; x < Size.x; x++)
             {
-                var moves = new List<Move>();
-                for(var x = 0 ; x < Size.x; x++)
+                for (var y = 0; y < Size.y; y++)
                 {
-                    for (var y = 0; y < Size.y; y++)
+                    var pos = new Vector2Int(x, y);
+                    var pieceFrom = PieceAt(pos);
+                        
+                    if (pieceFrom != null && pieceFrom.IsWhite == WhitesMove)
                     {
-                        var pos = new Vector2Int(x, y);
-                        var pieceFrom = PieceAt(pos);
-                        
-                        if (pieceFrom != null && pieceFrom.IsWhite == WhitesMove)
-                        {
-                            moves.AddRange(PieceAt(pos).GetMoves(pos, this));
-                        }
-                        
+                        moves.AddRange(PieceAt(pos).GetMoves(pos, this));
                     }
+                        
                 }
-                return moves;
             }
+            _legalMoves = moves;
         }
 
         private bool IsLegal(Move move)
         {
-<<<<<<< Updated upstream
-            return LegalMoves.Contains(move);
-=======
-            /*
-            var pieceFrom = PieceAt(move.From);
-            var pieceTo = PieceAt(move.To);
-            return (pieceFrom != null && pieceFrom.IsWhite == WhitesMove &&
-                    (pieceTo == null || pieceTo.IsWhite != WhitesMove));
-            */
-            return true;
->>>>>>> Stashed changes
+            Debug.Log(String.Join(" : ", _legalMoves));
+            return _legalMoves.Any(p => move.From == p.From && move.To == p.To);
         }
         
         protected Board()
         {
             _data = new Piece[Size.x, Size.y];
             // ReSharper disable StringLiteralTypo
-            ProcessFenString("8/8/5b2/8/8/2B5/8/8 w - - 0 1");
+            ProcessFenString("8/6B1/8/8/8/2r5/8/8 w - - 0 1");
+            UpdateLegalMoves();
             // ReSharper restore StringLiteralTypo
         }
 
@@ -79,6 +71,7 @@ namespace Antichess
             _data[move.To.x, move.To.y] = PieceAt(move.From);
             _data[move.From.x, move.From.y] = null;
             WhitesMove = !WhitesMove;
+            UpdateLegalMoves();
             return true;
 
         }
@@ -103,9 +96,6 @@ namespace Antichess
 
         private void ProcessFenString(string fenString)
         {
-            //  Returns a board from a FEN string.
-            // Note that there is no castling in antichess, so these sections of the fen string are ignored.
-
             var y = Size.y - 1;
             var x = 0;
             var i = 0;
