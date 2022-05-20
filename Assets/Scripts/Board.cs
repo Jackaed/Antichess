@@ -36,7 +36,17 @@ namespace Antichess
 
         private bool IsLegal(Move move)
         {
+<<<<<<< Updated upstream
             return LegalMoves.Contains(move);
+=======
+            /*
+            var pieceFrom = PieceAt(move.From);
+            var pieceTo = PieceAt(move.To);
+            return (pieceFrom != null && pieceFrom.IsWhite == WhitesMove &&
+                    (pieceTo == null || pieceTo.IsWhite != WhitesMove));
+            */
+            return true;
+>>>>>>> Stashed changes
         }
         
         protected Board()

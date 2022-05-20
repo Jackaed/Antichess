@@ -21,8 +21,14 @@ namespace Antichess
             var pieceFrom = PieceAt(move.From);
             var pieceTo = PieceAt(move.To);
             if (!base.MovePiece(move)) return false;
+<<<<<<< Updated upstream
             if (_gameObjects.ContainsKey(pieceFrom))
                 PiecesToMove.Add(new MovingPiece(move.To, _gameObjects[pieceFrom]));
+=======
+            Debug.Log(PieceAt(move.From).GetType());
+            if (_gameObjects.ContainsKey(PieceAt(move.From)))
+                PiecesToMove.Add(new MovingPiece(move.To, _gameObjects[PieceAt(move.From)]));
+>>>>>>> Stashed changes
 
             if (pieceTo != null)
             {
