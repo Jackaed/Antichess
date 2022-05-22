@@ -8,7 +8,7 @@ namespace Antichess
     {
         private readonly Dictionary<Piece, GameObject> _gameObjects = new();
         public readonly List<MovingPiece> PiecesToMove = new();
-        
+
         protected override void AddPiece(Piece piece, Vector2Int pos)
         {
             base.AddPiece(piece, pos);

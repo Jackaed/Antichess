@@ -12,23 +12,39 @@ namespace Antichess
     {
         public static readonly Vector2Int Size = new(8, 8);
         private readonly Piece[,] _data;
-        private List<Move> _legalMoves;
-
+        private Dictionary<Vector2Int, List<Vector2Int>> _legalMoves;
+        
         private void UpdateLegalMoves()
         {
-            var moves = new List<Move>();
+            var canTake = false;
+            var lastCouldTake = false;
+            var moves = new Dictionary<Vector2Int, List<Vector2Int>>();
             for(var x = 0 ; x < Size.x; x++)
             {
                 for (var y = 0; y < Size.y; y++)
                 {
                     var pos = new Vector2Int(x, y);
                     var pieceFrom = PieceAt(pos);
-                        
+
+                    
+                    
                     if (pieceFrom != null && pieceFrom.IsWhite == WhitesMove)
                     {
-                        moves.AddRange(PieceAt(pos).GetMoves(pos, this));
-                    }
+                        var pieceMoves = pieceFrom.GetMoves(pos, this, canTake);
+                        canTake = pieceMoves.CanTake || canTake;
+                    
+                        if (lastCouldTake != canTake)
+                        {
+                            moves = new Dictionary<Vector2Int, List<Vector2Int>>();
+                            lastCouldTake = true;
+                        }
+
+                        if (pieceMoves.MoveList.Count != 0)
+                        {
+                            moves[pos] = pieceMoves.MoveList;
+                        }
                         
+                    }
                 }
             }
             _legalMoves = moves;
@@ -36,15 +52,20 @@ namespace Antichess
 
         private bool IsLegal(Move move)
         {
-            Debug.Log(String.Join(" : ", _legalMoves));
-            return _legalMoves.Any(p => move.From == p.From && move.To == p.To);
+            Debug.Log(LegalMovesToString());
+            return _legalMoves.ContainsKey(move.From) && _legalMoves[move.From].Any(p => move.To == p);
+        }
+
+        private string LegalMovesToString()
+        {
+            return string.Join("; ", _legalMoves.Select(pair => $"{pair.Key} => {string.Join(", ", pair.Value)}"));
         }
         
         protected Board()
         {
             _data = new Piece[Size.x, Size.y];
             // ReSharper disable StringLiteralTypo
-            ProcessFenString("8/6B1/8/8/8/2r5/8/8 w - - 0 1");
+            ProcessFenString("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
             UpdateLegalMoves();
             // ReSharper restore StringLiteralTypo
         }

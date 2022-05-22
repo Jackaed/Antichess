@@ -9,16 +9,16 @@ namespace Antichess.Pieces
         {
             IsWhite = isWhite;
         }
-        public bool IsWhite { get; protected set; }
+        public bool IsWhite { get; }
 
         protected virtual GameObject BlackModel => null;
         protected virtual GameObject WhiteModel => null;
 
         public GameObject Model => IsWhite ? WhiteModel : BlackModel;
 
-        public virtual List<Move> GetMoves(Vector2Int pos, Board boardRef)
+        public virtual ListMove GetMoves(Vector2Int pos, Board boardRef, bool CanTake)
         {
-            return new List<Move>();
+            return new ListMove();
         }
     }
 }
