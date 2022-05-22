@@ -7,9 +7,9 @@ namespace Antichess.Pieces
         public Knight(bool isWhite) : base(isWhite) {}
         protected override GameObject WhiteModel => ObjectLoader.Instance.wKnight;
         protected override GameObject BlackModel => ObjectLoader.Instance.bKnight;
+
         public override ListMove GetMoves(Vector2Int pos, Board boardRef, bool canTake)
         {
-
             Vector2Int[] directions =
             {
                 new(2, 1),

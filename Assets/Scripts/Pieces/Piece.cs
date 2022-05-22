@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace Antichess.Pieces
 {
@@ -9,6 +8,7 @@ namespace Antichess.Pieces
         {
             IsWhite = isWhite;
         }
+
         public bool IsWhite { get; }
 
         protected virtual GameObject BlackModel => null;
@@ -16,7 +16,7 @@ namespace Antichess.Pieces
 
         public GameObject Model => IsWhite ? WhiteModel : BlackModel;
 
-        public virtual ListMove GetMoves(Vector2Int pos, Board boardRef, bool CanTake)
+        public virtual ListMove GetMoves(Vector2Int pos, Board boardRef, bool canTake)
         {
             return new ListMove();
         }

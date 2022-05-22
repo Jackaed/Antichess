@@ -17,7 +17,7 @@ namespace Antichess.Pieces
                 new(0, 1),
                 new(0, -1)
             };
-            
+
             return GenericMoveLogic.GetMovesInStraightDirection(pos, directions, boardRef, canTake);
         }
     }

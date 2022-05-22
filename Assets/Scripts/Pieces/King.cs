@@ -1,5 +1,4 @@
-﻿using Unity.VisualScripting;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace Antichess.Pieces
 {
@@ -11,7 +10,6 @@ namespace Antichess.Pieces
 
         public override ListMove GetMoves(Vector2Int pos, Board boardRef, bool canTake)
         {
-
             Vector2Int[] directions =
             {
                 new(0, 1),

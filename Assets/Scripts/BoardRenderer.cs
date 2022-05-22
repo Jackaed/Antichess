@@ -21,17 +21,15 @@ namespace Antichess
             MovePieces();
         }
 
-        private void MovePieces ()
+        private void MovePieces()
         {
             for (var x = 0; x < _board.PiecesToMove.Count; x++)
             {
                 var pieceToMove = _board.PiecesToMove[x];
                 var currentPos = pieceToMove.Piece.transform.position;
                 if (currentPos != ObjectLoader.GetRealCoords(pieceToMove.To))
-                {
                     pieceToMove.Piece.transform.position = Vector3.MoveTowards(currentPos,
                         ObjectLoader.GetRealCoords(pieceToMove.To), 25 * Time.deltaTime);
-                }
                 else _board.PiecesToMove.RemoveAt(x);
             }
         }
@@ -54,7 +52,7 @@ namespace Antichess
                 _hasFrom = true;
             }
         }
-        
+
         private static Vector2Int GetPosFromRaycast(RaycastHit hit)
         {
             return ObjectLoader.GetBoardCoords(hit.point);

@@ -464,7 +464,7 @@ Transform:
   m_GameObject: {fileID: 205443662}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: -0.2, z: 0}
-  m_LocalScale: {x: 2, y: 1, z: 1}
+  m_LocalScale: {x: 2, y: 1, z: 2}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -518,7 +518,7 @@ MonoBehaviour:
   taaAntiFlicker: 0.5
   taaMotionVectorRejection: 0.799
   taaAntiHistoryRinging: 1
-  taaBaseBlendFactor: 0.726
+  taaBaseBlendFactor: 0.796
   physicalParameters:
     m_Iso: 200
     m_ShutterSpeed: 0.005
@@ -954,7 +954,7 @@ MonoBehaviour:
       rangeCompressionFactor: 1
     influence:
       m_Shape: 0
-      m_BoxSize: {x: 5, y: 0.01, z: 5}
+      m_BoxSize: {x: 5.64, y: 0.01, z: 5.64}
       m_BoxBlendDistancePositive: {x: 0, y: 0, z: 0}
       m_BoxBlendDistanceNegative: {x: 0, y: 0, z: 0}
       m_BoxBlendNormalDistancePositive: {x: 0, y: 0, z: 0}
@@ -992,7 +992,7 @@ MonoBehaviour:
     resolutionScalable:
       m_Override: 512
       m_UseOverride: 0
-      m_Level: 2
+      m_Level: 0
     resolution: 0
     cameraSettings:
       customRenderingSettings: 0

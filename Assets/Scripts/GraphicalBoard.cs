@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace Antichess
 {
-    internal class GraphicalBoard : Board 
+    internal class GraphicalBoard : Board
     {
         private readonly Dictionary<Piece, GameObject> _gameObjects = new();
         public readonly List<MovingPiece> PiecesToMove = new();
@@ -20,9 +20,9 @@ namespace Antichess
         {
             var pieceFrom = PieceAt(move.From);
             var pieceTo = PieceAt(move.To);
-            
+
             if (!base.MovePiece(move)) return false;
-            
+
             if (_gameObjects.ContainsKey(pieceFrom))
                 PiecesToMove.Add(new MovingPiece(move.To, _gameObjects[PieceAt(move.To)]));
 

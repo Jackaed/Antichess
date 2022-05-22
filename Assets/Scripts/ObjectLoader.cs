@@ -41,7 +41,7 @@ namespace Antichess
             var coord = Math.Round(num / 0.6f + 3.5f);
             return (int) Math.Clamp(coord, 0, 7);
         }
-        
+
         public static Vector2Int GetBoardCoords(Vector3 realCoords)
         {
             return new Vector2Int(GetBoardCoord(realCoords.x), GetBoardCoord(realCoords.z));
