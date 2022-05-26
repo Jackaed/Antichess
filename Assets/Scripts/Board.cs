@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Antichess.Pieces;
+using Antichess.TargetSquares;
 using UnityEngine;
 
 // ReSharper disable VirtualMemberCallInConstructor
@@ -9,10 +10,12 @@ namespace Antichess
 {
     public class Board
     {
-        public static readonly Vector2Int Size = new(8, 8);
+        public static readonly Position Size = new(8, 8);
         private readonly Piece[,] _data;
-        private Dictionary<Vector2Int, List<Vector2Int>> _legalMoves;
-
+        private Dictionary<Position, List<Position>> _legalMoves;
+        public bool CanTake;
+        private bool _couldTake;
+        
         protected Board()
         {
             _data = new Piece[Size.x, Size.y];
@@ -24,32 +27,41 @@ namespace Antichess
 
         private bool WhitesMove { get; set; }
 
+        public void AddLegalMove(Move move)
+        {
+            var pieceFrom = PieceAt(move.From);
+            if (pieceFrom == null) return;
+            if (_couldTake != CanTake)
+            {
+                _legalMoves.Clear();
+                _couldTake = true;
+            }
+
+            if (_legalMoves.ContainsKey(move.From))
+            {
+                _legalMoves[move.From].Add(move.To);
+            }
+            else
+            {
+                _legalMoves[move.From] = new List<Position> {move.To};
+            }
+        }
+
         private void UpdateLegalMoves()
         {
-            var canTake = false;
-            var lastCouldTake = false;
-            var moves = new Dictionary<Vector2Int, List<Vector2Int>>();
-            for (var x = 0; x < Size.x; x++)
-            for (var y = 0; y < Size.y; y++)
+            _couldTake = false;
+            CanTake = false;
+            _legalMoves = new Dictionary<Position, List<Position>>();
+            for (byte x = 0; x < Size.x; x++)
+            for (byte y = 0; y < Size.y; y++)
             {
-                var pos = new Vector2Int(x, y);
+                var pos = new Position(x, y);
                 var pieceFrom = PieceAt(pos);
 
 
                 if (pieceFrom == null || pieceFrom.IsWhite != WhitesMove) continue;
-                var pieceMoves = pieceFrom.GetMoves(pos, this, canTake);
-                canTake = pieceMoves.CanTake || canTake;
-
-                if (lastCouldTake != canTake)
-                {
-                    moves = new Dictionary<Vector2Int, List<Vector2Int>>();
-                    lastCouldTake = true;
-                }
-
-                if (pieceMoves.MoveList.Count != 0) moves[pos] = pieceMoves.MoveList;
+                pieceFrom.AddMoves(pos, this);
             }
-
-            _legalMoves = moves;
         }
 
         private bool IsLegal(Move move)
@@ -63,12 +75,12 @@ namespace Antichess
             return string.Join("; ", _legalMoves.Select(pair => $"{pair.Key} => {string.Join(", ", pair.Value)}"));
         }
 
-        public Piece PieceAt(Vector2Int pos)
+        public Piece PieceAt(Position pos)
         {
             return _data[pos.x, pos.y];
         }
 
-        protected virtual void AddPiece(Piece piece, Vector2Int pos)
+        protected virtual void AddPiece(Piece piece, Position pos)
         {
             _data[pos.x, pos.y] = piece;
         }
@@ -108,8 +120,8 @@ namespace Antichess
 
         private void ProcessFenString(string fenString)
         {
-            var y = Size.y - 1;
-            var x = 0;
+            var y = (byte) (Size.y - 1);
+            byte x = 0;
             var i = 0;
             while (fenString[i] != ' ')
             {
@@ -120,11 +132,11 @@ namespace Antichess
                 }
                 else if (char.IsNumber(fenString[i]))
                 {
-                    x += fenString[i] - '0';
+                    x += (byte) (fenString[i] - '0');
                 }
                 else
                 {
-                    AddPiece(GetPieceFromChar(fenString[i]), new Vector2Int(x, y));
+                    AddPiece(GetPieceFromChar(fenString[i]), new Position(x, y));
                     x++;
                 }
 

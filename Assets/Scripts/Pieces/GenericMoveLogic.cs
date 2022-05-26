@@ -1,25 +1,30 @@
 ﻿using System.Collections.Generic;
+using Antichess.TargetSquares;
 using UnityEngine;
 
 namespace Antichess.Pieces
 {
     public static class GenericMoveLogic
     {
-        private static ListMove MovesInDir(Vector2Int pos, Vector2Int increments, Board boardRef, bool canTake)
+        // Adds all of the moves that are achieved by going directly in a straight line, until you collide with an enemy
+        // piece or one of your own pieces, or the edge of the board. 
+        private static void AddMovesInDir(Position pos, Vector2Int increments, Board boardRef)
         {
-            ListMove moveList = new();
-            var to = new Vector2Int(pos.x, pos.y) + increments;
-            while (to.x < Board.Size.x && to.x >= 0 && to.y < Board.Size.y && to.y >= 0)
+            var to = new Position(pos.x, pos.y) + increments;
+            while (to.x < Board.Size.x && to.y < Board.Size.y)
             {
                 if (boardRef.PieceAt(to) == null)
                 {
-                    if (!canTake) moveList.MoveList.Add(to);
+                    if (boardRef.CanTake == false)
+                    {
+                        boardRef.AddLegalMove(new Move(pos, to));
+                    }
                 }
 
                 else if (boardRef.PieceAt(to).IsWhite != boardRef.PieceAt(pos).IsWhite)
                 {
-                    moveList.MoveList = new List<Vector2Int> {to};
-                    canTake = true;
+                    boardRef.CanTake = true;
+                    boardRef.AddLegalMove(new Move(pos, to));
                     break;
                 }
 
@@ -30,65 +35,47 @@ namespace Antichess.Pieces
 
                 to += increments;
             }
-
-            moveList.CanTake = canTake;
-            return moveList;
         }
-
-        public static ListMove GetMovesInStraightDirection(Vector2Int pos,
-            IEnumerable<Vector2Int> directions, Board boardRef, bool canTake)
+        
+        // Runs AddMovesInDir, but for every direction given. Used by Rooks, Bishops and Queens.
+        public static void AddLegalMovesInDirections(Position pos,
+            IEnumerable<Vector2Int> directions, Board boardRef)
         {
-            ListMove moveList = new();
-
-            var couldTake = false;
-            foreach (var direction in directions)
+            foreach(var direction in directions)
             {
-                var dirList = MovesInDir(pos, direction, boardRef, canTake);
-                canTake = dirList.CanTake;
-                if (couldTake != canTake)
+                AddMovesInDir(pos, direction, boardRef);
+            }
+        }
+        
+        // Basic function that adds a move to the list of legal moves if it either takes a piece or moves into empty
+        // space.
+        private static void AddMoveAtPosIfLegal(Move move, Board boardRef)
+        {
+            if (boardRef.PieceAt(move.To) == null)
+            {
+                if (!boardRef.CanTake)
                 {
-                    moveList.MoveList = new List<Vector2Int>();
-                    couldTake = true;
+                    boardRef.AddLegalMove(move);
                 }
-
-                moveList.MoveList.AddRange(dirList.MoveList);
-                moveList.CanTake = dirList.CanTake;
             }
 
-            return moveList;
-        }
-
-        public static ListMove GetMovesAtOffsets(Vector2Int pos,
-            IEnumerable<Vector2Int> directions, Board boardRef, bool canTake)
+            else if (boardRef.PieceAt(move.To).IsWhite != boardRef.PieceAt(move.From).IsWhite)
+            {
+                boardRef.CanTake = true;
+                boardRef.AddLegalMove(move);
+            }
+        } 
+        
+        // Adds moves at offsets from piece's original position, if that move passes the above legality checks.
+        public static void AddLegalMovesAtOffsets(Position pos,
+            IEnumerable<Vector2Int> directions, Board boardRef)
         {
-            ListMove listMove = new();
-            var couldTake = false;
             foreach (var direction in directions)
             {
                 var dir = pos + direction;
-                if (dir.x < 0 || dir.x >= Board.Size.x || dir.y < 0 || dir.y >= Board.Size.y) continue;
-                if (boardRef.PieceAt(dir) == null)
-                {
-                    if (!canTake) listMove.MoveList.Add(dir);
-                }
-
-                else if (boardRef.PieceAt(dir).IsWhite != boardRef.PieceAt(pos).IsWhite)
-                {
-                    canTake = true;
-
-                    if (!couldTake)
-                    {
-                        listMove.MoveList = new List<Vector2Int>();
-                        couldTake = true;
-                    }
-
-                    listMove.MoveList.Add(dir);
-                }
-
-                listMove.CanTake = canTake;
+                if (dir.x >= Board.Size.x || dir.y >= Board.Size.y) continue;
+                AddMoveAtPosIfLegal(new Move(pos, dir), boardRef);
             }
-
-            return listMove;
         }
     }
 }

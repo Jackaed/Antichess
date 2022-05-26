@@ -1,12 +1,13 @@
 using UnityEngine;
+using Antichess.TargetSquares;
 
 namespace Antichess
 {
     public class Move
     {
-        public Vector2Int From, To;
+        public readonly Position From, To;
 
-        public Move(Vector2Int from, Vector2Int to)
+        public Move(Position from, Position to)
         {
             From = from;
             To = to;

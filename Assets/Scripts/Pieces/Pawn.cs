@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+﻿using Antichess.TargetSquares;
 using UnityEngine;
 
 namespace Antichess.Pieces
@@ -9,32 +9,27 @@ namespace Antichess.Pieces
         protected override GameObject WhiteModel => ObjectLoader.Instance.wPawn;
         protected override GameObject BlackModel => ObjectLoader.Instance.bPawn;
 
-        public override ListMove GetMoves(Vector2Int pos, Board boardRef, bool canTake)
+        public override void AddMoves(Position pos, Board boardRef)
         {
-            var ahead = pos + new Vector2Int(0, IsWhite ? 1 : -1);
+            var ahead = pos + new Vector2Int(0,IsWhite ? 1 : -1);
+            if (ahead.y > Board.Size.y) return;
 
-            if (ahead.y > Board.Size.y || ahead.y < 0) return new ListMove();
-
-            var listMove = new ListMove();
-            Vector2Int[] takesPositions = {ahead + new Vector2Int(1, 0), ahead + new Vector2Int(-1, 0)};
+            Position[] takesPositions = {ahead + new Position(1, 0), ahead + new Vector2Int(-1, 0)};
+            
             foreach (var takesPosition in takesPositions)
                 if (takesPosition.x > 0 && takesPosition.x < Board.Size.x && boardRef.PieceAt(takesPosition) != null &&
                     boardRef.PieceAt(takesPosition).IsWhite != IsWhite)
                 {
-                    listMove.MoveList.Add(takesPosition);
-                    canTake = true;
+                    boardRef.CanTake = true;
+                    boardRef.AddLegalMove(new Move(pos, takesPosition));
                 }
 
-            if (!canTake && boardRef.PieceAt(ahead) == null)
-            {
-                listMove.MoveList = new List<Vector2Int> {ahead};
-                var aheadAhead = ahead + new Vector2Int(0, IsWhite ? 1 : -1);
-                if (pos.y == (IsWhite ? 1 : Board.Size.y - 2) && boardRef.PieceAt(aheadAhead) == null)
-                    listMove.MoveList.Add(aheadAhead);
-            }
-
-            listMove.CanTake = canTake;
-            return listMove;
+            if (boardRef.CanTake || boardRef.PieceAt(ahead) != null) return;
+            
+            boardRef.AddLegalMove(new Move(pos, ahead));
+            var aheadAhead = ahead + new Vector2Int(0, IsWhite ? 1 : -1);
+            if (pos.y == (IsWhite ? 1 : Board.Size.y - 2) && boardRef.PieceAt(aheadAhead) == null)
+                boardRef.AddLegalMove(new Move(pos, aheadAhead));
         }
     }
 }

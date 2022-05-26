@@ -1,4 +1,6 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using Antichess.TargetSquares;
+using UnityEngine;
 
 namespace Antichess.Pieces
 {
@@ -16,9 +18,6 @@ namespace Antichess.Pieces
 
         public GameObject Model => IsWhite ? WhiteModel : BlackModel;
 
-        public virtual ListMove GetMoves(Vector2Int pos, Board boardRef, bool canTake)
-        {
-            return new ListMove();
-        }
+        public virtual void AddMoves(Position pos, Board boardRef) {}
     }
 }

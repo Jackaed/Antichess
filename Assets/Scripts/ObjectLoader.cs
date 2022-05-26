@@ -1,5 +1,6 @@
 ﻿using System;
 using UnityEngine;
+using Antichess.TargetSquares;
 
 namespace Antichess
 {
@@ -31,20 +32,20 @@ namespace Antichess
             return 0.6f * (boardCoord - 3.5f);
         }
 
-        public static Vector3 GetRealCoords(Vector2Int boardCoords)
+        public static Vector3 GetRealCoords(Position boardCoords)
         {
             return new Vector3(GetRealCoord(boardCoords.x), 0, (boardCoords.y - 3.5f) * 0.6f);
         }
 
-        private static int GetBoardCoord(float num)
+        private static byte GetBoardCoord(float num)
         {
             var coord = Math.Round(num / 0.6f + 3.5f);
-            return (int) Math.Clamp(coord, 0, 7);
+            return (byte) Math.Clamp(coord, 0, 7);
         }
 
-        public static Vector2Int GetBoardCoords(Vector3 realCoords)
+        public static Position GetBoardCoords(Vector3 realCoords)
         {
-            return new Vector2Int(GetBoardCoord(realCoords.x), GetBoardCoord(realCoords.z));
+            return new Position(GetBoardCoord(realCoords.x), GetBoardCoord(realCoords.z));
         }
     }
 }

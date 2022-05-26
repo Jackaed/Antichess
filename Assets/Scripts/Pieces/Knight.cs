@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using Antichess.TargetSquares;
+using UnityEngine;
 
 namespace Antichess.Pieces
 {
@@ -8,7 +9,7 @@ namespace Antichess.Pieces
         protected override GameObject WhiteModel => ObjectLoader.Instance.wKnight;
         protected override GameObject BlackModel => ObjectLoader.Instance.bKnight;
 
-        public override ListMove GetMoves(Vector2Int pos, Board boardRef, bool canTake)
+        public override void AddMoves(Position pos, Board boardRef)
         {
             Vector2Int[] directions =
             {
@@ -21,7 +22,7 @@ namespace Antichess.Pieces
                 new(-2, 1),
                 new(-2, -1)
             };
-            return GenericMoveLogic.GetMovesAtOffsets(pos, directions, boardRef, canTake);
+            GenericMoveLogic.AddLegalMovesAtOffsets(pos, directions, boardRef);
         }
     }
 }

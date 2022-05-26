@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using Antichess.Pieces;
 using UnityEngine;
+using Antichess.TargetSquares;
 
 namespace Antichess
 {
@@ -9,7 +10,7 @@ namespace Antichess
         private readonly Dictionary<Piece, GameObject> _gameObjects = new();
         public readonly List<MovingPiece> PiecesToMove = new();
 
-        protected override void AddPiece(Piece piece, Vector2Int pos)
+        protected override void AddPiece(Piece piece, Position pos)
         {
             base.AddPiece(piece, pos);
             _gameObjects.Add(piece, Object.Instantiate(piece.Model,
@@ -20,7 +21,7 @@ namespace Antichess
         {
             var pieceFrom = PieceAt(move.From);
             var pieceTo = PieceAt(move.To);
-
+            Debug.Log(move);
             if (!base.MovePiece(move)) return false;
 
             if (_gameObjects.ContainsKey(pieceFrom))

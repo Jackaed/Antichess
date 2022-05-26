@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using Antichess.TargetSquares;
 
 namespace Antichess
 {
@@ -6,7 +7,7 @@ namespace Antichess
     {
         private GraphicalBoard _board;
         private Camera _cam;
-        private Vector2Int _from;
+        private Position _from;
         private bool _hasFrom;
 
         private void Start()
@@ -53,7 +54,7 @@ namespace Antichess
             }
         }
 
-        private static Vector2Int GetPosFromRaycast(RaycastHit hit)
+        private static Position GetPosFromRaycast(RaycastHit hit)
         {
             return ObjectLoader.GetBoardCoords(hit.point);
         }
