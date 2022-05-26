@@ -107,4 +107,5 @@ sysinfo.txt
 crashlytics-build.properties
 
 # DevTools
-Assets/Scripts/MaskMapGenerator.cs
+/Assets/Scripts/MaskMapGenerator.cs
+/Assets/Scripts/MaskmapGenerator.cs.meta
