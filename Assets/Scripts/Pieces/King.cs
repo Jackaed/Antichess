@@ -9,7 +9,7 @@ namespace Antichess.Pieces
         protected override GameObject BlackModel => ObjectLoader.Instance.bKing;
         protected override GameObject WhiteModel => ObjectLoader.Instance.wKing;
 
-        public override void AddMoves(Position pos, Board boardRef)
+        public override void AddMoves(Position pos, BoardLogic boardRef)
         {
             Vector2Int[] directions =
             {

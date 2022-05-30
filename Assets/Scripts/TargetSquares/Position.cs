@@ -25,6 +25,12 @@ namespace Antichess.TargetSquares
         {
             return new Position((byte) (a.x + b.x), (byte)(a.y + b.y));
         }
+        
+        public static Position operator -(Position a, Vector2Int b)
+        {
+            return new Position((byte) (a.x - b.x), (byte)(a.y - b.y));
+        }
+
 
         private bool Equals(Position other)
         {
@@ -35,7 +41,7 @@ namespace Antichess.TargetSquares
         {
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
-            return obj.GetType() == GetType() && Equals((Position) obj);
+            return Equals((Position) obj);
         }
 
         public override int GetHashCode()

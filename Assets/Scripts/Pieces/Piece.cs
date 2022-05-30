@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace Antichess.Pieces
 {
-    public class Piece
+    public abstract class Piece
     {
         protected Piece(bool isWhite)
         {
@@ -13,11 +13,13 @@ namespace Antichess.Pieces
 
         public bool IsWhite { get; }
 
-        protected virtual GameObject BlackModel => null;
-        protected virtual GameObject WhiteModel => null;
+        protected abstract GameObject BlackModel { get; }
+        protected abstract GameObject WhiteModel { get; }
 
+        public virtual void OnMove(BoardLogic board, Position pos, Move move) {}
+        
         public GameObject Model => IsWhite ? WhiteModel : BlackModel;
 
-        public virtual void AddMoves(Position pos, Board boardRef) {}
+        public virtual void AddMoves(Position pos, BoardLogic boardRef) {}
     }
 }
