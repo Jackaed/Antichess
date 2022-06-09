@@ -1,5 +1,5 @@
-﻿using UnityEngine;
-using Antichess.TargetSquares;
+﻿using Antichess.TargetSquares;
+using UnityEngine;
 
 namespace Antichess
 {

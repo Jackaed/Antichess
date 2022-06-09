@@ -5,9 +5,9 @@ namespace Antichess
 {
     public class ChessGame : MonoBehaviour
     {
-        private Player _white, _black;
         private Board _board;
         private bool _renderBoard;
+        private Player _white, _black;
 
         private void Start()
         {
@@ -20,10 +20,7 @@ namespace Antichess
         {
             var currentPlayer = _board.WhitesMove ? _white : _black;
             var attemptedMove = currentPlayer.SuggestMove();
-            if (attemptedMove != null)
-            {
-                _board.TryMove(attemptedMove);
-            }
+            if (attemptedMove != null) _board.TryMove(attemptedMove);
             _board.OnNewFrame();
         }
     }

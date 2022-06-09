@@ -1,6 +1,6 @@
 ﻿using System;
-using UnityEngine;
 using Antichess.TargetSquares;
+using UnityEngine;
 
 namespace Antichess
 {

@@ -5,11 +5,10 @@ namespace Antichess.TargetSquares
 {
     public class Position
     {
-
         // ReSharper disable InconsistentNaming
         public readonly byte x, y;
         // ReSharper restore InconsistentNaming
-        
+
         public Position(byte x, byte y)
         {
             this.x = x;
@@ -18,17 +17,17 @@ namespace Antichess.TargetSquares
 
         public static Position operator +(Position a, Position b)
         {
-            return new Position((byte) (a.x + b.x), (byte)(a.y + b.y));
+            return new Position((byte) (a.x + b.x), (byte) (a.y + b.y));
         }
-        
+
         public static Position operator +(Position a, Vector2Int b)
         {
-            return new Position((byte) (a.x + b.x), (byte)(a.y + b.y));
+            return new Position((byte) (a.x + b.x), (byte) (a.y + b.y));
         }
-        
+
         public static Position operator -(Position a, Vector2Int b)
         {
-            return new Position((byte) (a.x - b.x), (byte)(a.y - b.y));
+            return new Position((byte) (a.x - b.x), (byte) (a.y - b.y));
         }
 
 

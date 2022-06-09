@@ -8,15 +8,15 @@ using UnityEngine;
 
 namespace Antichess
 {
+    // This performs the actual logical operations of the board
     public class BoardLogic
     {
         public static readonly Position Size = new(8, 8);
         private readonly Piece[,] _data;
-        public Dictionary<Position, List<Position>> LegalMoves { get; private set; }
-        public bool CanTake;
         private bool _couldTake;
+        public bool CanTake;
         public Position EnPassantTargettableSquare;
-        
+
         public BoardLogic()
         {
             _data = new Piece[Size.x, Size.y];
@@ -25,10 +25,12 @@ namespace Antichess
             UpdateLegalMoves();
             // ReSharper restore StringLiteralTypo
         }
-        
-        public virtual void OnNewFrame () {}
+
+        public Dictionary<Position, List<Position>> LegalMoves { get; private set; }
 
         public bool WhitesMove { get; private set; }
+
+        public virtual void OnNewFrame() { }
 
         public void AddLegalMove(Move move)
         {
@@ -41,13 +43,9 @@ namespace Antichess
             }
 
             if (LegalMoves.ContainsKey(move.From))
-            {
                 LegalMoves[move.From].Add(move.To);
-            }
             else
-            {
                 LegalMoves[move.From] = new List<Position> {move.To};
-            }
         }
 
         private void UpdateLegalMoves()
@@ -66,10 +64,11 @@ namespace Antichess
                 if (pieceFrom == null || pieceFrom.IsWhite != WhitesMove) continue;
                 pieceFrom.AddMoves(pos, this);
             }
+
             EnPassantTargettableSquare = null;
         }
 
-        private bool IsLegal(Move move)
+        public bool IsLegal(Move move)
         {
             Debug.Log(LegalMovesToString());
             return LegalMoves.ContainsKey(move.From) && LegalMoves[move.From].Any(p => move.To == p);
@@ -99,18 +98,12 @@ namespace Antichess
             }
 
             var pawnDoubleMove = move.To as PawnDoubleMovePosition;
-            if (pawnDoubleMove != null)
-            {
-                EnPassantTargettableSquare = pawnDoubleMove.MovedThrough;
-            }
+            if (pawnDoubleMove != null) EnPassantTargettableSquare = pawnDoubleMove.MovedThrough;
 
             var enPassant = move.To as EnPassantPosition;
-            if (enPassant != null)
-            {
-                RemovePiece(enPassant.TargetPieceSquare);
-            }
-            
-            
+            if (enPassant != null) RemovePiece(enPassant.TargetPieceSquare);
+
+
             _data[move.To.x, move.To.y] = PieceAt(move.From);
             _data[move.From.x, move.From.y] = null;
             WhitesMove = !WhitesMove;

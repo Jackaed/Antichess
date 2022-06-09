@@ -1,4 +1,3 @@
-using UnityEngine;
 using Antichess.TargetSquares;
 
 namespace Antichess

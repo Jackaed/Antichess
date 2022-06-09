@@ -4,7 +4,7 @@
     {
         protected readonly Board BoardRef;
         protected bool IsWhite;
-        
+
         protected Player(Board board, bool isWhite)
         {
             BoardRef = board;

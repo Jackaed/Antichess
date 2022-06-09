@@ -15,10 +15,7 @@ namespace Antichess.Pieces
             {
                 if (boardRef.PieceAt(to) == null)
                 {
-                    if (boardRef.CanTake == false)
-                    {
-                        boardRef.AddLegalMove(new Move(pos, to));
-                    }
+                    if (boardRef.CanTake == false) boardRef.AddLegalMove(new Move(pos, to));
                 }
 
                 else if (boardRef.PieceAt(to).IsWhite != boardRef.PieceAt(pos).IsWhite)
@@ -36,27 +33,21 @@ namespace Antichess.Pieces
                 to += increments;
             }
         }
-        
+
         // Runs AddMovesInDir, but for every direction given. Used by Rooks, Bishops and Queens.
         public static void AddLegalMovesInDirections(Position pos,
             IEnumerable<Vector2Int> directions, BoardLogic boardRef)
         {
-            foreach(var direction in directions)
-            {
-                AddMovesInDir(pos, direction, boardRef);
-            }
+            foreach (var direction in directions) AddMovesInDir(pos, direction, boardRef);
         }
-        
+
         // Basic function that adds a move to the list of legal moves if it either takes a piece or moves into empty
         // space.
         private static void AddMoveAtPosIfLegal(Move move, BoardLogic boardRef)
         {
             if (boardRef.PieceAt(move.To) == null)
             {
-                if (!boardRef.CanTake)
-                {
-                    boardRef.AddLegalMove(move);
-                }
+                if (!boardRef.CanTake) boardRef.AddLegalMove(move);
             }
 
             else if (boardRef.PieceAt(move.To).IsWhite != boardRef.PieceAt(move.From).IsWhite)
@@ -64,8 +55,8 @@ namespace Antichess.Pieces
                 boardRef.CanTake = true;
                 boardRef.AddLegalMove(move);
             }
-        } 
-        
+        }
+
         // Adds moves at offsets from piece's original position, if that move passes the above legality checks.
         public static void AddLegalMovesAtOffsets(Position pos,
             IEnumerable<Vector2Int> directions, BoardLogic boardRef)

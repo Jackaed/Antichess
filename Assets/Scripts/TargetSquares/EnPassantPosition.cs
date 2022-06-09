@@ -4,12 +4,12 @@ namespace Antichess.TargetSquares
 {
     public class EnPassantPosition : Position
     {
+        public readonly Position TargetPieceSquare;
+
         public EnPassantPosition(Position to, Position targetPieceSquare) : base(to.x, to.y)
         {
             TargetPieceSquare = targetPieceSquare;
         }
-        
-        public readonly Position TargetPieceSquare;
 
         private bool Equals(EnPassantPosition other)
         {
@@ -20,7 +20,7 @@ namespace Antichess.TargetSquares
         {
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
-            if (obj.GetType() != this.GetType()) return false;
+            if (obj.GetType() != GetType()) return false;
             return Equals((EnPassantPosition) obj);
         }
 

@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using Antichess.Pieces;
-using UnityEngine;
 using Antichess.TargetSquares;
+using UnityEngine;
 
 namespace Antichess
 {
@@ -36,10 +36,7 @@ namespace Antichess
         protected override void RemovePiece(Position pos)
         {
             Debug.Log(pos);
-            if (_gameObjects.ContainsKey(PieceAt(pos)))
-            {
-                Object.Destroy(_gameObjects[PieceAt(pos)]);
-            }
+            if (_gameObjects.ContainsKey(PieceAt(pos))) Object.Destroy(_gameObjects[PieceAt(pos)]);
             base.RemovePiece(pos);
         }
 
@@ -55,6 +52,6 @@ namespace Antichess
                         ObjectLoader.GetRealCoords(pieceToMove.To), 25 * Time.deltaTime);
                 else PiecesToMove.RemoveAt(x);
             }
-        } 
+        }
     }
 }
