@@ -1,5 +1,6 @@
 ﻿using System;
 using Antichess.Pieces;
+using Unity.VisualScripting;
 
 namespace Antichess.TargetSquares
 {
@@ -14,7 +15,7 @@ namespace Antichess.TargetSquares
 
         bool Equals(PromotionPosition other)
         {
-            return base.Equals(other) && PromotionPiece.Equals(other.PromotionPiece);
+            return base.Equals(other) && PromotionPiece.GetType() == other.PromotionPiece.GetType();
         }
 
         public override bool Equals(object obj)
@@ -26,7 +27,7 @@ namespace Antichess.TargetSquares
 
         public override int GetHashCode()
         {
-            return HashCode.Combine(base.GetHashCode(), PromotionPiece);
+            return base.GetHashCode();
         }
 
         public override string ToString()

@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Antichess.Pieces;
@@ -24,8 +25,8 @@ namespace Antichess
             _blackPieceLocations = new List<Position>();
             LegalMoves = new Dictionary<Position, List<Position>>();
             // ReSharper disable StringLiteralTypo
-            // ProcessFenString("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
-            ProcessFenString("8/6P1/8/8/1k6/8/7K/8 w - - 0 1");
+            ProcessFenString("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
+            // ProcessFenString("8/6P1/8/8/1k6/8/7K/8 w - - 0 1");
             // ReSharper restore StringLiteralTypo
             UpdateLegalMoves();
             
@@ -66,6 +67,10 @@ namespace Antichess
             var pieceLocations = WhitesMove ? _whitePieceLocations : _blackPieceLocations;
             foreach(var pos in pieceLocations)
             {
+                if (PieceAt(pos) == null)
+                {
+                    Debug.Log(pos);
+                }
                 PieceAt(pos).AddMoves(pos, this);
             }
 
@@ -91,10 +96,11 @@ namespace Antichess
         private void AddPieceGenerally(Piece piece, Position pos)
         {
             pos = new Position(pos.x, pos.y);
-            var pieceLocation = (piece.IsWhite ? _whitePieceLocations : _blackPieceLocations);
+            if(pos == new Position(4, 4)) Debug.Log("I did a bad thing! ");
+                var pieceLocation = (piece.IsWhite ? _whitePieceLocations : _blackPieceLocations);
             _data[pos.x, pos.y] = piece;
-            if(!pieceLocation.Contains(pos))
-                pieceLocation.Add(pos);
+            (piece.IsWhite ? _blackPieceLocations : _whitePieceLocations).Remove(pos);
+            pieceLocation.Add(pos);
         }
         
         protected virtual void AddPiece(Piece piece, Position pos)
@@ -119,6 +125,7 @@ namespace Antichess
             var promotion = move.To as PromotionPosition;
             if (promotion != null) AddPiece(promotion.PromotionPiece, move.From);
 
+            
             AddPieceGenerally(PieceAt(move.From), move.To);
             RemovePieceGenerally(move.From);
             WhitesMove = !WhitesMove;
@@ -129,6 +136,7 @@ namespace Antichess
         // Not overridden in the RenderedBoardLogic class
         private void RemovePieceGenerally(Position pos)
         {
+            if(pos == new Position(4, 4)) Debug.Log("I removed a bad thing! ");
             (PieceAt(pos).IsWhite ? _whitePieceLocations : _blackPieceLocations).Remove(new Position(pos.x, pos.y));
             _data[pos.x, pos.y] = null;
         }

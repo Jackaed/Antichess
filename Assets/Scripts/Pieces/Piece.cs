@@ -17,26 +17,6 @@ namespace Antichess.Pieces
 
         public GameObject Model => IsWhite ? WhiteModel : BlackModel;
 
-        protected bool Equals(Piece other)
-        {
-            return IsWhite == other.IsWhite;
-        }
-
-        public override bool Equals(object obj)
-        {
-            if (ReferenceEquals(null, obj)) return false;
-            if (ReferenceEquals(this, obj)) return true;
-            if (obj.GetType() != this.GetType()) return false;
-            return Equals((Piece) obj);
-        }
-
-        public override int GetHashCode()
-        {
-            return IsWhite.GetHashCode();
-        }
-
-        public virtual void OnMove(BoardLogic board, Position pos, Move move) { }
-
         public virtual void AddMoves(Position pos, BoardLogic boardRef) { }
         
         
