@@ -12,6 +12,10 @@ namespace Antichess
 
         protected override void AddPiece(Piece piece, Position pos)
         {
+            if (PieceAt(pos) != null)
+            {
+                RemovePiece(pos);
+            }
             base.AddPiece(piece, pos);
             _gameObjects.Add(piece, Object.Instantiate(piece.Model,
                 ObjectLoader.GetRealCoords(pos), piece.Model.transform.rotation));

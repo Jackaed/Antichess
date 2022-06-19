@@ -1,10 +1,37 @@
-﻿using Antichess.Pieces;
+﻿using System;
+using Antichess.Pieces;
 
 namespace Antichess.TargetSquares
 {
     public class PromotionPosition : Position
     {
-        public Piece PromotionPiece;
-        public PromotionPosition(byte x, byte y) : base(x, y) { }
+        public readonly Piece PromotionPiece;
+
+        public PromotionPosition(byte x, byte y, Piece piece) : base(x, y)
+        {
+            PromotionPiece = piece;
+        }
+
+        bool Equals(PromotionPosition other)
+        {
+            return base.Equals(other) && PromotionPiece.Equals(other.PromotionPiece);
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            return obj.GetType() == this.GetType() && Equals((PromotionPosition) obj);
+        }
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(base.GetHashCode(), PromotionPiece);
+        }
+
+        public override string ToString()
+        {
+            return x + ", " + y + " into" + PromotionPiece.GetType().ToString();
+        }
     }
 }

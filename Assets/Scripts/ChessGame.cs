@@ -20,7 +20,12 @@ namespace Antichess
         {
             var currentPlayer = _board.WhitesMove ? _white : _black;
             var attemptedMove = currentPlayer.SuggestMove();
-            if (attemptedMove != null) _board.TryMove(attemptedMove);
+
+            if (attemptedMove != null)
+            {
+                Debug.Log(attemptedMove);
+                _board.TryMove(attemptedMove);
+            }
             _board.OnNewFrame();
         }
     }

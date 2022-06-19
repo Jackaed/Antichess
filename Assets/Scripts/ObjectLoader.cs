@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using Antichess.Pieces;
 using Antichess.TargetSquares;
 using UnityEngine;
 
@@ -6,21 +8,33 @@ namespace Antichess
 {
     internal class ObjectLoader : MonoBehaviour
     {
+        public static Dictionary<Type, bool> UIButtonsDown = new()
+        {
+            {typeof(Rook), false},
+            {typeof(Queen), false},
+            {typeof(Knight), false},
+            {typeof(King), false},
+            {typeof(Bishop), false}
+        };
+
         public GameObject bPawn,
             bBishop,
             bKnight,
             bRook,
             bQueen,
             bKing,
+            bPromotionUI,
             wPawn,
             wBishop,
             wKnight,
             wRook,
             wQueen,
-            wKing;
+            wKing,
+            wPromotionUI;
+        
 
         public static ObjectLoader Instance { get; private set; }
-
+        
         private void Awake()
         {
             if (Instance == null) Instance = this;

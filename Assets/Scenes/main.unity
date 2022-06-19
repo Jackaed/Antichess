@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 2795.3716, g: 2254.7078, b: 1680.5717, a: 1}
+  m_IndirectSpecularColor: {r: 0, g: 0, b: 0, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -729,12 +729,16 @@ MonoBehaviour:
   bRook: {fileID: 1862762443702175832, guid: 70f3384313c2316428ce4e98cee50103, type: 3}
   bQueen: {fileID: 8619624594702210923, guid: 8c35831d8a31cbe4a883b8b0393106b7, type: 3}
   bKing: {fileID: 1302353747382217464, guid: c0eafb7a362b80047a7fade7deed855f, type: 3}
+  bPromotionUI: {fileID: 2354321020001833105, guid: 4f3d1962ae2a5f14dbb6ce4b2629dc3b,
+    type: 3}
   wPawn: {fileID: 5402341206827774892, guid: 402bc0d3baca1e647ba3d7a347868c81, type: 3}
   wBishop: {fileID: 3029183514233896040, guid: 4eeb24cbe01ba5643a2aaf0a66e95789, type: 3}
   wKnight: {fileID: 5530684359118474503, guid: 911fd84d5bc56e04eae6de801d1f620d, type: 3}
   wRook: {fileID: 5001625874702859051, guid: fc2b4208b168bc24da9fa54193b48b2d, type: 3}
   wQueen: {fileID: 8801582352321327747, guid: 40e9fdef29764254c99857ca35a15492, type: 3}
   wKing: {fileID: 811178225517792266, guid: fac4f46ef6a22a5468068092cc52cad8, type: 3}
+  wPromotionUI: {fileID: 4086940178944395636, guid: 487432847ad8e1542b4b608965dcd3aa,
+    type: 3}
 --- !u!4 &333934258
 Transform:
   m_ObjectHideFlags: 0

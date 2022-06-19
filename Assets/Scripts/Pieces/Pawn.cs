@@ -5,7 +5,18 @@ namespace Antichess.Pieces
 {
     public class Pawn : Piece
     {
-        public Pawn(bool isWhite) : base(isWhite) { }
+        private readonly Piece[] _promotionPieces;
+
+        public Pawn(bool isWhite) : base(isWhite)
+        {
+            _promotionPieces = new Piece[]
+            {
+                new Bishop(IsWhite),
+                new Queen(IsWhite),
+                new Rook(IsWhite),
+                new Knight(IsWhite)
+            };
+        }
         protected override GameObject WhiteModel => ObjectLoader.Instance.wPawn;
         protected override GameObject BlackModel => ObjectLoader.Instance.bPawn;
 
@@ -38,7 +49,18 @@ namespace Antichess.Pieces
 
             if (boardRef.CanTake || boardRef.PieceAt(ahead) != null) return;
 
-            boardRef.AddLegalMove(new Move(pos, ahead));
+            if (ahead.y == (IsWhite ? BoardLogic.Size.y - 1 : 0))
+            {
+                foreach (Piece piece in _promotionPieces)
+                {
+                    boardRef.AddLegalMove(new Move(pos, new PromotionPosition(ahead.x, ahead.y, piece)));
+                }
+            }
+            else
+            {
+                boardRef.AddLegalMove(new Move(pos, ahead));
+            }
+           
             var aheadAhead = new PawnDoubleMovePosition(
                 ahead + new Vector2Int(0, IsWhite ? 1 : -1), ahead);
             if (pos.y == (IsWhite ? 1 : BoardLogic.Size.y - 2) && boardRef.PieceAt(aheadAhead) == null)
