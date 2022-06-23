@@ -2,12 +2,8 @@
 using System.Linq;
 using Antichess.Pieces;
 using Antichess.TargetSquares;
-using Unity.VisualScripting;
-using System.Reflection;
-using System.Runtime.CompilerServices;
 using UnityEngine;
 using UnityEngine.UI;
-using Button = UnityEngine.UIElements.Button;
 using Object = UnityEngine.Object;
 
 namespace Antichess.PlayerTypes
@@ -16,10 +12,13 @@ namespace Antichess.PlayerTypes
     {
         private readonly Camera _cam;
         private Position _from;
+        private bool _hasFrom;
+
+
+        private Position _mouseClickPosition;
         private Type _promotionPiece;
         private GameObject _promotionUI;
         private bool _userTryingToPromote;
-        private bool _hasFrom;
 
         public User(Board board, bool isWhite) : base(board, isWhite)
         {
@@ -49,7 +48,7 @@ namespace Antichess.PlayerTypes
                 _promotionUI = Object.Instantiate(IsWhite
                     ? ObjectLoader.Instance.wPromotionUI
                     : ObjectLoader.Instance.bPromotionUI);
-                var promotionUIButtons = _promotionUI.GetComponentsInChildren<UnityEngine.UI.Button>();
+                var promotionUIButtons = _promotionUI.GetComponentsInChildren<Button>();
                 promotionUIButtons[0].onClick.AddListener(OnBishopPromoteButtonClick);
                 promotionUIButtons[1].onClick.AddListener(OnKnightPromoteButtonClick);
                 promotionUIButtons[2].onClick.AddListener(OnQueenPromoteButtonClick);
@@ -57,50 +56,58 @@ namespace Antichess.PlayerTypes
 
                 return null;
             }
+
             return move;
         }
 
-        Move ChoosePromotionPiece(Move move)
+        private Move ChoosePromotionPiece(Move move)
         {
             if (_promotionPiece == null) return null;
             Debug.Log(_promotionPiece.ToString());
             var temp = _promotionPiece;
             _promotionPiece = null;
             _userTryingToPromote = false;
-            object[] param = (new[] {IsWhite}).Cast<object>().ToArray();
+            var param = new[] {IsWhite}.Cast<object>().ToArray();
             Object.Destroy(_promotionUI);
             _promotionUI = null;
             return new Move(move.From, new PromotionPosition(move.To.x, move.To.y,
-                (Piece)Activator.CreateInstance(temp, param)));
+                (Piece) Activator.CreateInstance(temp, param)));
         }
 
-        void OnKnightPromoteButtonClick()
+        private void OnKnightPromoteButtonClick()
         {
             _promotionPiece = typeof(Knight);
             Debug.Log("Knight");
         }
-        void OnBishopPromoteButtonClick() {_promotionPiece = typeof(Bishop); }
-        void OnQueenPromoteButtonClick() {_promotionPiece = typeof(Queen); }
-        void OnRookPromoteButtonClick() {_promotionPiece = typeof(Rook); }
 
+        private void OnBishopPromoteButtonClick()
+        {
+            _promotionPiece = typeof(Bishop);
+        }
 
-        private Position _mouseClickPosition;
+        private void OnQueenPromoteButtonClick()
+        {
+            _promotionPiece = typeof(Queen);
+        }
+
+        private void OnRookPromoteButtonClick()
+        {
+            _promotionPiece = typeof(Rook);
+        }
+
         public override Move SuggestMove()
         {
-            if (_userTryingToPromote)
-            {
-                return ChoosePromotionPiece(new Move(_from, _mouseClickPosition));
-            }
-            
+            if (_userTryingToPromote) return ChoosePromotionPiece(new Move(_from, _mouseClickPosition));
+
             if (!Input.GetMouseButtonDown(0)) return null;
-            
+
             var mouseRay = _cam!.ScreenPointToRay(Input.mousePosition);
             if (!Physics.Raycast(mouseRay, out var hit)) return null;
 
             _mouseClickPosition = ObjectLoader.GetBoardCoords(hit.point);
             if (_hasFrom)
             {
-                Move move = GetPossibleMove(new Move(_from, _mouseClickPosition));
+                var move = GetPossibleMove(new Move(_from, _mouseClickPosition));
                 _hasFrom = false;
                 return move;
             }

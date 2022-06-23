@@ -31,7 +31,7 @@ namespace Antichess.TargetSquares
         }
 
 
-        bool Equals(Position other)
+        private bool Equals(Position other)
         {
             return x == other.x && y == other.y;
         }

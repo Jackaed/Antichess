@@ -5,17 +5,14 @@ using UnityEngine;
 
 namespace Antichess
 {
-    internal class RenderedBoardLogic : BoardLogic
+    internal class RenderedBoard : Board
     {
         private readonly Dictionary<Piece, GameObject> _gameObjects = new();
         public readonly List<MovingPiece> PiecesToMove = new();
 
         protected override void AddPiece(Piece piece, Position pos)
         {
-            if (PieceAt(pos) != null)
-            {
-                RemovePiece(pos);
-            }
+            if (PieceAt(pos) != null) RemovePiece(pos);
             base.AddPiece(piece, pos);
             _gameObjects.Add(piece, Object.Instantiate(piece.Model,
                 ObjectLoader.GetRealCoords(pos), piece.Model.transform.rotation));

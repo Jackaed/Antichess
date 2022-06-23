@@ -31,10 +31,10 @@ namespace Antichess
             wQueen,
             wKing,
             wPromotionUI;
-        
+
 
         public static ObjectLoader Instance { get; private set; }
-        
+
         private void Awake()
         {
             if (Instance == null) Instance = this;

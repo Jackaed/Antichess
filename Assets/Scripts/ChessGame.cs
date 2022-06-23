@@ -5,15 +5,15 @@ namespace Antichess
 {
     public class ChessGame : MonoBehaviour
     {
-        private Board _board;
+        private RenderedBoard _board;
         private bool _renderBoard;
         private Player _white, _black;
 
         private void Start()
         {
-            _board = new Board(true);
+            _board = new RenderedBoard();
             _white = new User(_board, true);
-            _black = new User(_board, false);
+            _black = new AIPlayer(_board, false);
         }
 
         private void Update()
@@ -24,8 +24,9 @@ namespace Antichess
             if (attemptedMove != null)
             {
                 Debug.Log(attemptedMove);
-                _board.TryMove(attemptedMove);
+                _board.MovePiece(attemptedMove);
             }
+
             _board.OnNewFrame();
         }
     }

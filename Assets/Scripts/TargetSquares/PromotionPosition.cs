@@ -1,6 +1,4 @@
-﻿using System;
-using Antichess.Pieces;
-using Unity.VisualScripting;
+﻿using Antichess.Pieces;
 
 namespace Antichess.TargetSquares
 {
@@ -13,7 +11,7 @@ namespace Antichess.TargetSquares
             PromotionPiece = piece;
         }
 
-        bool Equals(PromotionPosition other)
+        private bool Equals(PromotionPosition other)
         {
             return base.Equals(other) && PromotionPiece.GetType() == other.PromotionPiece.GetType();
         }
@@ -22,7 +20,7 @@ namespace Antichess.TargetSquares
         {
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
-            return obj.GetType() == this.GetType() && Equals((PromotionPosition) obj);
+            return obj.GetType() == GetType() && Equals((PromotionPosition) obj);
         }
 
         public override int GetHashCode()
@@ -32,7 +30,7 @@ namespace Antichess.TargetSquares
 
         public override string ToString()
         {
-            return x + ", " + y + " into" + PromotionPiece.GetType().ToString();
+            return x + ", " + y + " into" + PromotionPiece.GetType();
         }
     }
 }
