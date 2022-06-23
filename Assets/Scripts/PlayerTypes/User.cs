@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Linq;
 using Antichess.Pieces;
-using Antichess.TargetSquares;
+using Antichess.PositionTypes;
 using UnityEngine;
 using UnityEngine.UI;
 using Object = UnityEngine.Object;
@@ -32,17 +32,17 @@ namespace Antichess.PlayerTypes
             if (BoardRef.PieceAt(move.From).GetType() != typeof(Pawn)) return move;
 
             //Test if user is attempting to move the pawn forward by two
-            if (move.To.y == move.From.y + (IsWhite ? 2 : -2))
+            if (move.To.Y == move.From.Y + (IsWhite ? 2 : -2))
                 return new Move(_from, new PawnDoubleMovePosition(move.To,
-                    move.To - (IsWhite ? Vector2Int.up : Vector2Int.down)));
+                    move.To - (IsWhite ? Position.Up : Position.Down)));
 
             // Test if user is attempting to make an en passant
-            if (BoardRef.PieceAt(move.To) == null && move.From.x != move.To.x)
+            if (BoardRef.PieceAt(move.To) == null && move.From.X != move.To.X)
                 return new Move(_from, new EnPassantPosition(move.To,
-                    new Position(move.To.x, (byte) (move.To.y - (IsWhite ? 1 : -1)))));
+                    move.To + (IsWhite ? Position.Down : Position.Up)));
 
             // Test if user is attempting to promote
-            if (move.To.y == (IsWhite ? 7 : 0))
+            if (move.To.Y == (IsWhite ? 7 : 0))
             {
                 _userTryingToPromote = true;
                 _promotionUI = Object.Instantiate(IsWhite
@@ -70,7 +70,7 @@ namespace Antichess.PlayerTypes
             var param = new[] {IsWhite}.Cast<object>().ToArray();
             Object.Destroy(_promotionUI);
             _promotionUI = null;
-            return new Move(move.From, new PromotionPosition(move.To.x, move.To.y,
+            return new Move(move.From, new PromotionPosition(move.To.X, move.To.Y,
                 (Piece) Activator.CreateInstance(temp, param)));
         }
 

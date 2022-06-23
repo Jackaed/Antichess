@@ -1,27 +1,20 @@
 ﻿using System;
 
-namespace Antichess.TargetSquares
+namespace Antichess.PositionTypes
 {
     public class EnPassantPosition : Position
     {
         public readonly Position TargetPieceSquare;
 
-        public EnPassantPosition(Position to, Position targetPieceSquare) : base(to.x, to.y)
+        public EnPassantPosition(Position to, Position targetPieceSquare) : base(to.X, to.Y)
         {
             TargetPieceSquare = targetPieceSquare;
         }
 
-        private bool Equals(EnPassantPosition other)
-        {
-            return base.Equals(other) && Equals(TargetPieceSquare, other.TargetPieceSquare);
-        }
-
         public override bool Equals(object obj)
         {
-            if (ReferenceEquals(null, obj)) return false;
-            if (ReferenceEquals(this, obj)) return true;
-            if (obj.GetType() != GetType()) return false;
-            return Equals((EnPassantPosition) obj);
+            var other = obj as EnPassantPosition;
+            return other != null && base.Equals(obj) && TargetPieceSquare == other.TargetPieceSquare;
         }
 
         public override int GetHashCode()

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Antichess.Pieces;
-using Antichess.TargetSquares;
+using Antichess.PositionTypes;
 using UnityEngine;
 
 namespace Antichess
@@ -48,13 +48,13 @@ namespace Antichess
 
         public static Vector3 GetRealCoords(Position boardCoords)
         {
-            return new Vector3(GetRealCoord(boardCoords.x), 0, (boardCoords.y - 3.5f) * 0.6f);
+            return new Vector3(GetRealCoord(boardCoords.X), 0, (boardCoords.Y - 3.5f) * 0.6f);
         }
 
-        private static byte GetBoardCoord(float num)
+        private static sbyte GetBoardCoord(float num)
         {
             var coord = Math.Round(num / 0.6f + 3.5f);
-            return (byte) Math.Clamp(coord, 0, 7);
+            return (sbyte) Math.Clamp(coord, 0, 7);
         }
 
         public static Position GetBoardCoords(Vector3 realCoords)

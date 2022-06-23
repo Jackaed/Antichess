@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using Antichess.TargetSquares;
+using Antichess.PositionTypes;
 using UnityEngine;
 
 namespace Antichess.Pieces

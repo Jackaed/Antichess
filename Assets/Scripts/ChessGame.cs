@@ -13,7 +13,7 @@ namespace Antichess
         {
             _board = new RenderedBoard();
             _white = new User(_board, true);
-            _black = new AIPlayer(_board, false);
+            _black = new User(_board, false);
         }
 
         private void Update()

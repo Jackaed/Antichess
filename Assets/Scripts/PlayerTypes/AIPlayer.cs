@@ -15,7 +15,7 @@ namespace Antichess.PlayerTypes
         {
             var randMoveIndex = _random.Next(BoardRef.NumPositionsFrom);
             var moveEnumerator = BoardRef.GetLegalMoveEnumerator();
-            var i = 0;
+            uint i = 0;
 
             do
             {

@@ -1,33 +1,27 @@
 ﻿using System;
 
-namespace Antichess.TargetSquares
+namespace Antichess.PositionTypes
 {
     public class PawnDoubleMovePosition : Position
     {
         public readonly Position MovedThrough;
 
-        public PawnDoubleMovePosition(Position to, Position movedThrough) : base(to.x, to.y)
+        public PawnDoubleMovePosition(Position to, Position movedThrough) : base(to.X, to.Y)
         {
             MovedThrough = movedThrough;
         }
 
         public override string ToString()
         {
-            return "(" + x + ", " + y + " through " + MovedThrough + ")";
-        }
-
-        private bool Equals(PawnDoubleMovePosition other)
-        {
-            return base.Equals(other) && Equals(MovedThrough, other.MovedThrough);
+            return "(" + X + ", " + Y + " through " + MovedThrough + ")";
         }
 
         public override bool Equals(object obj)
         {
-            if (ReferenceEquals(null, obj)) return false;
-            if (ReferenceEquals(this, obj)) return true;
-            if (obj.GetType() != GetType()) return false;
-            return Equals((PawnDoubleMovePosition) obj);
+            var other = obj as PawnDoubleMovePosition;
+            return other != null && base.Equals(obj) && MovedThrough == other.MovedThrough;
         }
+
 
         public override int GetHashCode()
         {

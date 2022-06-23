@@ -1,4 +1,4 @@
-using Antichess.TargetSquares;
+using Antichess.PositionTypes;
 
 namespace Antichess
 {

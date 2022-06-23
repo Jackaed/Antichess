@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using Antichess.TargetSquares;
+using Antichess.PositionTypes;
 using UnityEngine;
 
 namespace Antichess.Pieces
@@ -24,44 +24,42 @@ namespace Antichess.Pieces
 
         public override void AddMoves(Position pos, Board boardRef, Dictionary<Position, List<Position>> legalMoves)
         {
-            var ahead = pos + new Vector2Int(0, IsWhite ? 1 : -1);
-            if (ahead.y > Board.Size.y) return;
+            var ahead = pos + Position.Ahead(IsWhite);
+            if (ahead.Y > Board.Size.Y) return;
 
-            Position[] takesPositions = {ahead + new Position(1, 0), ahead + new Vector2Int(-1, 0)};
+            Position[] takesPositions = {ahead + new Position(1, 0), ahead + new Position(-1, 0)};
 
             foreach (var takesPosition in takesPositions)
-                if (takesPosition.x < Board.Size.x)
+                if (takesPosition.X < Board.Size.X)
                 {
                     var target = boardRef.PieceAt(takesPosition);
                     if (target != null && target.IsWhite != IsWhite)
                     {
-                        boardRef.CanTake = true;
-                        Board.AddLegalMove(new Move(pos, takesPosition), boardRef, legalMoves);
+                        Board.AddLegalMove(new Move(pos, takesPosition), boardRef, legalMoves, true);
                     }
-                    else if (target == null && takesPosition == boardRef.EnPassantTargettableSquare)
+                    else if (target == null && takesPosition == boardRef.EnPassantTargetSquare)
                     {
-                        boardRef.CanTake = true;
-                        var enPassantTakesSquare = boardRef.EnPassantTargettableSquare
-                                                   - new Vector2Int(0, IsWhite ? 1 : -1);
+                        var enPassantTakesSquare = boardRef.EnPassantTargetSquare - ahead;
 
-                        Board.AddLegalMove(new Move(pos,
-                            new EnPassantPosition(takesPosition, enPassantTakesSquare)), boardRef, legalMoves);
+                        Board.AddLegalMove(new Move(pos, new EnPassantPosition(takesPosition, enPassantTakesSquare)),
+                            boardRef, legalMoves, true);
                     }
                 }
 
             if (boardRef.CanTake || boardRef.PieceAt(ahead) != null) return;
 
-            if (ahead.y == (IsWhite ? Board.Size.y - 1 : 0))
+            if (ahead.Y == (IsWhite ? Board.Size.Y - 1 : 0))
                 foreach (var piece in _promotionPieces)
-                    Board.AddLegalMove(new Move(pos, new PromotionPosition(ahead.x, ahead.y, piece)), boardRef,
-                        legalMoves);
+                    Board.AddLegalMove(new Move(pos, new PromotionPosition(ahead.X, ahead.Y, piece)), boardRef,
+                        legalMoves, false);
             else
-                Board.AddLegalMove(new Move(pos, ahead), boardRef, legalMoves);
+                Board.AddLegalMove(new Move(pos, ahead), boardRef, legalMoves, false);
 
             var aheadAhead = new PawnDoubleMovePosition(
-                ahead + new Vector2Int(0, IsWhite ? 1 : -1), ahead);
-            if (pos.y == (IsWhite ? 1 : Board.Size.y - 2) && boardRef.PieceAt(aheadAhead) == null)
-                Board.AddLegalMove(new Move(pos, aheadAhead), boardRef, legalMoves);
+                ahead + Position.Ahead(IsWhite), ahead);
+
+            if (pos.Y == (IsWhite ? 1 : Board.Size.Y - 2) && boardRef.PieceAt(aheadAhead) == null)
+                Board.AddLegalMove(new Move(pos, aheadAhead), boardRef, legalMoves, false);
         }
     }
 }

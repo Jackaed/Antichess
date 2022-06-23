@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using Antichess.TargetSquares;
+using Antichess.PositionTypes;
 using UnityEngine;
 
 namespace Antichess.Pieces
@@ -12,7 +12,7 @@ namespace Antichess.Pieces
 
         public override void AddMoves(Position pos, Board boardRef, Dictionary<Position, List<Position>> legalMoves)
         {
-            Vector2Int[] directions =
+            Position[] directions =
             {
                 new(0, 1),
                 new(1, 1),

@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Antichess.Pieces;
-using Antichess.TargetSquares;
+using Antichess.PositionTypes;
 using UnityEngine;
 
 // ReSharper disable VirtualMemberCallInConstructor
@@ -19,13 +19,10 @@ namespace Antichess
         private readonly Dictionary<Position, List<Position>> _legalMoves;
 
         private readonly List<Position> _whitePieceLocations;
-        private bool _couldTake;
-        public bool CanTake;
-        public Position EnPassantTargettableSquare;
 
         public Board()
         {
-            _data = new Piece[Size.x, Size.y];
+            _data = new Piece[Size.X, Size.Y];
             _whitePieceLocations = new List<Position>();
             _blackPieceLocations = new List<Position>();
             _legalMoves = new Dictionary<Position, List<Position>>();
@@ -35,6 +32,9 @@ namespace Antichess
             // ReSharper restore StringLiteralTypo
             UpdateLegalMoves();
         }
+
+        public bool CanTake { get; private set; }
+        public Position EnPassantTargetSquare { get; private set; }
 
         public int NumPositionsFrom => _legalMoves.Count;
 
@@ -57,14 +57,15 @@ namespace Antichess
 
         public virtual void OnNewFrame() { }
 
-        public static void AddLegalMove(Move move, Board board, Dictionary<Position, List<Position>> legalMoves)
+        public static void AddLegalMove(Move move, Board board, Dictionary<Position, List<Position>> legalMoves,
+            bool canTake)
         {
             var pieceFrom = board.PieceAt(move.From);
             if (pieceFrom == null) return;
-            if (board._couldTake != board.CanTake)
+            if (canTake != board.CanTake)
             {
                 legalMoves.Clear();
-                board._couldTake = true;
+                board.CanTake = true;
             }
 
             if (legalMoves.ContainsKey(move.From))
@@ -75,17 +76,17 @@ namespace Antichess
 
         private void UpdateLegalMoves()
         {
-            _couldTake = false;
             CanTake = false;
             _legalMoves.Clear();
 
             var pieceLocations = WhitesMove ? _whitePieceLocations : _blackPieceLocations;
             foreach (var pos in pieceLocations) PieceAt(pos).AddMoves(pos, this, _legalMoves);
 
-            EnPassantTargettableSquare = null;
+            EnPassantTargetSquare = null;
+            Debug.Log(LegalMovesToString());
         }
 
-        public bool IsLegal(Move move)
+        private bool IsLegal(Move move)
         {
             return _legalMoves.ContainsKey(move.From) && _legalMoves[move.From].Any(p => move.To == p);
         }
@@ -97,14 +98,14 @@ namespace Antichess
 
         public Piece PieceAt(Position pos)
         {
-            return _data[pos.x, pos.y];
+            return _data[pos.X, pos.Y];
         }
 
         private void AddPieceGenerally(Piece piece, Position pos)
         {
-            pos = new Position(pos.x, pos.y);
+            pos = new Position(pos.X, pos.Y);
             var pieceLocation = piece.IsWhite ? _whitePieceLocations : _blackPieceLocations;
-            _data[pos.x, pos.y] = piece;
+            _data[pos.X, pos.Y] = piece;
             (piece.IsWhite ? _blackPieceLocations : _whitePieceLocations).Remove(pos);
             pieceLocation.Add(pos);
         }
@@ -123,7 +124,7 @@ namespace Antichess
             }
 
             var pawnDoubleMove = move.To as PawnDoubleMovePosition;
-            if (pawnDoubleMove != null) EnPassantTargettableSquare = pawnDoubleMove.MovedThrough;
+            if (pawnDoubleMove != null) EnPassantTargetSquare = pawnDoubleMove.MovedThrough;
 
             var enPassant = move.To as EnPassantPosition;
             if (enPassant != null) RemovePiece(enPassant.TargetPieceSquare);
@@ -142,8 +143,8 @@ namespace Antichess
         // Not overridden in the RenderedBoardLogic class
         private void RemovePieceGenerally(Position pos)
         {
-            (PieceAt(pos).IsWhite ? _whitePieceLocations : _blackPieceLocations).Remove(new Position(pos.x, pos.y));
-            _data[pos.x, pos.y] = null;
+            (PieceAt(pos).IsWhite ? _whitePieceLocations : _blackPieceLocations).Remove(new Position(pos.X, pos.Y));
+            _data[pos.X, pos.Y] = null;
         }
 
         protected virtual void RemovePiece(Position pos)
@@ -171,8 +172,8 @@ namespace Antichess
 
         private void ProcessFenString(string fenString)
         {
-            var y = (byte) (Size.y - 1);
-            byte x = 0;
+            var y = (sbyte) (Size.Y - 1);
+            sbyte x = 0;
             var i = 0;
             while (fenString[i] != ' ')
             {
@@ -183,7 +184,7 @@ namespace Antichess
                 }
                 else if (char.IsNumber(fenString[i]))
                 {
-                    x += (byte) (fenString[i] - '0');
+                    x += (sbyte) (fenString[i] - '0');
                 }
                 else
                 {

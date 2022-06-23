@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using Antichess.Pieces;
-using Antichess.TargetSquares;
+using Antichess.PositionTypes;
 using UnityEngine;
 
 namespace Antichess
