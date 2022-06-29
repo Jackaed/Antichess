@@ -11,7 +11,7 @@ namespace Antichess.Pieces
             Dictionary<Position, List<Position>> legalMoves)
         {
             var to = new Position(pos.X, pos.Y) + increments;
-            while (to.X < Board.Size.X && to.Y < Board.Size.Y)
+            while (to.X < Constants.BoardSize && to.Y < Constants.BoardSize)
             {
                 if (boardRef.PieceAt(to) == null)
                 {
@@ -63,7 +63,7 @@ namespace Antichess.Pieces
             foreach (var direction in directions)
             {
                 var dir = pos + direction;
-                if (dir.X >= Board.Size.X || dir.Y >= Board.Size.Y) continue;
+                if (dir.X >= Constants.BoardSize || dir.Y >= Constants.BoardSize) continue;
                 AddMoveAtPosIfLegal(new Move(pos, dir), boardRef, legalMoves);
             }
         }

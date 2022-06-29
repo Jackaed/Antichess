@@ -2,6 +2,8 @@
 
 namespace Antichess.PositionTypes
 {
+    // This facilitates En Passant, by adding an extra "target square", containing the location of the pawn to be taken
+    // if the move that this position is attatched to is made.
     public class EnPassantPosition : Position
     {
         public readonly Position TargetPieceSquare;
@@ -30,6 +32,11 @@ namespace Antichess.PositionTypes
         public static bool operator !=(EnPassantPosition left, EnPassantPosition right)
         {
             return !Equals(left, right);
+        }
+
+        public override string ToString()
+        {
+            return base.ToString() + " taking on " + TargetPieceSquare;
         }
     }
 }

@@ -1,11 +1,12 @@
 ﻿using Antichess.PlayerTypes;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 namespace Antichess
 {
     public class ChessGame : MonoBehaviour
     {
-        private RenderedBoard _board;
+        private Board _board;
         private bool _renderBoard;
         private Player _white, _black;
 
@@ -13,7 +14,7 @@ namespace Antichess
         {
             _board = new RenderedBoard();
             _white = new User(_board, true);
-            _black = new User(_board, false);
+            _black = new AIPlayer(_board, false);
         }
 
         private void Update()
@@ -25,6 +26,11 @@ namespace Antichess
             {
                 Debug.Log(attemptedMove);
                 _board.MovePiece(attemptedMove);
+            }
+
+            if (Input.GetKeyDown("q"))
+            {
+                _board.UndoLastMove();
             }
 
             _board.OnNewFrame();

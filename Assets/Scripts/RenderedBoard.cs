@@ -9,29 +9,36 @@ namespace Antichess
     {
         private readonly Dictionary<Piece, GameObject> _gameObjects = new();
         public readonly List<MovingPiece> PiecesToMove = new();
-
+        
         protected override void AddPiece(Piece piece, Position pos)
         {
             if (PieceAt(pos) != null) RemovePiece(pos);
             base.AddPiece(piece, pos);
-            _gameObjects.Add(piece, Object.Instantiate(piece.Model,
-                ObjectLoader.GetRealCoords(pos), piece.Model.transform.rotation));
+            if(piece != null)
+                _gameObjects.Add(piece, Object.Instantiate(piece.Model,
+                    Constants.GetRealCoords(pos), piece.Model.transform.rotation));
         }
 
-        public override bool MovePiece(Move move)
+        protected override void UnmakeMove(BoardStateChange move)
+        {
+            base.UnmakeMove(move);
+            PiecesToMove.Add(new MovingPiece(move.From, _gameObjects[PieceAt(move.From)]));
+        }
+
+        protected override void MakeMoveWithoutLegalityCheck (Move move)
         {
             var pieceFrom = PieceAt(move.From);
             var pieceTo = PieceAt(move.To);
-            if (!base.MovePiece(move)) return false;
+            
+            base.MakeMoveWithoutLegalityCheck(move);
 
             if (_gameObjects.ContainsKey(pieceFrom))
                 PiecesToMove.Add(new MovingPiece(move.To, _gameObjects[PieceAt(move.To)]));
 
-            if (pieceTo == null) return true;
+            if (pieceTo == null) return;
 
             Object.Destroy(_gameObjects[pieceTo]);
             _gameObjects.Remove(pieceTo);
-            return true;
         }
 
         protected override void RemovePiece(Position pos)
@@ -48,9 +55,9 @@ namespace Antichess
             {
                 var pieceToMove = PiecesToMove[x];
                 var currentPos = pieceToMove.Piece.transform.position;
-                if (currentPos != ObjectLoader.GetRealCoords(pieceToMove.To))
+                if (currentPos != Constants.GetRealCoords(pieceToMove.To))
                     pieceToMove.Piece.transform.position = Vector3.MoveTowards(currentPos,
-                        ObjectLoader.GetRealCoords(pieceToMove.To), 25 * Time.deltaTime);
+                        Constants.GetRealCoords(pieceToMove.To), 25 * Time.deltaTime);
                 else PiecesToMove.RemoveAt(x);
             }
         }

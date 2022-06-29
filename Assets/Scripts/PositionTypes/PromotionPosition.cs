@@ -3,6 +3,7 @@ using Antichess.Pieces;
 
 namespace Antichess.PositionTypes
 {
+    // A simple version of a Position, which facilitates the storage of a piece for a pawn to promote to.
     public class PromotionPosition : Position
     {
         public readonly Piece PromotionPiece;

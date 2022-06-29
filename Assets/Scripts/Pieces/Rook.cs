@@ -7,8 +7,9 @@ namespace Antichess.Pieces
     public class Rook : Piece
     {
         public Rook(bool isWhite) : base(isWhite) { }
-        protected override GameObject BlackModel => ObjectLoader.Instance.bRook;
-        protected override GameObject WhiteModel => ObjectLoader.Instance.wRook;
+        protected override GameObject BlackModel => Constants.Instance.bRook;
+        protected override GameObject WhiteModel => Constants.Instance.wRook;
+        public override uint Value => 5;
 
         public override void AddMoves(Position pos, Board boardRef, Dictionary<Position, List<Position>> legalMoves)
         {

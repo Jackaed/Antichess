@@ -1,20 +1,21 @@
+using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Runtime.Serialization.Formatters.Binary;
 using Antichess.Pieces;
 using Antichess.PositionTypes;
+using Unity.VisualScripting;
 using UnityEngine;
-
-// ReSharper disable VirtualMemberCallInConstructor
 
 namespace Antichess
 {
-    // This performs the actual logical operations of the board
     public class Board
     {
-        public static readonly Position Size = new(8, 8);
 
         private readonly List<Position> _blackPieceLocations;
         private readonly Piece[,] _data;
+        private readonly Stack<BoardStateChange> _moveHistory;
 
         private readonly Dictionary<Position, List<Position>> _legalMoves;
 
@@ -22,14 +23,38 @@ namespace Antichess
 
         public Board()
         {
-            _data = new Piece[Size.X, Size.Y];
+            _data = new Piece[Constants.BoardSize, Constants.BoardSize];
             _whitePieceLocations = new List<Position>();
             _blackPieceLocations = new List<Position>();
             _legalMoves = new Dictionary<Position, List<Position>>();
+            _moveHistory = new Stack<BoardStateChange>();
             // ReSharper disable StringLiteralTypo
             ProcessFenString("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
             // ProcessFenString("8/6P1/8/8/1k6/8/7K/8 w - - 0 1");
             // ReSharper restore StringLiteralTypo
+            UpdateLegalMoves();
+        }
+
+        public void UndoLastMove()
+        {
+            UnmakeMove(_moveHistory.Pop());
+        }
+
+        protected virtual void UnmakeMove(BoardStateChange move)
+        {
+            EnPassantTargetSquare = move.OldEnPassantTarget;
+            
+            AddPieceGenerally(PieceAt(move.To), move.From);
+            RemovePieceGenerally(move.To);
+            WhitesMove = !WhitesMove;
+            
+            AddPiece(move.Taken, move.To);
+            
+            var enPassant = move.To as EnPassantPosition;
+            if (enPassant != null) AddPiece(new Pawn(!WhitesMove), enPassant.TargetPieceSquare);
+            
+            var promotion = move.To as PromotionPosition;
+            if (promotion != null) AddPiece(new Pawn(WhitesMove), move.From);
             UpdateLegalMoves();
         }
 
@@ -40,14 +65,17 @@ namespace Antichess
 
         public bool WhitesMove { get; private set; }
 
-        public Dictionary<Position, List<Position>>.Enumerator GetLegalMoveEnumerator()
+        // Allows for iteration over the whole dictionary, without public access to the dictionary itself. This prevents
+        // players from being able to add legal moves.
+        public Dictionary<Position, List<Position>>.KeyCollection.Enumerator GetLegalPositionsFrom()
         {
-            return _legalMoves.GetEnumerator();
+            return _legalMoves.Keys.GetEnumerator();
         }
 
-        public Position GetLegalMoveTo(Position from, int moveToIndex)
+        // These two methods allow users to view the legal moves of a position, without 
+        public List<Position>.Enumerator GetLegalPositionsTo(Position from)
         {
-            return _legalMoves[from][moveToIndex];
+            return _legalMoves[from].GetEnumerator();
         }
 
         public int NumPositionsTo(Position from)
@@ -81,9 +109,7 @@ namespace Antichess
 
             var pieceLocations = WhitesMove ? _whitePieceLocations : _blackPieceLocations;
             foreach (var pos in pieceLocations) PieceAt(pos).AddMoves(pos, this, _legalMoves);
-
-            EnPassantTargetSquare = null;
-            Debug.Log(LegalMovesToString());
+            
         }
 
         private bool IsLegal(Move move)
@@ -104,10 +130,19 @@ namespace Antichess
         private void AddPieceGenerally(Piece piece, Position pos)
         {
             pos = new Position(pos.X, pos.Y);
-            var pieceLocation = piece.IsWhite ? _whitePieceLocations : _blackPieceLocations;
             _data[pos.X, pos.Y] = piece;
-            (piece.IsWhite ? _blackPieceLocations : _whitePieceLocations).Remove(pos);
-            pieceLocation.Add(pos);
+            if (piece != null)
+            {
+                var pieceLocation = piece.IsWhite ? _whitePieceLocations : _blackPieceLocations;
+            
+                (piece.IsWhite ? _blackPieceLocations : _whitePieceLocations).Remove(pos);
+                pieceLocation.Add(pos);
+            }
+        }
+
+        public Board Copy()
+        {
+            return (Board) ObjectCopier.CloneObject(this);
         }
 
         protected virtual void AddPiece(Piece piece, Position pos)
@@ -115,14 +150,24 @@ namespace Antichess
             AddPieceGenerally(piece, pos);
         }
 
-        public virtual bool MovePiece(Move move)
+        public Dictionary<Position, List<Position>> GetLegalMoves()
         {
-            if (!IsLegal(move))
-            {
-                Debug.Log("Illegal move");
-                return false;
-            }
+            return (Dictionary<Position, List<Position>>) ObjectCopier.CloneObject(_legalMoves);
+        }
+        
+        public int Evaluate ()
+        {
+            var total = -_whitePieceLocations.Sum(pos => (int) PieceAt(pos).Value);
+            return total + _blackPieceLocations.Sum(pos => (int) PieceAt(pos).Value);
+        }
+        
+        protected virtual void MakeMoveWithoutLegalityCheck(Move move)
+        {
+            _moveHistory.Push(new BoardStateChange(move.From, move.To, PieceAt(move.To), 
+                EnPassantTargetSquare == null ? null : EnPassantTargetSquare.Clone()));
 
+            EnPassantTargetSquare = null;
+            
             var pawnDoubleMove = move.To as PawnDoubleMovePosition;
             if (pawnDoubleMove != null) EnPassantTargetSquare = pawnDoubleMove.MovedThrough;
 
@@ -137,12 +182,24 @@ namespace Antichess
             RemovePieceGenerally(move.From);
             WhitesMove = !WhitesMove;
             UpdateLegalMoves();
+        }
+
+        public bool MovePiece(Move move)
+        {
+            if (!IsLegal(move))
+            {
+                Debug.Log("Illegal move");
+                return false;
+            }
+            
+            MakeMoveWithoutLegalityCheck(move);
             return true;
         }
 
         // Not overridden in the RenderedBoardLogic class
         private void RemovePieceGenerally(Position pos)
         {
+            if (PieceAt(pos) == null) return;
             (PieceAt(pos).IsWhite ? _whitePieceLocations : _blackPieceLocations).Remove(new Position(pos.X, pos.Y));
             _data[pos.X, pos.Y] = null;
         }
@@ -172,7 +229,7 @@ namespace Antichess
 
         private void ProcessFenString(string fenString)
         {
-            var y = (sbyte) (Size.Y - 1);
+            var y = (sbyte) (Constants.BoardSize - 1);
             sbyte x = 0;
             var i = 0;
             while (fenString[i] != ' ')

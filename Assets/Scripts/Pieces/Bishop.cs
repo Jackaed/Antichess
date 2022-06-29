@@ -7,8 +7,9 @@ namespace Antichess.Pieces
     public class Bishop : Piece
     {
         public Bishop(bool isWhite) : base(isWhite) { }
-        protected override GameObject BlackModel => ObjectLoader.Instance.bBishop;
-        protected override GameObject WhiteModel => ObjectLoader.Instance.wBishop;
+        protected override GameObject BlackModel => Constants.Instance.bBishop;
+        protected override GameObject WhiteModel => Constants.Instance.wBishop;
+        public override uint Value => 3;
 
         public override void AddMoves(Position pos, Board boardRef, Dictionary<Position, List<Position>> legalMoves)
         {

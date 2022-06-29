@@ -13,7 +13,11 @@ namespace Antichess.PositionTypes
             X = x;
             Y = y;
         }
-
+        
+        // Since a chessboard is only 8 by 8, X and Y only need to be able to contain the values 0 through 7, everything
+        // else is a bonus. Therefore, X and Y are simply nibbles, stored collectively in a single byte "_data". X and Y
+        // are signed, to facilitate addition of positions where one of the positions is negative, e.g. in storing
+        // offsets for a piece's movement.
         public sbyte X
         {
             get => (sbyte) (_data & 0x0F);
@@ -26,11 +30,13 @@ namespace Antichess.PositionTypes
             private set => _data = (byte) (((value & 0x0F) << 4) + X);
         }
 
+        // Heavily used in pawns.
         public static Position Ahead(bool isWhite)
         {
             return isWhite ? Up : Down;
         }
-
+        
+        // The following is operator overloads, facilitating the addition, subtraction and comparison of Positions.
         public static Position operator +(Position a, Position b)
         {
             return new Position((sbyte) (a.X + b.X), (sbyte) (a.Y + b.Y));
@@ -65,6 +71,11 @@ namespace Antichess.PositionTypes
         public override string ToString()
         {
             return "(" + X + ", " + Y + ")";
+        }
+
+        public Position Clone()
+        {
+            return (Position)MemberwiseClone();
         }
     }
 }

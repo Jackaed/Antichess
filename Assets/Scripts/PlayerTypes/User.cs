@@ -46,8 +46,12 @@ namespace Antichess.PlayerTypes
             {
                 _userTryingToPromote = true;
                 _promotionUI = Object.Instantiate(IsWhite
-                    ? ObjectLoader.Instance.wPromotionUI
-                    : ObjectLoader.Instance.bPromotionUI);
+                    ? Constants.Instance.wPromotionUI
+                    : Constants.Instance.bPromotionUI);
+                Canvas canvas = _promotionUI.GetComponent<Canvas>();
+                canvas.worldCamera = _cam;
+                RectTransform transform = _promotionUI.GetComponent<RectTransform>();
+                transform.position = Constants.GetRealCoords(move.To) + 0.5f * Vector3.up;
                 var promotionUIButtons = _promotionUI.GetComponentsInChildren<Button>();
                 promotionUIButtons[0].onClick.AddListener(OnBishopPromoteButtonClick);
                 promotionUIButtons[1].onClick.AddListener(OnKnightPromoteButtonClick);
@@ -104,7 +108,7 @@ namespace Antichess.PlayerTypes
             var mouseRay = _cam!.ScreenPointToRay(Input.mousePosition);
             if (!Physics.Raycast(mouseRay, out var hit)) return null;
 
-            _mouseClickPosition = ObjectLoader.GetBoardCoords(hit.point);
+            _mouseClickPosition = Constants.GetBoardCoords(hit.point);
             if (_hasFrom)
             {
                 var move = GetPossibleMove(new Move(_from, _mouseClickPosition));

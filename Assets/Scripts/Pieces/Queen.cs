@@ -7,9 +7,9 @@ namespace Antichess.Pieces
     public class Queen : Piece
     {
         public Queen(bool isWhite) : base(isWhite) { }
-        protected override GameObject BlackModel => ObjectLoader.Instance.bQueen;
-        protected override GameObject WhiteModel => ObjectLoader.Instance.wQueen;
-
+        protected override GameObject BlackModel => Constants.Instance.bQueen;
+        protected override GameObject WhiteModel => Constants.Instance.wQueen;
+        public override uint Value => 9;
         public override void AddMoves(Position pos, Board boardRef, Dictionary<Position, List<Position>> legalMoves)
         {
             Position[] directions =

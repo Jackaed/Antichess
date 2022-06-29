@@ -7,12 +7,14 @@ namespace Antichess.Pieces
     public class King : Piece
     {
         public King(bool isWhite) : base(isWhite) { }
-        protected override GameObject BlackModel => ObjectLoader.Instance.bKing;
-        protected override GameObject WhiteModel => ObjectLoader.Instance.wKing;
+        protected override GameObject BlackModel => Constants.Instance.bKing;
+        protected override GameObject WhiteModel => Constants.Instance.wKing;
+        public override uint Value => 2;
 
         public override void AddMoves(Position pos, Board boardRef, Dictionary<Position, List<Position>> legalMoves)
         {
-            Position[] directions =
+            // The offsets of a King's potential movement options, from his current position "pos"
+            Position[] offsets =
             {
                 new(0, 1),
                 new(1, 1),
@@ -23,7 +25,7 @@ namespace Antichess.Pieces
                 new(-1, 0),
                 new(-1, 1)
             };
-            GenericMoveLogic.AddLegalMovesAtOffsets(pos, directions, boardRef, legalMoves);
+            GenericMoveLogic.AddLegalMovesAtOffsets(pos, offsets, boardRef, legalMoves);
         }
     }
 }

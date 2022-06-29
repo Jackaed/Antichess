@@ -6,17 +6,11 @@ using UnityEngine;
 
 namespace Antichess
 {
-    internal class ObjectLoader : MonoBehaviour
+    internal class Constants : MonoBehaviour
     {
-        public static Dictionary<Type, bool> UIButtonsDown = new()
-        {
-            {typeof(Rook), false},
-            {typeof(Queen), false},
-            {typeof(Knight), false},
-            {typeof(King), false},
-            {typeof(Bishop), false}
-        };
-
+        public static readonly double MoveSpeed = 25.0;
+        public static readonly byte BoardSize = 8;
+        
         public GameObject bPawn,
             bBishop,
             bKnight,
@@ -33,7 +27,7 @@ namespace Antichess
             wPromotionUI;
 
 
-        public static ObjectLoader Instance { get; private set; }
+        public static Constants Instance { get; private set; }
 
         private void Awake()
         {
@@ -54,7 +48,7 @@ namespace Antichess
         private static sbyte GetBoardCoord(float num)
         {
             var coord = Math.Round(num / 0.6f + 3.5f);
-            return (sbyte) Math.Clamp(coord, 0, 7);
+            return (sbyte) Math.Clamp(coord, 0, Constants.BoardSize);
         }
 
         public static Position GetBoardCoords(Vector3 realCoords)

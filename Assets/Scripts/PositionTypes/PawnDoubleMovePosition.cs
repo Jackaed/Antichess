@@ -2,6 +2,8 @@
 
 namespace Antichess.PositionTypes
 {
+    // This stores the position a pawn has moved through when a pawn moves forward by two. Used in calculating En 
+    // Passant Legality.
     public class PawnDoubleMovePosition : Position
     {
         public readonly Position MovedThrough;
@@ -21,8 +23,7 @@ namespace Antichess.PositionTypes
             var other = obj as PawnDoubleMovePosition;
             return other != null && base.Equals(obj) && MovedThrough == other.MovedThrough;
         }
-
-
+        
         public override int GetHashCode()
         {
             return HashCode.Combine(base.GetHashCode(), MovedThrough);
