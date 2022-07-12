@@ -25,7 +25,7 @@ namespace Antichess
             if (attemptedMove != null)
             {
                 Debug.Log(attemptedMove);
-                _board.MovePiece(attemptedMove);
+                _board.Move(attemptedMove);
             }
 
             if (Input.GetKeyDown("q"))

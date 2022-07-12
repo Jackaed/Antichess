@@ -2,13 +2,15 @@ using Antichess.Pieces;
 
 namespace Antichess.PositionTypes
 {
-    public class BoardStateChange : Move
+    public class BoardChange
     {
+        public readonly Move Move;
         public readonly Piece Taken;
         public readonly Position OldEnPassantTarget;
         
-        public BoardStateChange(Position from, Position to, Piece taken, Position oldEnPassantTarget) : base(from, to)
+        public BoardChange(Move move, Piece taken, Position oldEnPassantTarget)
         {
+            Move = move;
             Taken = taken;
             OldEnPassantTarget = oldEnPassantTarget;
         }

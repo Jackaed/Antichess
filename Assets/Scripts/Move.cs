@@ -4,7 +4,7 @@ namespace Antichess
 {
     public class Move
     {
-        public Position From, To;
+        public readonly Position From, To;
 
         public Move(Position from, Position to)
         {

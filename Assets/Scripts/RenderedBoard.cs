@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
 using Antichess.Pieces;
 using Antichess.PositionTypes;
+using JetBrains.Annotations;
+using Unity.VisualScripting;
 using UnityEngine;
 
 namespace Antichess
@@ -10,27 +12,26 @@ namespace Antichess
         private readonly Dictionary<Piece, GameObject> _gameObjects = new();
         public readonly List<MovingPiece> PiecesToMove = new();
         
-        protected override void AddPiece(Piece piece, Position pos)
+        protected override void Create(Piece piece, Position pos)
         {
-            if (PieceAt(pos) != null) RemovePiece(pos);
-            base.AddPiece(piece, pos);
-            if(piece != null)
-                _gameObjects.Add(piece, Object.Instantiate(piece.Model,
-                    Constants.GetRealCoords(pos), piece.Model.transform.rotation));
+            if (PieceAt(pos) != null) Destroy(pos);
+            base.Create(piece, pos);
+            _gameObjects.Add(piece, Object.Instantiate(piece.Model,
+                Constants.GetRealCoords(pos), piece.Model.transform.rotation));
         }
 
-        protected override void UnmakeMove(BoardStateChange move)
+        protected override void UndoMove(BoardChange change)
         {
-            base.UnmakeMove(move);
-            PiecesToMove.Add(new MovingPiece(move.From, _gameObjects[PieceAt(move.From)]));
+            PiecesToMove.Add(new MovingPiece(change.Move.From, _gameObjects[PieceAt(change.Move.To)]));
+            base.UndoMove(change);
         }
 
-        protected override void MakeMoveWithoutLegalityCheck (Move move)
+        protected override void UnsafeMove (Move move)
         {
             var pieceFrom = PieceAt(move.From);
             var pieceTo = PieceAt(move.To);
             
-            base.MakeMoveWithoutLegalityCheck(move);
+            base.UnsafeMove(move);
 
             if (_gameObjects.ContainsKey(pieceFrom))
                 PiecesToMove.Add(new MovingPiece(move.To, _gameObjects[PieceAt(move.To)]));
@@ -41,11 +42,11 @@ namespace Antichess
             _gameObjects.Remove(pieceTo);
         }
 
-        protected override void RemovePiece(Position pos)
+        protected override void Destroy(Position pos)
         {
             Debug.Log(pos);
             if (_gameObjects.ContainsKey(PieceAt(pos))) Object.Destroy(_gameObjects[PieceAt(pos)]);
-            base.RemovePiece(pos);
+            base.Destroy(pos);
         }
 
         public override void OnNewFrame()
@@ -54,11 +55,15 @@ namespace Antichess
             for (var x = 0; x < PiecesToMove.Count; x++)
             {
                 var pieceToMove = PiecesToMove[x];
-                var currentPos = pieceToMove.Piece.transform.position;
-                if (currentPos != Constants.GetRealCoords(pieceToMove.To))
-                    pieceToMove.Piece.transform.position = Vector3.MoveTowards(currentPos,
+
+                if (pieceToMove.Piece == null ||
+                    pieceToMove.Piece.transform.position == Constants.GetRealCoords(pieceToMove.To))
+                {
+                    PiecesToMove.RemoveAt(x);
+                }
+                else
+                    pieceToMove.Piece.transform.position = Vector3.MoveTowards(pieceToMove.Piece.transform.position,
                         Constants.GetRealCoords(pieceToMove.To), 25 * Time.deltaTime);
-                else PiecesToMove.RemoveAt(x);
             }
         }
     }
