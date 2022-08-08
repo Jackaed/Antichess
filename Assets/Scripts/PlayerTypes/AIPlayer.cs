@@ -1,19 +1,10 @@
-using Antichess.PositionTypes;
-using UnityEngine;
-using Random = System.Random;
-
 namespace Antichess.PlayerTypes
 {
     public class AIPlayer : Player
     {
-        private readonly Random _random;
-        private const int MaxSearchDepth = 5;
         private int _numPositionsSearched;
 
-        public AIPlayer(Board board, bool isWhite) : base(board, isWhite)
-        {
-            _random = new Random();
-        }
+        public AIPlayer(Board board, bool isWhite) : base(board, isWhite) { }
 
 //        private Move SuggestRandomMove()
 //        {
@@ -45,7 +36,10 @@ namespace Antichess.PlayerTypes
 
         public override Move SuggestMove()
         {
-            return BoardRef.BestMove;
+            if (!BoardRef.BestMoveOutdated) return BoardRef.IsEvaluating ? null : BoardRef.BestMove;
+
+            BoardRef.StartEval();
+            return null;
         }
     }
 }

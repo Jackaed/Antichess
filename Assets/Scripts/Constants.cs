@@ -1,8 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using Antichess.Pieces;
 using Antichess.PositionTypes;
 using UnityEngine;
+using Random = System.Random;
 
 namespace Antichess
 {
@@ -10,7 +9,7 @@ namespace Antichess
     {
         public static readonly double MoveSpeed = 25.0;
         public static readonly byte BoardSize = 8;
-        
+
         public GameObject bPawn,
             bBishop,
             bKnight,
@@ -26,6 +25,8 @@ namespace Antichess
             wKing,
             wPromotionUI;
 
+        public Random Rand;
+
 
         public static Constants Instance { get; private set; }
 
@@ -33,6 +34,7 @@ namespace Antichess
         {
             if (Instance == null) Instance = this;
             else Destroy(gameObject);
+            Rand = new Random();
         }
 
         private static float GetRealCoord(int boardCoord)
@@ -48,7 +50,7 @@ namespace Antichess
         private static sbyte GetBoardCoord(float num)
         {
             var coord = Math.Round(num / 0.6f + 3.5f);
-            return (sbyte) Math.Clamp(coord, 0, Constants.BoardSize);
+            return (sbyte) Math.Clamp(coord, 0, BoardSize);
         }
 
         public static Position GetBoardCoords(Vector3 realCoords)

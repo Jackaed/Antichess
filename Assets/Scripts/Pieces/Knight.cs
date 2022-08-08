@@ -10,8 +10,9 @@ namespace Antichess.Pieces
         protected override GameObject WhiteModel => Constants.Instance.wKnight;
         protected override GameObject BlackModel => Constants.Instance.bKnight;
         public override uint Value => 3;
+        protected override uint ColourlessIndex => 1;
 
-        public override void AddMoves(Position pos, Board boardRef, Dictionary<Position, List<Position>> legalMoves)
+        public override void AddMoves(Position pos, Board boardRef, List<Move> legalMoves)
         {
             Position[] offsets =
             {

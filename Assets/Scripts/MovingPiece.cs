@@ -5,7 +5,7 @@ namespace Antichess
 {
     public struct MovingPiece
     {
-        public Position To;
+        public readonly Position To;
         public readonly GameObject Piece;
 
         public MovingPiece(Position to, GameObject piece)

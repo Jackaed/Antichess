@@ -10,8 +10,9 @@ namespace Antichess.Pieces
         protected override GameObject BlackModel => Constants.Instance.bRook;
         protected override GameObject WhiteModel => Constants.Instance.wRook;
         public override uint Value => 5;
+        protected override uint ColourlessIndex => 3;
 
-        public override void AddMoves(Position pos, Board boardRef, Dictionary<Position, List<Position>> legalMoves)
+        public override void AddMoves(Position pos, Board boardRef, List<Move> legalMoves)
         {
             Position[] directions =
             {

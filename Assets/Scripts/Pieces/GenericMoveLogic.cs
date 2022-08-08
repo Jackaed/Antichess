@@ -8,7 +8,7 @@ namespace Antichess.Pieces
         // Adds all of the moves that are achieved by going directly in a straight line, until you collide with an enemy
         // piece or one of your own pieces, or the edge of the board. 
         private static void AddMovesInDir(Position pos, Position increments, Board boardRef,
-            Dictionary<Position, List<Position>> legalMoves)
+            List<Move> legalMoves)
         {
             var to = new Position(pos.X, pos.Y) + increments;
             while (to.X < Constants.BoardSize && to.Y < Constants.BoardSize)
@@ -35,7 +35,7 @@ namespace Antichess.Pieces
 
         // Runs AddMovesInDir, but for every direction given. Used by Rooks, Bishops and Queens.
         public static void AddLegalMovesInDirections(Position pos,
-            IEnumerable<Position> directions, Board boardRef, Dictionary<Position, List<Position>> legalMoves)
+            IEnumerable<Position> directions, Board boardRef, List<Move> legalMoves)
         {
             foreach (var direction in directions) AddMovesInDir(pos, direction, boardRef, legalMoves);
         }
@@ -43,7 +43,7 @@ namespace Antichess.Pieces
         // Basic function that adds a move to the list of legal moves if it either takes a piece or moves into empty
         // space.
         private static void AddMoveAtPosIfLegal(Move move, Board boardRef,
-            Dictionary<Position, List<Position>> legalMoves)
+            List<Move> legalMoves)
         {
             if (boardRef.PieceAt(move.To) == null)
             {
@@ -58,7 +58,7 @@ namespace Antichess.Pieces
 
         // Adds moves at offsets from piece's original position, if that move passes the above legality checks.
         public static void AddLegalMovesAtOffsets(Position pos,
-            IEnumerable<Position> directions, Board boardRef, Dictionary<Position, List<Position>> legalMoves)
+            IEnumerable<Position> directions, Board boardRef, List<Move> legalMoves)
         {
             foreach (var direction in directions)
             {

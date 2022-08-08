@@ -11,7 +11,9 @@ namespace Antichess.Pieces
         protected override GameObject WhiteModel => Constants.Instance.wBishop;
         public override uint Value => 3;
 
-        public override void AddMoves(Position pos, Board boardRef, Dictionary<Position, List<Position>> legalMoves)
+        protected override uint ColourlessIndex => 2;
+
+        public override void AddMoves(Position pos, Board boardRef, List<Move> legalMoves)
         {
             Position[] directions =
             {

@@ -23,7 +23,7 @@ namespace Antichess.PositionTypes
             var other = obj as PawnDoubleMovePosition;
             return other != null && base.Equals(obj) && MovedThrough == other.MovedThrough;
         }
-        
+
         public override int GetHashCode()
         {
             return HashCode.Combine(base.GetHashCode(), MovedThrough);

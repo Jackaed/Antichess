@@ -20,10 +20,14 @@ namespace Antichess.Pieces
         public GameObject Model => IsWhite ? WhiteModel : BlackModel;
 
         public abstract uint Value { get; }
-        
+
+        protected abstract uint ColourlessIndex { get; }
+
+        public uint Index => (uint) (ColourlessIndex + (IsWhite ? 0 : 6));
+
         // Adds a piece's legal move options to LegalMoves, when given the a reference to the board and the piece's
         // position.
         public virtual void AddMoves(Position pos, Board boardRef,
-            Dictionary<Position, List<Position>> legalMoves) { }
+            List<Move> legalMoves) { }
     }
 }

@@ -21,7 +21,7 @@ namespace Antichess.PositionTypes
 
         public override int GetHashCode()
         {
-            return HashCode.Combine(base.GetHashCode(), PromotionPiece);
+            return HashCode.Combine(base.GetHashCode(), PromotionPiece.GetHashCode());
         }
 
         public override string ToString()

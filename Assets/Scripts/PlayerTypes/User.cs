@@ -48,9 +48,9 @@ namespace Antichess.PlayerTypes
                 _promotionUI = Object.Instantiate(IsWhite
                     ? Constants.Instance.wPromotionUI
                     : Constants.Instance.bPromotionUI);
-                Canvas canvas = _promotionUI.GetComponent<Canvas>();
+                var canvas = _promotionUI.GetComponent<Canvas>();
                 canvas.worldCamera = _cam;
-                RectTransform transform = _promotionUI.GetComponent<RectTransform>();
+                var transform = _promotionUI.GetComponent<RectTransform>();
                 transform.position = Constants.GetRealCoords(move.To) + 0.5f * Vector3.up;
                 var promotionUIButtons = _promotionUI.GetComponentsInChildren<Button>();
                 promotionUIButtons[0].onClick.AddListener(OnBishopPromoteButtonClick);

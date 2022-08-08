@@ -7,7 +7,6 @@ namespace Antichess.Pieces
     public class Pawn : Piece
     {
         private readonly Piece[] _promotionPieces;
-        public override uint Value => 1;
 
         public Pawn(bool isWhite) : base(isWhite)
         {
@@ -20,10 +19,24 @@ namespace Antichess.Pieces
             };
         }
 
+        public override uint Value => 1;
+        protected override uint ColourlessIndex => 0;
+
         protected override GameObject WhiteModel => Constants.Instance.wPawn;
         protected override GameObject BlackModel => Constants.Instance.bPawn;
 
-        public override void AddMoves(Position pos, Board boardRef, Dictionary<Position, List<Position>> legalMoves)
+        private void AddMoveAndCheckForPromotion(Move move, bool canTake, Board boardRef,
+            List<Move> legalMoves)
+        {
+            if (move.To.Y == (IsWhite ? Constants.BoardSize - 1 : 0))
+                foreach (var piece in _promotionPieces)
+                    Board.AddLegalMove(new Move(move.From, new PromotionPosition(move.To.X, move.To.Y, piece)),
+                        boardRef, legalMoves, canTake);
+            else
+                Board.AddLegalMove(move, boardRef, legalMoves, canTake);
+        }
+
+        public override void AddMoves(Position pos, Board boardRef, List<Move> legalMoves)
         {
             var ahead = pos + Position.Ahead(IsWhite);
             if (ahead.Y > Constants.BoardSize) return;
@@ -36,7 +49,7 @@ namespace Antichess.Pieces
                     var target = boardRef.PieceAt(takesPosition);
                     if (target != null && target.IsWhite != IsWhite)
                     {
-                        Board.AddLegalMove(new Move(pos, takesPosition), boardRef, legalMoves, true);
+                        AddMoveAndCheckForPromotion(new Move(pos, takesPosition), true, boardRef, legalMoves);
                     }
                     else if (target == null && takesPosition == boardRef.EnPassantTargetSquare)
                     {
@@ -49,12 +62,7 @@ namespace Antichess.Pieces
 
             if (boardRef.CanTake || boardRef.PieceAt(ahead) != null) return;
 
-            if (ahead.Y == (IsWhite ? Constants.BoardSize - 1 : 0))
-                foreach (var piece in _promotionPieces)
-                    Board.AddLegalMove(new Move(pos, new PromotionPosition(ahead.X, ahead.Y, piece)), boardRef,
-                        legalMoves, false);
-            else
-                Board.AddLegalMove(new Move(pos, ahead), boardRef, legalMoves, false);
+            AddMoveAndCheckForPromotion(new Move(pos, ahead), false, boardRef, legalMoves);
 
             var aheadAhead = new PawnDoubleMovePosition(
                 ahead + Position.Ahead(IsWhite), ahead);
