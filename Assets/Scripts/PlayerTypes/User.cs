@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Linq;
-using Antichess.Pieces;
-using Antichess.PositionTypes;
+using Antichess.Core;
+using Antichess.Core.Pieces;
+using Antichess.Unity;
 using UnityEngine;
 using UnityEngine.UI;
 using Object = UnityEngine.Object;
@@ -11,17 +12,18 @@ namespace Antichess.PlayerTypes
     public class User : Player
     {
         private readonly Camera _cam;
+        private readonly RenderedBoard _renderedBoard;
         private Position _from;
         private bool _hasFrom;
-
 
         private Position _mouseClickPosition;
         private Type _promotionPiece;
         private GameObject _promotionUI;
         private bool _userTryingToPromote;
 
-        public User(Board board, bool isWhite) : base(board, isWhite)
+        public User(RenderedBoard board, bool isWhite) : base(board, isWhite)
         {
+            _renderedBoard = board;
             _cam = Camera.main;
             _promotionPiece = null;
             _userTryingToPromote = false;
@@ -33,25 +35,23 @@ namespace Antichess.PlayerTypes
 
             //Test if user is attempting to move the pawn forward by two
             if (move.To.Y == move.From.Y + (IsWhite ? 2 : -2))
-                return new Move(_from, new PawnDoubleMovePosition(move.To,
-                    move.To - (IsWhite ? Position.Up : Position.Down)));
+                return new Move(move.From, move.To, Move.Flags.PawnDoubleMove);
 
             // Test if user is attempting to make an en passant
             if (BoardRef.PieceAt(move.To) == null && move.From.X != move.To.X)
-                return new Move(_from, new EnPassantPosition(move.To,
-                    move.To + (IsWhite ? Position.Down : Position.Up)));
+                return new Move(move.From, move.To, Move.Flags.EnPassant);
 
             // Test if user is attempting to promote
             if (move.To.Y == (IsWhite ? 7 : 0))
             {
                 _userTryingToPromote = true;
                 _promotionUI = Object.Instantiate(IsWhite
-                    ? Constants.Instance.wPromotionUI
-                    : Constants.Instance.bPromotionUI);
+                    ? ObjectLoader.Instance.wPromotionUI
+                    : ObjectLoader.Instance.bPromotionUI);
                 var canvas = _promotionUI.GetComponent<Canvas>();
                 canvas.worldCamera = _cam;
                 var transform = _promotionUI.GetComponent<RectTransform>();
-                transform.position = Constants.GetRealCoords(move.To) + 0.5f * Vector3.up;
+                transform.position = ObjectLoader.GetRealCoords(move.To) + 0.5f * Vector3.up;
                 var promotionUIButtons = _promotionUI.GetComponentsInChildren<Button>();
                 promotionUIButtons[0].onClick.AddListener(OnBishopPromoteButtonClick);
                 promotionUIButtons[1].onClick.AddListener(OnKnightPromoteButtonClick);
@@ -74,8 +74,7 @@ namespace Antichess.PlayerTypes
             var param = new[] {IsWhite}.Cast<object>().ToArray();
             Object.Destroy(_promotionUI);
             _promotionUI = null;
-            return new Move(move.From, new PromotionPosition(move.To.X, move.To.Y,
-                (Piece) Activator.CreateInstance(temp, param)));
+            return new Promotion(move.From, move.To, (Piece) Activator.CreateInstance(temp, param));
         }
 
         private void OnKnightPromoteButtonClick()
@@ -108,15 +107,22 @@ namespace Antichess.PlayerTypes
             var mouseRay = _cam!.ScreenPointToRay(Input.mousePosition);
             if (!Physics.Raycast(mouseRay, out var hit)) return null;
 
-            _mouseClickPosition = Constants.GetBoardCoords(hit.point);
+            _mouseClickPosition = ObjectLoader.GetBoardCoords(hit.point);
             if (_hasFrom)
             {
                 var move = GetPossibleMove(new Move(_from, _mouseClickPosition));
                 _hasFrom = false;
-                return move;
+                if (_from != _mouseClickPosition)
+                    return move;
+                _renderedBoard.LowerPieceAt(_from);
+                _renderedBoard.ClearLegalMoveIndicators();
+                return null;
             }
 
             if (BoardRef.PieceAt(_mouseClickPosition) == null) return null;
+
+            _renderedBoard.LiftPieceAt(_mouseClickPosition);
+            _renderedBoard.ShowLegalMovesFor(_mouseClickPosition);
             _from = _mouseClickPosition;
             _hasFrom = true;
             return null;

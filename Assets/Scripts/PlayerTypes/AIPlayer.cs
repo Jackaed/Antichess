@@ -1,45 +1,34 @@
+using Antichess.AI;
+using Antichess.Core;
+
 namespace Antichess.PlayerTypes
 {
     public class AIPlayer : Player
     {
+        private Evaluator _evaluator;
+        private bool _hasReturnedMove;
         private int _numPositionsSearched;
 
-        public AIPlayer(Board board, bool isWhite) : base(board, isWhite) { }
+        public AIPlayer(Board board, bool isWhite) : base(board, isWhite)
+        {
+            _hasReturnedMove = true;
+        }
 
-//        private Move SuggestRandomMove()
-//        {
-//            var randFromIndex = _random.Next(0, BoardRef.NumPositionsFrom);
-//            var fromEnumerator = BoardRef.GetLegalPositionsFrom();
-//            uint x = 0;
-//
-//            while (fromEnumerator.MoveNext())
-//            {
-//                x++;
-//                if(x - 1 != randFromIndex) continue;
-//                var from = fromEnumerator.Current;
-//                var toEnumerator = BoardRef.GetLegalPositionsTo(from);
-//                var y = 0;
-//                var randToIndex = _random.Next(0, BoardRef.NumPositionsTo(from));
-//                
-//                while (toEnumerator.MoveNext())
-//                {
-//                    y++;
-//                    Debug.Log(randFromIndex + " " + randToIndex);
-//                    if (y - 1 != randToIndex) continue;
-//                    return new Move(from, toEnumerator.Current);
-//                } 
-//                
-//            }
-//
-//            return null;
-//        }
 
         public override Move SuggestMove()
         {
-            if (!BoardRef.BestMoveOutdated) return BoardRef.IsEvaluating ? null : BoardRef.BestMove;
+            // If we've returned a valid move, and we're being asked for another one, it's a new request, and we should 
+            // start a new evaluator.
+            if (_hasReturnedMove)
+            {
+                _evaluator = new Evaluator(BoardRef);
+                _hasReturnedMove = false;
+            }
 
-            BoardRef.StartEval();
-            return null;
+            var move = _evaluator.BestMove;
+            if (move != null)
+                _hasReturnedMove = true;
+            return move;
         }
     }
 }

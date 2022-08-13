@@ -215,13 +215,13 @@ MonoBehaviour:
     m_Value: 2
   threshold:
     m_OverrideState: 1
-    m_Value: 0.1
+    m_Value: 0.84
   intensity:
     m_OverrideState: 1
-    m_Value: 0.096
+    m_Value: 0.516
   scatter:
     m_OverrideState: 1
-    m_Value: 0.7
+    m_Value: 0.824
   tint:
     m_OverrideState: 1
     m_Value: {r: 1, g: 1, b: 1, a: 1}
@@ -499,7 +499,7 @@ MonoBehaviour:
   active: 1
   rotation:
     m_OverrideState: 1
-    m_Value: 132
+    m_Value: 247
   skyIntensityMode:
     m_OverrideState: 0
     m_Value: 0

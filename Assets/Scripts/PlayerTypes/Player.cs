@@ -1,4 +1,6 @@
-﻿namespace Antichess.PlayerTypes
+﻿using Antichess.Core;
+
+namespace Antichess.PlayerTypes
 {
     public abstract class Player
     {
