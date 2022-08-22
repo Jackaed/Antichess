@@ -1,4 +1,5 @@
-﻿using Antichess.Core;
+﻿using System;
+using Antichess.Core;
 using Antichess.PlayerTypes;
 using UnityEngine;
 
@@ -17,9 +18,14 @@ namespace Antichess.Unity
             _black = new AIPlayer(_board, false);
         }
 
+        private void FixedUpdate()
+        {
+            _board.FixedUpdate();
+        }
+
         private void Update()
         {
-            if (_board.Winner == Board.WinnerEnum.None)
+            if (_board.Winner == Board.Winners.None)
             {
                 var currentPlayer = _board.WhitesMove ? _white : _black;
                 var attemptedMove = currentPlayer.SuggestMove();
@@ -30,8 +36,6 @@ namespace Antichess.Unity
                     _board.Move(attemptedMove);
                 }
             }
-
-            _board.OnNewFrame();
         }
     }
 }

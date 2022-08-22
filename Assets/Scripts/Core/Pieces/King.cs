@@ -3,18 +3,15 @@ using UnityEngine;
 
 namespace Antichess.Core.Pieces
 {
-    public class King : Piece
+    public class King : IPieceData
     {
-        public King(bool isWhite) : base(isWhite)
-        {
-        }
+        private King() { }
 
-        protected override GameObject BlackModel => ObjectLoader.Instance.bKing;
-        protected override GameObject WhiteModel => ObjectLoader.Instance.wKing;
-        public override uint Value => 2;
-        protected override uint ColourlessIndex => 4;
+        public GameObject BlackModel => ObjectLoader.Instance.bKing;
+        public GameObject WhiteModel => ObjectLoader.Instance.wKing;
+        public uint Value => 2;
 
-        public override void AddMoves(Position pos, Board boardRef, LegalMoves legalMoves)
+        public void AddLegalMoves(Position pos, Board boardRef, LegalMoves legalMoves, bool onlyCaptures)
         {
             // The offsets of a King's potential movement options, from his current position "pos"
             Position[] offsets =
@@ -28,7 +25,11 @@ namespace Antichess.Core.Pieces
                 new(-1, 0),
                 new(-1, 1)
             };
-            GenericMoveLogic.AddLegalMovesAtOffsets(pos, offsets, boardRef, legalMoves);
+            GenericMoveLogic.AddLegalMovesAtOffsets(pos, offsets, boardRef, legalMoves, onlyCaptures);
         }
+        public override string ToString() => "King";
+
+        private static King _instance = null;
+        public static King Instance => _instance ??= new King();
     }
 }

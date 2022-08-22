@@ -10,22 +10,26 @@ namespace Antichess.Core
 {
     public class RenderedBoard : Board
     {
-        private readonly Dictionary<Piece, GameObject> _gameObjects = new();
-        private readonly List<Piece> _highlightedPieces = new();
+        private readonly List<RenderedPiece> _highlightedPieces = new();
         private readonly List<GameObject> _legalMoveIndicators = new();
         private readonly List<MovingPiece> _piecesToMove = new();
+        private const float TimeToMove = 0.2f;
+        private const float MoveSpeed = 1 / TimeToMove;
+
+        private RenderedPiece RenderedPieceAt(Position pos)
+        {
+            return PieceAt(pos) as RenderedPiece;
+        }
 
         protected override void Create(Piece piece, Position pos)
         {
-            if (PieceAt(pos) != null) Destroy(pos);
-            base.Create(piece, pos);
-            _gameObjects.Add(piece, Object.Instantiate(piece.Model,
-                ObjectLoader.GetRealCoords(pos), piece.Model.transform.rotation));
+            base.Create(RenderedPiece.ToRenderedPiece(piece, pos), pos);
         }
 
         protected override void UndoMove(BoardChange change)
         {
-            _piecesToMove.Add(new MovingPiece(change.Move.From, _gameObjects[PieceAt(change.Move.To)]));
+            _piecesToMove.Add(new MovingPiece(change.Move.From, RenderedPieceAt(change.Move.To).GameObject, 
+                change.Move.Distance));
             base.UndoMove(change);
         }
 
@@ -33,13 +37,11 @@ namespace Antichess.Core
         {
             if (PieceAt(pos) != null)
             {
-                var highlightedPiece = PieceAt(pos);
-                var highlightedGameObject = _gameObjects[highlightedPiece];
-                var materialList = highlightedGameObject.GetComponent<MeshRenderer>().materials;
-                materialList[1] = highlightedPiece.IsWhite
+                var highlightedPiece = RenderedPieceAt(pos);
+                var highlightedGameObject = highlightedPiece.GameObject;
+                highlightedGameObject.GetComponent<MeshRenderer>().material = highlightedPiece.IsWhite
                     ? ObjectLoader.Instance.wEmissiveMaterial
                     : ObjectLoader.Instance.bEmissiveMaterial;
-                highlightedGameObject.GetComponent<MeshRenderer>().materials = materialList;
                 _highlightedPieces.Add(highlightedPiece);
             }
             else
@@ -50,39 +52,61 @@ namespace Antichess.Core
             }
         }
 
+        public bool MoveCanPromote(Move move)
+        {
+            return LegalMoves.List.Where(legalPromotion => legalPromotion is Promotion).Any
+                (legalPromotion => move.From == legalPromotion.From && move.To == legalPromotion.To);
+        }
+
         public void ClearLegalMoveIndicators()
         {
             foreach (var indicator in _legalMoveIndicators) Object.Destroy(indicator);
 
             foreach (var highlightedPiece in _highlightedPieces)
-            {
-                var highlightedGameObject = _gameObjects[highlightedPiece];
-                var materialList = highlightedGameObject.GetComponent<MeshRenderer>().materials;
-                materialList[1] = highlightedPiece.IsWhite
+                highlightedPiece.GameObject.GetComponent<MeshRenderer>().material = highlightedPiece.IsWhite
                     ? ObjectLoader.Instance.wBaseMaterial
                     : ObjectLoader.Instance.bBaseMaterial;
-                highlightedGameObject.GetComponent<MeshRenderer>().materials = materialList;
-            }
 
             _legalMoveIndicators.Clear();
             _highlightedPieces.Clear();
         }
 
+        public void RemoveMeshCollider(Position pos)
+        {
+            RenderedPieceAt(pos).GameObject.GetComponent<Collider>().enabled = false;
+        }
+
+        public void EnableMeshCollider(Position pos)
+        {
+            RenderedPieceAt(pos).GameObject.GetComponent<Collider>().enabled = true;
+        }
+
+        public void SnapPieceToCursor(Position originalPos, RaycastHit hit)
+        {
+            RenderedPieceAt(originalPos).GameObject.transform.position = hit.point + new Vector3(0, 0.25f, 0);
+        }
+        
+        public void SnapPieceToPos(Position pos)
+        {
+            RenderedPieceAt(pos).GameObject.transform.position = ObjectLoader.GetRealCoords(pos);
+        }
+
         public void ShowLegalMovesFor(Position pos)
         {
+            ClearLegalMoveIndicators();
             foreach (var move in LegalMoves.List.Where(move => move.From == pos)) CreateLegalMoveIndicator(move.To);
         }
 
         public void LowerPieceAt(Position pos)
         {
-            var gamePos = _gameObjects[PieceAt(pos)].transform.position;
-            _gameObjects[PieceAt(pos)].transform.position = new Vector3(gamePos.x, 0.0f, gamePos.z);
+            var gamePos = RenderedPieceAt(pos).GameObject.transform.position;
+            RenderedPieceAt(pos).GameObject.transform.position = new Vector3(gamePos.x, 0.0f, gamePos.z);
         }
 
         public void LiftPieceAt(Position pos)
         {
-            var gamePos = _gameObjects[PieceAt(pos)].transform.position;
-            _gameObjects[PieceAt(pos)].transform.position = new Vector3(gamePos.x, 0.25f, gamePos.z);
+            var gamePos = RenderedPieceAt(pos).GameObject.transform.position;
+            RenderedPieceAt(pos).GameObject.transform.position = new Vector3(gamePos.x, 0.25f, gamePos.z);
         }
 
         protected override void UpdateWinner()
@@ -90,16 +114,16 @@ namespace Antichess.Core
             base.UpdateWinner();
             switch (Winner)
             {
-                case WinnerEnum.White:
+                case Winners.White:
                     Debug.Log("White Wins");
                     break;
-                case WinnerEnum.Black:
+                case Winners.Black:
                     Debug.Log("Black Wins");
                     break;
-                case WinnerEnum.Stalemate:
+                case Winners.Stalemate:
                     Debug.Log("Stalemate");
                     break;
-                case WinnerEnum.None:
+                case Winners.None:
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
@@ -108,9 +132,11 @@ namespace Antichess.Core
 
         public override bool Move(Move move)
         {
+            Debug.Log(LegalMoves);
             var wasLegal = base.Move(move);
             if (wasLegal) return true;
             LowerPieceAt(move.From);
+            RenderedPieceAt(move.From).GameObject.transform.position = ObjectLoader.GetRealCoords(move.From);
             ClearLegalMoveIndicators();
             return false;
         }
@@ -123,27 +149,24 @@ namespace Antichess.Core
             else
                 ObjectLoader.Instance.audioSource.PlayOneShot(ObjectLoader.Instance.move, 1);
 
-            var pieceFrom = PieceAt(move.From);
-            var pieceTo = PieceAt(move.To);
+            var pieceFrom = RenderedPieceAt(move.From);
+            var pieceTo = RenderedPieceAt(move.To);
 
             base.UnsafeMove(move);
 
-            if (_gameObjects.ContainsKey(pieceFrom))
-                _piecesToMove.Add(new MovingPiece(move.To, _gameObjects[PieceAt(move.To)]));
+            if (pieceFrom != null)
+                _piecesToMove.Add(new MovingPiece(move.To, pieceFrom.GameObject, move.Distance));
 
             if (pieceTo == null) return;
-
-            Object.Destroy(_gameObjects[pieceTo]);
-            _gameObjects.Remove(pieceTo);
         }
 
         protected override void Destroy(Position pos)
         {
-            if (_gameObjects.ContainsKey(PieceAt(pos))) Object.Destroy(_gameObjects[PieceAt(pos)]);
+            if (RenderedPieceAt(pos) != null) Object.Destroy(RenderedPieceAt(pos).GameObject);
             base.Destroy(pos);
         }
 
-        public void OnNewFrame()
+        public void FixedUpdate()
         {
             for (var x = 0; x < _piecesToMove.Count; x++)
             {
@@ -154,7 +177,8 @@ namespace Antichess.Core
                     _piecesToMove.RemoveAt(x);
                 else
                     pieceToMove.Piece.transform.position = Vector3.MoveTowards(pieceToMove.Piece.transform.position,
-                        ObjectLoader.GetRealCoords(pieceToMove.To), 25 * Time.deltaTime);
+                        ObjectLoader.GetRealCoords(pieceToMove.To), 
+                        MoveSpeed * Time.deltaTime * pieceToMove.Distance);
             }
         }
     }

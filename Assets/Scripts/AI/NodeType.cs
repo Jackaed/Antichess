@@ -1,6 +1,6 @@
-namespace Antichess
+namespace Antichess.AI
 {
-    public enum NodeType
+    public enum NodeType : byte
     {
         NotEvaluated,
         Exact,

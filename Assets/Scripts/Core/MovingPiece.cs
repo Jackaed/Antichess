@@ -6,11 +6,13 @@ namespace Antichess.Core
     {
         public readonly Position To;
         public readonly GameObject Piece;
+        public readonly float Distance;
 
-        public MovingPiece(Position to, GameObject piece)
+        public MovingPiece(Position to, GameObject piece, float distance)
         {
             To = to;
             Piece = piece;
+            Distance = distance;
         }
     }
 }

@@ -3,19 +3,16 @@ using UnityEngine;
 
 namespace Antichess.Core.Pieces
 {
-    public class Bishop : Piece
+    public class Bishop : IPieceData
     {
-        public Bishop(bool isWhite) : base(isWhite)
-        {
-        }
+        private Bishop() {}
+        
+        public GameObject BlackModel => ObjectLoader.Instance.bBishop;
+        public GameObject WhiteModel => ObjectLoader.Instance.wBishop;
+        
+        public uint Value => 3;
 
-        protected override GameObject BlackModel => ObjectLoader.Instance.bBishop;
-        protected override GameObject WhiteModel => ObjectLoader.Instance.wBishop;
-        public override uint Value => 3;
-
-        protected override uint ColourlessIndex => 2;
-
-        public override void AddMoves(Position pos, Board boardRef, LegalMoves legalMoves)
+        public void AddLegalMoves(Position pos, Board boardRef, LegalMoves legalMoves, bool onlyCaptures)
         {
             Position[] directions =
             {
@@ -24,7 +21,13 @@ namespace Antichess.Core.Pieces
                 new(-1, 1),
                 new(-1, -1)
             };
-            GenericMoveLogic.AddLegalMovesInDirections(pos, directions, boardRef, legalMoves);
+            GenericMoveLogic.AddLegalMovesInDirections(pos, directions, boardRef, legalMoves, onlyCaptures);
         }
+        
+        public override string ToString() => "Bishop";
+        
+        private static Bishop _instance = null;
+        
+        public static Bishop Instance => _instance ??= new Bishop();
     }
 }

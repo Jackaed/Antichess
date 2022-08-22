@@ -3,18 +3,15 @@ using UnityEngine;
 
 namespace Antichess.Core.Pieces
 {
-    public class Rook : Piece
+    public class Rook : IPieceData
     {
-        public Rook(bool isWhite) : base(isWhite)
-        {
-        }
+        private Rook() { }
 
-        protected override GameObject BlackModel => ObjectLoader.Instance.bRook;
-        protected override GameObject WhiteModel => ObjectLoader.Instance.wRook;
-        public override uint Value => 5;
-        protected override uint ColourlessIndex => 3;
+        public GameObject BlackModel => ObjectLoader.Instance.bRook;
+        public GameObject WhiteModel => ObjectLoader.Instance.wRook;
+        public uint Value => 5;
 
-        public override void AddMoves(Position pos, Board boardRef, LegalMoves legalMoves)
+        public void AddLegalMoves(Position pos, Board boardRef, LegalMoves legalMoves, bool onlyCaptures)
         {
             Position[] directions =
             {
@@ -24,7 +21,13 @@ namespace Antichess.Core.Pieces
                 new(0, -1)
             };
 
-            GenericMoveLogic.AddLegalMovesInDirections(pos, directions, boardRef, legalMoves);
+            GenericMoveLogic.AddLegalMovesInDirections(pos, directions, boardRef, legalMoves, onlyCaptures);
         }
+        
+        public override string ToString() => "Rook";
+        
+        private static Rook _instance = null;
+        
+        public static Rook Instance => _instance ??= new Rook();
     }
 }

@@ -4,8 +4,8 @@ namespace Antichess.Core
 {
     public class Position
     {
-        public static readonly Position Up = new(0, 1);
-        public static readonly Position Down = new(0, -1);
+        private static readonly Position Up = new(0, 1);
+        private static readonly Position Down = new(0, -1);
         private byte _data;
 
         public Position(sbyte x, sbyte y)
@@ -50,10 +50,16 @@ namespace Antichess.Core
             return new Position((sbyte) (a.X - b.X), (sbyte) (a.Y - b.Y));
         }
 
+        private bool Equals(Position other)
+        {
+            return _data == other._data;
+        }
+
         public override bool Equals(object obj)
         {
-            var other = (Position) obj;
-            return other != null && X == other.X && Y == other.Y;
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            return obj.GetType() == this.GetType() && Equals((Position) obj);
         }
 
         public override int GetHashCode()

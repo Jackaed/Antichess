@@ -7,7 +7,7 @@ namespace Antichess.Unity
 {
     internal class ObjectLoader : MonoBehaviour
     {
-        public static readonly byte BoardSize = 8;
+        public const byte BoardSize = 8;
 
         public GameObject bPawn,
             bBishop,
@@ -54,7 +54,7 @@ namespace Antichess.Unity
         private static sbyte GetBoardCoord(float num)
         {
             var coord = Math.Round(num / 0.6f + 3.5f);
-            return (sbyte) Math.Clamp(coord, 0, BoardSize);
+            return (sbyte) Math.Clamp(coord, 0, BoardSize - 1);
         }
 
         public static Position GetBoardCoords(Vector3 realCoords)

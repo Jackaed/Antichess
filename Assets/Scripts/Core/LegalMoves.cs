@@ -1,11 +1,17 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Linq;
+using System.Threading.Tasks;
+using UnityEngine;
 
 namespace Antichess.Core
 {
+    // A self-sustaining Legal Move collection, that updates itself if required.
     public class LegalMoves
     {
         private readonly Board _board;
-        private readonly List<Move> _legalMoves;
+        private readonly ConcurrentBag<Move> _legalMoves;
         private readonly PieceLocations _pieceLocations;
         private bool _canEnPassant;
 
@@ -14,7 +20,7 @@ namespace Antichess.Core
 
         public LegalMoves(Board board, PieceLocations pieceLocations)
         {
-            _legalMoves = new List<Move>();
+            _legalMoves = new ConcurrentBag<Move>();
             _board = board;
             _pieceLocations = pieceLocations;
             _isOutdated = true;
@@ -22,13 +28,13 @@ namespace Antichess.Core
 
         public LegalMoves(LegalMoves other, PieceLocations pieceLocations, Board board)
         {
-            _legalMoves = new List<Move>(other._legalMoves);
+            _legalMoves = new ConcurrentBag<Move>(other._legalMoves);
             _board = board;
             _pieceLocations = pieceLocations;
             _isOutdated = other._isOutdated;
         }
 
-        public int Count => List.Count;
+        public int Count => Bag.Count;
 
         public bool CanTake
         {
@@ -59,13 +65,23 @@ namespace Antichess.Core
                 if (_isOutdated)
                     Update();
 
-                return new List<Move>(_legalMoves);
+                return _legalMoves.ToList();
+            }
+        }
+
+        private ConcurrentBag<Move> Bag
+        {
+            get
+            {
+                if (_isOutdated)
+                    Update();
+                return _legalMoves;
             }
         }
 
         public override string ToString()
         {
-            return string.Join(", ", List);
+            return string.Join(", ", Bag);
         }
 
         public void OnBoardChange()
@@ -75,24 +91,19 @@ namespace Antichess.Core
 
         public bool IsLegal(Move move)
         {
-            return List.Contains(move);
+            return Bag.Contains(move);
         }
 
-        public void Add(Move move, bool canTake)
+        public void Add(Move move)
         {
             if (_board.PieceAt(move.From) == null) return;
-
-            if (canTake != _canTake)
-            {
-                _legalMoves.Clear();
-                _canTake = true;
-            }
 
             if (move.Flag == Move.Flags.EnPassant) _canEnPassant = true;
 
             _legalMoves.Add(move);
         }
 
+        // Updates the _legalMoves collection to represent the legal moves in the current position in the board.
         private void Update()
         {
             _canTake = false;
@@ -100,8 +111,19 @@ namespace Antichess.Core
             _isOutdated = false;
             _legalMoves.Clear();
 
-            foreach (var pos in _pieceLocations.ColourPositions(_board.WhitesMove))
-                _board.PieceAt(pos).AddMoves(pos, _board, this);
+            // Find all of the possible captures, and if none are found, then search for non-capture moves.
+            Parallel.ForEach(_pieceLocations.ColourPositions(_board.WhitesMove), pos =>
+            {
+                _board.PieceAt(pos).AddLegalMoves(pos, _board, this, true);
+            });
+
+            if (_legalMoves.Count == 0)
+            {
+                Parallel.ForEach(_pieceLocations.ColourPositions(_board.WhitesMove), pos =>
+                {
+                    _board.PieceAt(pos).AddLegalMoves(pos, _board, this, false);
+                });
+            }
         }
     }
 }

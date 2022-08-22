@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Linq;
+using System.Timers;
 using Antichess.Core;
 using Antichess.Core.Pieces;
 using Antichess.Unity;
+using JetBrains.Annotations;
 using UnityEngine;
 using UnityEngine.UI;
 using Object = UnityEngine.Object;
@@ -12,26 +14,28 @@ namespace Antichess.PlayerTypes
     public class User : Player
     {
         private readonly Camera _cam;
-        private readonly RenderedBoard _renderedBoard;
         private Position _from;
         private bool _hasFrom;
+        private bool _isClickAndDrag;
+        private Position _selectedPiecePos;
 
         private Position _mouseClickPosition;
-        private Type _promotionPiece;
+        private Piece.Types _promotionPiece;
         private GameObject _promotionUI;
         private bool _userTryingToPromote;
 
         public User(RenderedBoard board, bool isWhite) : base(board, isWhite)
         {
-            _renderedBoard = board;
             _cam = Camera.main;
-            _promotionPiece = null;
+            _promotionPiece = Piece.Types.None;
             _userTryingToPromote = false;
         }
 
+        private RenderedBoard RenderedBoard => BoardRef as RenderedBoard;
+
         private Move GetPossibleMove(Move move)
         {
-            if (BoardRef.PieceAt(move.From).GetType() != typeof(Pawn)) return move;
+            if (BoardRef.PieceAt(move.From).Type != Piece.Types.Pawn) return move;
 
             //Test if user is attempting to move the pawn forward by two
             if (move.To.Y == move.From.Y + (IsWhite ? 2 : -2))
@@ -42,90 +46,165 @@ namespace Antichess.PlayerTypes
                 return new Move(move.From, move.To, Move.Flags.EnPassant);
 
             // Test if user is attempting to promote
-            if (move.To.Y == (IsWhite ? 7 : 0))
-            {
-                _userTryingToPromote = true;
-                _promotionUI = Object.Instantiate(IsWhite
-                    ? ObjectLoader.Instance.wPromotionUI
-                    : ObjectLoader.Instance.bPromotionUI);
-                var canvas = _promotionUI.GetComponent<Canvas>();
-                canvas.worldCamera = _cam;
-                var transform = _promotionUI.GetComponent<RectTransform>();
-                transform.position = ObjectLoader.GetRealCoords(move.To) + 0.5f * Vector3.up;
-                var promotionUIButtons = _promotionUI.GetComponentsInChildren<Button>();
-                promotionUIButtons[0].onClick.AddListener(OnBishopPromoteButtonClick);
-                promotionUIButtons[1].onClick.AddListener(OnKnightPromoteButtonClick);
-                promotionUIButtons[2].onClick.AddListener(OnQueenPromoteButtonClick);
-                promotionUIButtons[3].onClick.AddListener(OnRookPromoteButtonClick);
+            if (!RenderedBoard.MoveCanPromote(move)) return move;
+            
+            _userTryingToPromote = true;
+            _promotionUI = Object.Instantiate(IsWhite
+                ? ObjectLoader.Instance.wPromotionUI
+                : ObjectLoader.Instance.bPromotionUI);
+            var canvas = _promotionUI.GetComponent<Canvas>();
+            canvas.worldCamera = _cam;
+            var transform = _promotionUI.GetComponent<RectTransform>();
+            transform.position = ObjectLoader.GetRealCoords(move.To) + 0.5f * Vector3.up;
+            var promotionUIButtons = _promotionUI.GetComponentsInChildren<Button>();
+            promotionUIButtons[0].onClick.AddListener(OnBishopPromoteButtonClick);
+            promotionUIButtons[1].onClick.AddListener(OnKnightPromoteButtonClick);
+            promotionUIButtons[2].onClick.AddListener(OnQueenPromoteButtonClick);
+            promotionUIButtons[3].onClick.AddListener(OnRookPromoteButtonClick);
 
-                return null;
-            }
+            return null;
 
-            return move;
         }
 
         private Move ChoosePromotionPiece(Move move)
         {
-            if (_promotionPiece == null) return null;
+            if (_promotionPiece == Piece.Types.None) return null;
             Debug.Log(_promotionPiece.ToString());
             var temp = _promotionPiece;
-            _promotionPiece = null;
+            _promotionPiece = Piece.Types.None;
             _userTryingToPromote = false;
-            var param = new[] {IsWhite}.Cast<object>().ToArray();
             Object.Destroy(_promotionUI);
             _promotionUI = null;
-            return new Promotion(move.From, move.To, (Piece) Activator.CreateInstance(temp, param));
+            return new Promotion(move.From, move.To, new Piece(IsWhite, temp));
         }
 
         private void OnKnightPromoteButtonClick()
         {
-            _promotionPiece = typeof(Knight);
+            _promotionPiece = Piece.Types.Knight;
             Debug.Log("Knight");
         }
 
         private void OnBishopPromoteButtonClick()
         {
-            _promotionPiece = typeof(Bishop);
+            _promotionPiece = Piece.Types.Bishop;
         }
 
         private void OnQueenPromoteButtonClick()
         {
-            _promotionPiece = typeof(Queen);
+            _promotionPiece = Piece.Types.Queen;
         }
 
         private void OnRookPromoteButtonClick()
         {
-            _promotionPiece = typeof(Rook);
+            _promotionPiece = Piece.Types.Rook;
+        }
+
+        private void SelectPiece(Position pos)
+        {
+            if (_selectedPiecePos == pos)
+            {
+                _selectedPiecePos = null;
+                DeselectPiece(pos);
+                return;
+            }
+            _selectedPiecePos = pos;
+            RenderedBoard.EnableMeshCollider(pos);
+            _isClickAndDrag = false;
+            _hasFrom = true;
+            _from = pos;
+            RenderedBoard.SnapPieceToPos(pos);
+            RenderedBoard.LiftPieceAt(pos);
+            RenderedBoard.ShowLegalMovesFor(pos);
+        }
+
+        private void DeselectPiece(Position pos)
+        {
+            _hasFrom = false;
+            RenderedBoard.SnapPieceToPos(pos);
+            RenderedBoard.LowerPieceAt(pos);
+            RenderedBoard.EnableMeshCollider(pos);
+            RenderedBoard.ClearLegalMoveIndicators();
+        }
+
+        private Move OnDCSecondClick(Position pos)
+        {
+            if (_from == pos)
+            {
+                DeselectPiece(_from);
+                return null;
+            }
+            
+            if (RenderedBoard.PieceAt(pos) != null && 
+                RenderedBoard.PieceAt(pos).IsWhite == RenderedBoard.PieceAt(_from).IsWhite)
+            {
+                DeselectPiece(_from);
+                SelectPiece(pos);
+                return null;
+            }
+            
+            DeselectPiece(_from);
+            return GetPossibleMove(new Move(_from, pos));
+        }
+
+        private void StartDragAndDrop(Position pos)
+        {
+            RenderedBoard.ShowLegalMovesFor(pos);
+            RenderedBoard.RemoveMeshCollider(pos);
+            _isClickAndDrag = true;
+            _hasFrom = true;
+            _from = pos;
+        }
+
+        private Move DragAndDropRelease(Position pos)
+        {
+            _hasFrom = false;
+            
+            if (pos == _from)
+            {
+                SelectPiece(pos);
+                return null;
+            }
+            
+            RenderedBoard.EnableMeshCollider(_from);
+            return GetPossibleMove(new Move(_from, pos));
         }
 
         public override Move SuggestMove()
         {
             if (_userTryingToPromote) return ChoosePromotionPiece(new Move(_from, _mouseClickPosition));
 
-            if (!Input.GetMouseButtonDown(0)) return null;
-
             var mouseRay = _cam!.ScreenPointToRay(Input.mousePosition);
             if (!Physics.Raycast(mouseRay, out var hit)) return null;
 
             _mouseClickPosition = ObjectLoader.GetBoardCoords(hit.point);
+
             if (_hasFrom)
             {
-                var move = GetPossibleMove(new Move(_from, _mouseClickPosition));
-                _hasFrom = false;
-                if (_from != _mouseClickPosition)
-                    return move;
-                _renderedBoard.LowerPieceAt(_from);
-                _renderedBoard.ClearLegalMoveIndicators();
+                if (Input.GetMouseButton(0))
+                {
+                    if (!_isClickAndDrag)
+                    {
+                        return OnDCSecondClick(_mouseClickPosition);
+                    }
+                    RenderedBoard.SnapPieceToCursor(_from, hit);
+                }
+                else if (_isClickAndDrag)
+                {
+                    return DragAndDropRelease(_mouseClickPosition);
+                }
+
                 return null;
             }
 
-            if (BoardRef.PieceAt(_mouseClickPosition) == null) return null;
+            else
+            {
+                if (Input.GetMouseButton(0) && RenderedBoard.PieceAt(_mouseClickPosition) != null &&
+                    RenderedBoard.PieceAt(_mouseClickPosition).IsWhite == IsWhite)
+                    
+                    StartDragAndDrop(_mouseClickPosition);
 
-            _renderedBoard.LiftPieceAt(_mouseClickPosition);
-            _renderedBoard.ShowLegalMovesFor(_mouseClickPosition);
-            _from = _mouseClickPosition;
-            _hasFrom = true;
-            return null;
+                return null;
+            }
         }
     }
 }

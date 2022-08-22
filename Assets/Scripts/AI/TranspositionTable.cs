@@ -1,7 +1,8 @@
 using System.Linq;
 using Antichess.Core;
+using UnityEngine;
 
-namespace Antichess
+namespace Antichess.AI
 {
     public class TranspositionTable
     {
@@ -21,31 +22,35 @@ namespace Antichess
             return val.Key == key ? val : Entry.NotEvaluated;
         }
 
-        public void Store(ulong key, int score, ushort depth, NodeType nodeType, ushort age)
+        public void Store(ulong key, int score, bool wasMate, ushort depth, NodeType nodeType, ushort age, Move refutationMove)
         {
             if (_table[key % _size].TtNodeType == NodeType.NotEvaluated || _table[key % _size].Age > age)
-                _table[key % _size] = new Entry(key, score, depth, nodeType, age);
+                _table[key % _size] = new Entry(key, score, wasMate, depth, nodeType, age, refutationMove);
         }
 
-        public class Entry
+        public struct Entry
         {
-            public static readonly Entry NotEvaluated = new(ulong.MinValue, int.MinValue, 0,
-                NodeType.NotEvaluated, 0);
+            public static readonly Entry NotEvaluated = new(ulong.MinValue, int.MinValue, false, 0,
+                NodeType.NotEvaluated, 0, null);
 
             public readonly ushort Age;
             public readonly ushort Depth;
 
             public readonly ulong Key;
             public readonly int Score;
+            public readonly bool WasMate;
             public readonly NodeType TtNodeType;
+            public readonly Move RefutationMove;
 
-            public Entry(ulong key, int score, ushort depth, NodeType nodeType, ushort age)
+            public Entry(ulong key, int score, bool wasMate, ushort depth, NodeType nodeType, ushort age, Move refutationMove)
             {
+                WasMate = wasMate; 
                 Key = key;
                 Score = score;
                 Depth = depth;
                 TtNodeType = nodeType;
                 Age = age;
+                RefutationMove = refutationMove;
             }
         }
     }

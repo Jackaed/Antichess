@@ -1,16 +1,19 @@
 using System;
 using Antichess.Unity;
+using UnityEngine;
 
 namespace Antichess.Core
 {
-    public class Move : IComparable<Move>
+    public class Move
     {
-        public enum Flags
+        public enum Flags : byte
         {
             None,
             EnPassant,
             PawnDoubleMove
         }
+
+        public float Distance => Mathf.Sqrt(Mathf.Pow((To.X - From.X), 2) + Mathf.Pow((To.Y - From.Y), 2));
 
         public readonly Flags Flag;
         public readonly Position From, To;
@@ -22,50 +25,36 @@ namespace Antichess.Core
             Flag = flag;
         }
 
-        public int CompareTo(Move other)
+        protected bool Equals(Move other)
         {
-            if (ReferenceEquals(this, other)) return 0;
-            if (ReferenceEquals(null, other)) return 1;
-
-            return ObjectLoader.Instance.Rand.Next(1) * 2 - 1;
-
-//            if (From.X > other.From.X) return 1;
-//
-//            if (From.X < other.From.X) return -1;
-//            if (From.Y > other.From.Y) return 1;
-//
-//            if (From.Y < other.From.Y) return -1;
-//            if (To.X > other.To.X) return 1;
-//
-//            if (To.X < other.To.X) return -1;
-//            if (To.Y > other.To.Y) return 1;
-//
-//            if (To.Y < other.To.Y) return -1;
-//
-//            return 0;
-        }
-
-        private bool Equals(Move other)
-        {
-            return Equals(From, other.From) && Equals(To, other.To);
+            return Flag == other.Flag && Equals(From, other.From) && Equals(To, other.To);
         }
 
         public override bool Equals(object obj)
         {
-            if (obj == null)
-                return false;
-            var other = (Move) obj;
-            return From == other.From && To == other.To;
-        }
-
-        public override string ToString()
-        {
-            return From + " , " + To;
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            return obj.GetType() == this.GetType() && Equals((Move) obj);
         }
 
         public override int GetHashCode()
         {
-            return HashCode.Combine(From, To);
+            return HashCode.Combine((int) Flag, From, To);
+        }
+
+        public static bool operator ==(Move left, Move right)
+        {
+            return Equals(left, right);
+        }
+
+        public static bool operator !=(Move left, Move right)
+        {
+            return !Equals(left, right);
+        }
+
+        public override string ToString()
+        {
+            return From + " => " + To;
         }
     }
 }

@@ -5,7 +5,7 @@ namespace Antichess.PlayerTypes
     public abstract class Player
     {
         protected readonly Board BoardRef;
-        protected bool IsWhite;
+        protected readonly bool IsWhite;
 
         protected Player(Board board, bool isWhite)
         {

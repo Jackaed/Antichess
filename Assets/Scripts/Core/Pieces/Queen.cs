@@ -3,18 +3,15 @@ using UnityEngine;
 
 namespace Antichess.Core.Pieces
 {
-    public class Queen : Piece
+    public class Queen : IPieceData
     {
-        public Queen(bool isWhite) : base(isWhite)
-        {
-        }
+        private Queen() { }
 
-        protected override GameObject BlackModel => ObjectLoader.Instance.bQueen;
-        protected override GameObject WhiteModel => ObjectLoader.Instance.wQueen;
-        public override uint Value => 9;
-        protected override uint ColourlessIndex => 5;
+        public GameObject BlackModel => ObjectLoader.Instance.bQueen;
+        public GameObject WhiteModel => ObjectLoader.Instance.wQueen;
+        public uint Value => 9;
 
-        public override void AddMoves(Position pos, Board boardRef, LegalMoves legalMoves)
+        public void AddLegalMoves(Position pos, Board boardRef, LegalMoves legalMoves, bool onlyCaptures)
         {
             Position[] directions =
             {
@@ -28,7 +25,13 @@ namespace Antichess.Core.Pieces
                 new(0, -1)
             };
 
-            GenericMoveLogic.AddLegalMovesInDirections(pos, directions, boardRef, legalMoves);
+            GenericMoveLogic.AddLegalMovesInDirections(pos, directions, boardRef, legalMoves, onlyCaptures);
         }
+        
+        public override string ToString() => "Queen";
+        
+        private static Queen _instance = null;
+        
+        public static Queen Instance => _instance ??= new Queen();
     }
 }
