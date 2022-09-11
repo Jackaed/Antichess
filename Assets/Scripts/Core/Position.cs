@@ -59,7 +59,7 @@ namespace Antichess.Core
         {
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
-            return obj.GetType() == this.GetType() && Equals((Position) obj);
+            return obj.GetType() == GetType() && Equals((Position) obj);
         }
 
         public override int GetHashCode()

@@ -1,19 +1,9 @@
 ﻿using System;
-using UnityEngine;
 
 namespace Antichess.Core.Pieces
 {
     public class Piece
     {
-        private static readonly IPieceData[] PieceDataArray = new IPieceData[]
-            {Pawn.Instance, Bishop.Instance, Knight.Instance, Rook.Instance, Queen.Instance, King.Instance};
-        
-        public Piece(bool isWhite, Types type)
-        {
-            IsWhite = isWhite;
-            Type = type;
-        }
-
         public enum Types : byte
         {
             Pawn,
@@ -25,13 +15,24 @@ namespace Antichess.Core.Pieces
             None
         }
 
+        private static readonly IPieceData[] PieceDataArray =
+            {Pawn.Instance, Bishop.Instance, Knight.Instance, Rook.Instance, Queen.Instance, King.Instance};
+
+        public Piece(bool isWhite, Types type)
+        {
+            IsWhite = isWhite;
+            Type = type;
+        }
+
         protected IPieceData PieceData => Type == Types.None ? null : PieceDataArray[(int) Type];
 
         public bool IsWhite { get; }
-        
+
         public Types Type { get; }
 
         public uint Value => PieceData.Value;
+
+        public uint Index => (uint) Type + (IsWhite ? 0u : 6u);
 
         public override string ToString()
         {
@@ -54,7 +55,7 @@ namespace Antichess.Core.Pieces
         {
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
-            return obj.GetType() == this.GetType() && Equals((Piece) obj);
+            return obj.GetType() == GetType() && Equals((Piece) obj);
         }
 
         public override int GetHashCode()

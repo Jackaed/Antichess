@@ -3,12 +3,20 @@ using System.Collections.Generic;
 using Antichess.Core.Pieces;
 using Antichess.Unity;
 using JetBrains.Annotations;
-using UnityEngine;
 
 namespace Antichess.Core
 {
     public class Board
     {
+        public enum Winners : byte
+        {
+            White,
+            Black,
+            Stalemate,
+            None
+        }
+
+        protected const int Size = 8;
         private readonly Piece[,] _data;
 
         private readonly Stack<BoardChange> _moveHistory;
@@ -18,7 +26,7 @@ namespace Antichess.Core
         protected readonly LegalMoves LegalMoves;
 
         protected readonly PieceLocations PieceLocations;
-        protected ushort LastIrreversibleMove;
+        private bool _gameHasStarted;
 
         private ushort _moveCounter;
 
@@ -29,26 +37,21 @@ namespace Antichess.Core
         private ulong _zobristHash;
         private bool _zobristOutdated;
         private ulong[,,] _zobristTable;
-        
-        public bool WhitesMove { get; private set; }
-        
-        public Position EnPassantTargetSquare { get; private set; }
-        
+        private ushort _halfMoveClock;
+
         protected Board()
         {
+            _gameHasStarted = false;
             _data = new Piece[ObjectLoader.BoardSize, ObjectLoader.BoardSize];
             PieceLocations = new PieceLocations(this);
             LegalMoves = new LegalMoves(this, PieceLocations);
             _moveHistory = new Stack<BoardChange>();
-            // ReSharper disable StringLiteralTypo
-            //ProcessFenString("8/6P1/8/8/1k6/8/7K/8 w - - 0 1");
-            ProcessFenString("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
-            // ReSharper restore StringLiteralTypo
             InitZobrist();
             _repetitionHistory = new List<ulong> {ZobristHash};
             _winner = Winners.None;
             _winnerOutdated = true;
             _zobristOutdated = true;
+            _halfMoveClock = 0;
         }
 
         // Copy constructor, returns a copy of the board toClone
@@ -63,14 +66,72 @@ namespace Antichess.Core
             _zobristHash = toClone._zobristHash;
             WhitesMove = toClone.WhitesMove;
             _winner = toClone._winner;
+            _halfMoveClock = toClone._halfMoveClock;
             _repetitionHistory = new List<ulong>(toClone._repetitionHistory);
         }
-        
+
+        public bool WhitesMove { get; private set; }
+
+        public Position EnPassantTargetSquare { get; private set; }
+
+        public Winners Winner
+        {
+            get
+            {
+                if (_winnerOutdated)
+                    UpdateWinner();
+
+                return _winner;
+            }
+        }
+
+        protected ulong ZobristHash
+        {
+            get
+            {
+                if (!_zobristOutdated)
+                    return _zobristHash;
+
+                _zobristHash = 0;
+                if (!WhitesMove) _zobristHash = _zobristHash ^ _zobristBlacksMove;
+
+                foreach (Position pos in PieceLocations.All)
+                {
+                    uint j = PieceAt(pos).Index;
+                    _zobristHash ^= _zobristTable[pos.X, pos.Y, j];
+                }
+
+                if (LegalMoves.CanEnPassant && EnPassantTargetSquare != null)
+                    _zobristHash ^= _zobristTable[EnPassantTargetSquare.X, EnPassantTargetSquare.Y, 12];
+
+                _zobristOutdated = false;
+                return _zobristHash;
+            }
+        }
+
+        public void Destroy()
+        {
+            if (_gameHasStarted && Winner == Winners.None) return;
+
+            foreach (Position pos in PieceLocations.All) Destroy(pos);
+        }
+
+        public void StartNewGame()
+        {
+            if (_gameHasStarted && Winner == Winners.None) return;
+
+            // ReSharper disable StringLiteralTypo
+            ProcessFenString("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
+            // ReSharper restore StringLiteralTypo
+
+            _gameHasStarted = true;
+        }
+
         public Piece PieceAt(Position pos)
         {
             return _data[pos.X, pos.Y];
         }
-        
+
         private void Add(Piece piece, Position pos)
         {
             PieceLocations.Remove(pos, PieceAt(pos));
@@ -83,7 +144,7 @@ namespace Antichess.Core
 
         private void Remove(Position pos)
         {
-            var piece = PieceAt(pos);
+            Piece piece = PieceAt(pos);
 
             if (piece == null) return;
 
@@ -92,9 +153,9 @@ namespace Antichess.Core
 
             OnChange();
         }
-        
-        // Whenever the board state changes, this makes various aspects of the program outdated, so they will be updated
-        // upon next access.
+
+        /// Whenever the board state changes, this makes various aspects of the program outdated, so they will be
+        /// updated upon next access.
         private void OnChange()
         {
             LegalMoves.OnBoardChange();
@@ -102,19 +163,19 @@ namespace Antichess.Core
             _winnerOutdated = true;
         }
 
-        // Equivalents of Add() but creates a new GameObject if this is a RenderedBoard.
-        protected virtual void Create([NotNull] Piece piece, [NotNull] Position pos)
+        /// Equivalents of Add() but creates a new GameObject if this is a RenderedBoard.
+        protected virtual void Create(Piece piece, Position pos)
         {
             Add(piece, pos);
         }
 
-        // Equivalent of Remove() but destroys the piece's GameObject in the RenderedBoard override.
+        /// Equivalent of Remove() but destroys the piece's GameObject in the RenderedBoard override.
         protected virtual void Destroy([NotNull] Position pos)
         {
             Remove(pos);
         }
 
-        // Makes a move with legality checks
+        /// Makes a move with legality checks
         public virtual bool Move(Move move)
         {
             if (!LegalMoves.IsLegal(move) || Winner != Winners.None) return false;
@@ -122,15 +183,16 @@ namespace Antichess.Core
             UnsafeMove(move);
             return true;
         }
-        
-        // Makes a move, but does not check if it is legal or not. Used in instances when we already know a move is 
-        // legal, such as when suggesting moves by iterating over the LegalMoves dictionary.
+
+        /// Makes a move, but does not check if it is legal or not. Used in instances when we already know a move is 
+        /// legal, such as when suggesting moves by iterating over the LegalMoves dictionary.
         protected virtual void UnsafeMove(Move move)
         {
             _moveCounter++;
+            _halfMoveClock++;
 
             _moveHistory.Push(new BoardChange(move, PieceAt(move.To),
-                EnPassantTargetSquare == null ? null : EnPassantTargetSquare.Clone(), LastIrreversibleMove));
+                EnPassantTargetSquare == null ? null : EnPassantTargetSquare.Clone(), _halfMoveClock));
 
             EnPassantTargetSquare = null;
 
@@ -147,7 +209,7 @@ namespace Antichess.Core
             }
 
             if (PieceAt(move.To) != null || PieceAt(move.From).Type == Piece.Types.Pawn)
-                LastIrreversibleMove = _moveCounter;
+                _halfMoveClock = 0;
 
 
             Destroy(move.To);
@@ -157,13 +219,13 @@ namespace Antichess.Core
 
             _repetitionHistory.Add(ZobristHash);
         }
-        
+
         protected void UndoLastMove()
         {
             UndoMove(_moveHistory.Pop());
             _repetitionHistory.RemoveAt(_repetitionHistory.Count - 1);
         }
-        
+
         protected virtual void UndoMove(BoardChange change)
         {
             EnPassantTargetSquare = change.OldEnPassantTarget;
@@ -178,67 +240,45 @@ namespace Antichess.Core
             if (change.Move.Flag == Core.Move.Flags.EnPassant)
                 Create(new Piece(!WhitesMove, Piece.Types.Pawn), change.Move.To - Position.Ahead(WhitesMove));
 
-            if (change.Move is Promotion promotion)
+            if (change.Move is Promotion)
                 Create(new Piece(WhitesMove, Piece.Types.Pawn), change.Move.From);
 
             _moveCounter--;
-            LastIrreversibleMove = change.LastIrreversibleMove;
+            _halfMoveClock = change.HalfMoveClock;
         }
-        
-        public enum Winners : byte
-        {
-            White,
-            Black,
-            Stalemate,
-            None
-        }
-        
-        public Winners Winner
-        {
-            get
-            {
-                if (_winnerOutdated)
-                    UpdateWinner();
 
-                return _winner;
-            }
-        }
-        
         protected virtual void UpdateWinner()
         {
-            var count = 0;
-            for (var i = _moveCounter - 4; i >= LastIrreversibleMove; i -= 2)
+            int count = 0;
+            _winnerOutdated = false;
+            
+            // Enforces repetition - if a position has occurred 3 or more times, it is a draw
+            for (int i = _repetitionHistory.Count - 5; i >= _repetitionHistory.Count - 1 - _halfMoveClock; i -= 2)
             {
                 if (_repetitionHistory[_moveCounter] == _repetitionHistory[i])
                     count++;
                 if (count < 2) continue;
                 _winner = Winners.Stalemate;
-                _winnerOutdated = false;
+                return;
+            }
+            
+            // Enforces the 50 move rule
+            if (_halfMoveClock >= 100)
+            {
+                _winner = Winners.Stalemate;
                 return;
             }
 
-            if (LastIrreversibleMove == _moveCounter - 50)
-            {
-                _winner = Winners.Stalemate;
-            }
-            else
-            {
-                if (LegalMoves.Count == 0)
-                    _winner = WhitesMove ? Winners.White : Winners.Black;
-                else
-                    _winner = Winners.None;
-            }
-
-            _winnerOutdated = false;
+            _winner = LegalMoves.Count == 0 ? WhitesMove ? Winners.White : Winners.Black : Winners.None;
         }
-        
+
         private void InitZobrist()
         {
-            var buffer = new byte[sizeof(ulong)];
+            byte[] buffer = new byte[sizeof(ulong)];
             _zobristTable = new ulong[8, 8, 13];
-            for (var x = 0; x < _zobristTable.GetLength(0); x++)
-            for (var y = 0; y < _zobristTable.GetLength(1); y++)
-            for (var z = 0; z < _zobristTable.GetLength(2); z++)
+            for (int x = 0; x < _zobristTable.GetLength(0); x++)
+            for (int y = 0; y < _zobristTable.GetLength(1); y++)
+            for (int z = 0; z < _zobristTable.GetLength(2); z++)
             {
                 ObjectLoader.Instance.Rand.NextBytes(buffer);
                 _zobristTable[x, y, z] = BitConverter.ToUInt64(buffer, 0);
@@ -248,37 +288,13 @@ namespace Antichess.Core
             _zobristBlacksMove = BitConverter.ToUInt64(buffer, 0);
         }
 
-        protected ulong ZobristHash
-        {
-            get
-            {
-                if (!_zobristOutdated)
-                    return _zobristHash;
-
-                _zobristHash = 0;
-                if (!WhitesMove) _zobristHash = _zobristHash ^ _zobristBlacksMove;
-
-                foreach (var pos in PieceLocations.All)
-                {
-                    var j = PieceAt(pos).Value;
-                    _zobristHash ^= _zobristTable[pos.X, pos.Y, j];
-                }
-
-                if (LegalMoves.CanEnPassant && EnPassantTargetSquare != null)
-                    _zobristHash = _zobristHash ^ _zobristTable[EnPassantTargetSquare.X, EnPassantTargetSquare.Y, 12];
-
-                _zobristOutdated = false;
-                return _zobristHash;
-            }
-        } 
-        
         // Sets board's data to the data fed in from a FEN string. Useful for making boards from standard positions, 
         // e.g. the board's starting position.
         private void ProcessFenString(string fenString)
         {
-            var y = (sbyte) (ObjectLoader.BoardSize - 1);
+            sbyte y = (sbyte) (ObjectLoader.BoardSize - 1);
             sbyte x = 0;
-            var i = 0;
+            int i = 0;
             while (fenString[i] != ' ')
             {
                 if (fenString[i] == '/')
@@ -306,9 +322,9 @@ namespace Antichess.Core
 
         private static Piece GetPieceFromChar(char character)
         {
-            var isWhite = char.IsUpper(character);
+            bool isWhite = char.IsUpper(character);
 
-            var type = char.ToLower(character) switch
+            Piece.Types type = char.ToLower(character) switch
             {
                 'p' => Piece.Types.Pawn,
                 'b' => Piece.Types.Bishop,

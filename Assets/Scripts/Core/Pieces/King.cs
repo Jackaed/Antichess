@@ -5,11 +5,17 @@ namespace Antichess.Core.Pieces
 {
     public class King : IPieceData
     {
-        private King() { }
+        private static King _instance;
+
+        private King()
+        {
+        }
+
+        public static King Instance => _instance ??= new King();
 
         public GameObject BlackModel => ObjectLoader.Instance.bKing;
         public GameObject WhiteModel => ObjectLoader.Instance.wKing;
-        public uint Value => 2;
+        public uint Value => 200;
 
         public void AddLegalMoves(Position pos, Board boardRef, LegalMoves legalMoves, bool onlyCaptures)
         {
@@ -27,9 +33,10 @@ namespace Antichess.Core.Pieces
             };
             GenericMoveLogic.AddLegalMovesAtOffsets(pos, offsets, boardRef, legalMoves, onlyCaptures);
         }
-        public override string ToString() => "King";
 
-        private static King _instance = null;
-        public static King Instance => _instance ??= new King();
+        public override string ToString()
+        {
+            return "King";
+        }
     }
 }

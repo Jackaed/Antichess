@@ -5,12 +5,18 @@ namespace Antichess.Core.Pieces
 {
     public class Bishop : IPieceData
     {
-        private Bishop() {}
-        
+        private static Bishop _instance;
+
+        private Bishop()
+        {
+        }
+
+        public static Bishop Instance => _instance ??= new Bishop();
+
         public GameObject BlackModel => ObjectLoader.Instance.bBishop;
         public GameObject WhiteModel => ObjectLoader.Instance.wBishop;
-        
-        public uint Value => 3;
+
+        public uint Value => 300;
 
         public void AddLegalMoves(Position pos, Board boardRef, LegalMoves legalMoves, bool onlyCaptures)
         {
@@ -23,11 +29,10 @@ namespace Antichess.Core.Pieces
             };
             GenericMoveLogic.AddLegalMovesInDirections(pos, directions, boardRef, legalMoves, onlyCaptures);
         }
-        
-        public override string ToString() => "Bishop";
-        
-        private static Bishop _instance = null;
-        
-        public static Bishop Instance => _instance ??= new Bishop();
+
+        public override string ToString()
+        {
+            return "Bishop";
+        }
     }
 }

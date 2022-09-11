@@ -6,14 +6,17 @@ namespace Antichess.PlayerTypes
     public class AIPlayer : Player
     {
         private const ulong TtSize = 16777216;
-        
+        private readonly float _playingStrength;
+        private readonly TranspositionTable _transpositionTable;
+
         private Evaluator _evaluator;
         private bool _hasReturnedMove;
         private int _numPositionsSearched;
-        private readonly TranspositionTable _transpositionTable;
 
-        public AIPlayer(Board board, bool isWhite) : base(board, isWhite)
+        public AIPlayer(Board board, bool isWhite, float playingStrength = 1.0f) : base(board, isWhite)
         {
+            _playingStrength = playingStrength;
+
             _transpositionTable = new TranspositionTable(TtSize);
             _hasReturnedMove = true;
         }
@@ -25,11 +28,11 @@ namespace Antichess.PlayerTypes
             // start a new evaluator.
             if (_hasReturnedMove)
             {
-                _evaluator = new Evaluator(BoardRef, _transpositionTable);
+                _evaluator = new Evaluator(BoardRef, _transpositionTable, _playingStrength);
                 _hasReturnedMove = false;
             }
 
-            var move = _evaluator.BestMove;
+            Move move = _evaluator.BestMove;
             if (move != null)
                 _hasReturnedMove = true;
             return move;

@@ -1,5 +1,4 @@
 using System;
-using Antichess.Unity;
 using UnityEngine;
 
 namespace Antichess.Core
@@ -13,8 +12,6 @@ namespace Antichess.Core
             PawnDoubleMove
         }
 
-        public float Distance => Mathf.Sqrt(Mathf.Pow((To.X - From.X), 2) + Mathf.Pow((To.Y - From.Y), 2));
-
         public readonly Flags Flag;
         public readonly Position From, To;
 
@@ -25,6 +22,8 @@ namespace Antichess.Core
             Flag = flag;
         }
 
+        public float Distance => Mathf.Sqrt(Mathf.Pow(To.X - From.X, 2) + Mathf.Pow(To.Y - From.Y, 2));
+
         protected bool Equals(Move other)
         {
             return Flag == other.Flag && Equals(From, other.From) && Equals(To, other.To);
@@ -34,7 +33,7 @@ namespace Antichess.Core
         {
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
-            return obj.GetType() == this.GetType() && Equals((Move) obj);
+            return obj.GetType() == GetType() && Equals((Move) obj);
         }
 
         public override int GetHashCode()

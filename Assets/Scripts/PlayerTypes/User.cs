@@ -1,13 +1,8 @@
-﻿using System;
-using System.Linq;
-using System.Timers;
-using Antichess.Core;
+﻿using Antichess.Core;
 using Antichess.Core.Pieces;
 using Antichess.Unity;
-using JetBrains.Annotations;
 using UnityEngine;
 using UnityEngine.UI;
-using Object = UnityEngine.Object;
 
 namespace Antichess.PlayerTypes
 {
@@ -17,13 +12,14 @@ namespace Antichess.PlayerTypes
         private Position _from;
         private bool _hasFrom;
         private bool _isClickAndDrag;
-        private Position _selectedPiecePos;
 
         private Position _mouseClickPosition;
         private Piece.Types _promotionPiece;
         private GameObject _promotionUI;
+        private Position _selectedPiecePos;
         private bool _userTryingToPromote;
 
+        // ReSharper disable once SuggestBaseTypeForParameterInConstructor
         public User(RenderedBoard board, bool isWhite) : base(board, isWhite)
         {
             _cam = Camera.main;
@@ -47,30 +43,29 @@ namespace Antichess.PlayerTypes
 
             // Test if user is attempting to promote
             if (!RenderedBoard.MoveCanPromote(move)) return move;
-            
+
             _userTryingToPromote = true;
             _promotionUI = Object.Instantiate(IsWhite
                 ? ObjectLoader.Instance.wPromotionUI
                 : ObjectLoader.Instance.bPromotionUI);
-            var canvas = _promotionUI.GetComponent<Canvas>();
+            Canvas canvas = _promotionUI.GetComponent<Canvas>();
             canvas.worldCamera = _cam;
-            var transform = _promotionUI.GetComponent<RectTransform>();
-            transform.position = ObjectLoader.GetRealCoords(move.To) + 0.5f * Vector3.up;
-            var promotionUIButtons = _promotionUI.GetComponentsInChildren<Button>();
+            RectTransform transform = _promotionUI.GetComponent<RectTransform>();
+            transform.position = RenderedBoard.GetRealCoords(move.To) + 0.5f * Vector3.up;
+            Button[] promotionUIButtons = _promotionUI.GetComponentsInChildren<Button>();
             promotionUIButtons[0].onClick.AddListener(OnBishopPromoteButtonClick);
             promotionUIButtons[1].onClick.AddListener(OnKnightPromoteButtonClick);
             promotionUIButtons[2].onClick.AddListener(OnQueenPromoteButtonClick);
             promotionUIButtons[3].onClick.AddListener(OnRookPromoteButtonClick);
 
             return null;
-
         }
 
         private Move ChoosePromotionPiece(Move move)
         {
             if (_promotionPiece == Piece.Types.None) return null;
             Debug.Log(_promotionPiece.ToString());
-            var temp = _promotionPiece;
+            Piece.Types temp = _promotionPiece;
             _promotionPiece = Piece.Types.None;
             _userTryingToPromote = false;
             Object.Destroy(_promotionUI);
@@ -107,6 +102,7 @@ namespace Antichess.PlayerTypes
                 DeselectPiece(pos);
                 return;
             }
+
             _selectedPiecePos = pos;
             RenderedBoard.EnableMeshCollider(pos);
             _isClickAndDrag = false;
@@ -133,15 +129,15 @@ namespace Antichess.PlayerTypes
                 DeselectPiece(_from);
                 return null;
             }
-            
-            if (RenderedBoard.PieceAt(pos) != null && 
+
+            if (RenderedBoard.PieceAt(pos) != null &&
                 RenderedBoard.PieceAt(pos).IsWhite == RenderedBoard.PieceAt(_from).IsWhite)
             {
                 DeselectPiece(_from);
                 SelectPiece(pos);
                 return null;
             }
-            
+
             DeselectPiece(_from);
             return GetPossibleMove(new Move(_from, pos));
         }
@@ -158,13 +154,13 @@ namespace Antichess.PlayerTypes
         private Move DragAndDropRelease(Position pos)
         {
             _hasFrom = false;
-            
+
             if (pos == _from)
             {
                 SelectPiece(pos);
                 return null;
             }
-            
+
             RenderedBoard.EnableMeshCollider(_from);
             return GetPossibleMove(new Move(_from, pos));
         }
@@ -173,19 +169,16 @@ namespace Antichess.PlayerTypes
         {
             if (_userTryingToPromote) return ChoosePromotionPiece(new Move(_from, _mouseClickPosition));
 
-            var mouseRay = _cam!.ScreenPointToRay(Input.mousePosition);
-            if (!Physics.Raycast(mouseRay, out var hit)) return null;
+            Ray mouseRay = _cam!.ScreenPointToRay(Input.mousePosition);
+            if (!Physics.Raycast(mouseRay, out RaycastHit hit)) return null;
 
-            _mouseClickPosition = ObjectLoader.GetBoardCoords(hit.point);
+            _mouseClickPosition = RenderedBoard.GetBoardCoords(hit.point);
 
             if (_hasFrom)
             {
                 if (Input.GetMouseButton(0))
                 {
-                    if (!_isClickAndDrag)
-                    {
-                        return OnDCSecondClick(_mouseClickPosition);
-                    }
+                    if (!_isClickAndDrag) return OnDCSecondClick(_mouseClickPosition);
                     RenderedBoard.SnapPieceToCursor(_from, hit);
                 }
                 else if (_isClickAndDrag)
@@ -196,15 +189,12 @@ namespace Antichess.PlayerTypes
                 return null;
             }
 
-            else
-            {
-                if (Input.GetMouseButton(0) && RenderedBoard.PieceAt(_mouseClickPosition) != null &&
-                    RenderedBoard.PieceAt(_mouseClickPosition).IsWhite == IsWhite)
-                    
-                    StartDragAndDrop(_mouseClickPosition);
+            if (Input.GetMouseButton(0) && RenderedBoard.PieceAt(_mouseClickPosition) != null &&
+                RenderedBoard.PieceAt(_mouseClickPosition).IsWhite == IsWhite)
 
-                return null;
-            }
+                StartDragAndDrop(_mouseClickPosition);
+
+            return null;
         }
     }
 }

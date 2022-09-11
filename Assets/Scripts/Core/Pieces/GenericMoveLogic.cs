@@ -10,7 +10,7 @@ namespace Antichess.Core.Pieces
         private static void AddMovesInDir(Position pos, Position increments,
             Board boardRef, LegalMoves legalMoves, bool onlyCaptures)
         {
-            var to = new Position(pos.X, pos.Y) + increments;
+            Position to = new Position(pos.X, pos.Y) + increments;
             while (to.X < ObjectLoader.BoardSize && to.Y < ObjectLoader.BoardSize)
             {
                 if (boardRef.PieceAt(to) == null)
@@ -37,7 +37,8 @@ namespace Antichess.Core.Pieces
         public static void AddLegalMovesInDirections(Position pos,
             IEnumerable<Position> directions, Board boardRef, LegalMoves legalMoves, bool onlyCaptures)
         {
-            foreach (var direction in directions) AddMovesInDir(pos, direction, boardRef, legalMoves, onlyCaptures);
+            foreach (Position direction in directions)
+                AddMovesInDir(pos, direction, boardRef, legalMoves, onlyCaptures);
         }
 
         // Basic function that adds a move to the list of legal moves if it either takes a piece or moves into empty
@@ -60,9 +61,9 @@ namespace Antichess.Core.Pieces
         public static void AddLegalMovesAtOffsets(Position pos,
             IEnumerable<Position> directions, Board boardRef, LegalMoves legalMoves, bool onlyCaptures)
         {
-            foreach (var direction in directions)
+            foreach (Position direction in directions)
             {
-                var dir = pos + direction;
+                Position dir = pos + direction;
                 if (dir.X >= ObjectLoader.BoardSize || dir.Y >= ObjectLoader.BoardSize) continue;
                 AddMoveAtPosIfLegal(new Move(pos, dir), boardRef, legalMoves, onlyCaptures);
             }

@@ -5,11 +5,17 @@ namespace Antichess.Core.Pieces
 {
     public class Queen : IPieceData
     {
-        private Queen() { }
+        private static Queen _instance;
+
+        private Queen()
+        {
+        }
+
+        public static Queen Instance => _instance ??= new Queen();
 
         public GameObject BlackModel => ObjectLoader.Instance.bQueen;
         public GameObject WhiteModel => ObjectLoader.Instance.wQueen;
-        public uint Value => 9;
+        public uint Value => 900;
 
         public void AddLegalMoves(Position pos, Board boardRef, LegalMoves legalMoves, bool onlyCaptures)
         {
@@ -27,11 +33,10 @@ namespace Antichess.Core.Pieces
 
             GenericMoveLogic.AddLegalMovesInDirections(pos, directions, boardRef, legalMoves, onlyCaptures);
         }
-        
-        public override string ToString() => "Queen";
-        
-        private static Queen _instance = null;
-        
-        public static Queen Instance => _instance ??= new Queen();
+
+        public override string ToString()
+        {
+            return "Queen";
+        }
     }
 }

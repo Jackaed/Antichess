@@ -1,30 +1,38 @@
-﻿using System;
-using System.Threading;
+﻿using System.Threading;
 using System.Threading.Tasks;
 using Antichess.Core;
+using UnityEngine;
 
 namespace Antichess.AI
 {
     public class Evaluator
     {
-        private const int MaxSearchTimeMillis = 4000;
         private const int CancellationCheckFrequency = 100;
-        private const int NumCancellationChecks = MaxSearchTimeMillis / CancellationCheckFrequency;
-        private const int MinMoveWaitTime = 500;
+        private const int MinMoveWaitTime = 400;
         private readonly AIBoard _board;
+        private readonly int _maxSearchTimeMillis;
+        private readonly int _numCancellationChecks;
+        private readonly CancellationTokenSource _timerTaskCancellationToken;
+        private bool _hasExceededMinWaitTime;
 
         private bool _isEvaluating;
-        private bool _hasExceededMinWaitTime;
-        private readonly CancellationTokenSource _timerTaskCancellationToken;
 
         // Evaluation begins as soon as the evaluator is created.
-        public Evaluator(Board board, TranspositionTable transpositionTable)
+        public Evaluator(Board board, TranspositionTable transpositionTable, float playingStrength)
         {
+            // the time spent searching scales from 0.5 second to 4 seconds as playing strength increases from 0 to 1.
+            _maxSearchTimeMillis = Mathf.RoundToInt(500 + 3000 * playingStrength);
+
+            // at a playing strength of 0, each position can be mis-evaluated by up to 2 Queen's worth in score. 
+            int heuristicValueMaxRandomOffset = Mathf.RoundToInt(5000 * (1 - playingStrength));
+
+            _numCancellationChecks = _maxSearchTimeMillis / CancellationCheckFrequency;
+
             _hasExceededMinWaitTime = false;
-            _board = new AIBoard(board, transpositionTable);
+            _board = new AIBoard(board, transpositionTable, heuristicValueMaxRandomOffset);
             _isEvaluating = true;
             _timerTaskCancellationToken = new CancellationTokenSource();
-            var token = _timerTaskCancellationToken.Token;
+            CancellationToken token = _timerTaskCancellationToken.Token;
             Task.Run(() => IDEvalTimer(token), token);
         }
 
@@ -41,29 +49,25 @@ namespace Antichess.AI
                 _timerTaskCancellationToken.Cancel();
 
                 if (!_hasExceededMinWaitTime) return null;
-                
+
                 _isEvaluating = false;
                 return _board.BestMove;
-
             }
         }
 
-        
+
         private void IDEvalTimer(CancellationToken finishedPrematurely)
         {
-            var tokenSource = new CancellationTokenSource();
-            var token = tokenSource.Token;
+            CancellationTokenSource tokenSource = new CancellationTokenSource();
+            CancellationToken token = tokenSource.Token;
 
             Task.Run(() => _board.IDEval(token), token);
-            
+
             // A minimum wait time means that moves arent made instantly, even if they can be, to allow an observer to
             // process what has happened
-            for (var i = 0; i < NumCancellationChecks; i++)
+            for (int i = 0; i < _numCancellationChecks; i++)
             {
-                if (CancellationCheckFrequency * i >= MinMoveWaitTime)
-                {
-                    _hasExceededMinWaitTime = true;
-                }
+                if (CancellationCheckFrequency * i >= MinMoveWaitTime) _hasExceededMinWaitTime = true;
                 if (finishedPrematurely.IsCancellationRequested)
                 {
                     tokenSource.Cancel();
@@ -74,10 +78,12 @@ namespace Antichess.AI
                         return;
                     }
                 }
+
                 Thread.Sleep(CancellationCheckFrequency);
             }
-            Thread.Sleep((MaxSearchTimeMillis) % CancellationCheckFrequency);
-            
+
+            Thread.Sleep(_maxSearchTimeMillis % CancellationCheckFrequency);
+
             tokenSource.Cancel();
             _isEvaluating = false;
         }

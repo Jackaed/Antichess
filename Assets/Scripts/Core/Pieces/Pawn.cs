@@ -5,7 +5,7 @@ namespace Antichess.Core.Pieces
 {
     public class Pawn : IPieceData
     {
-        private static readonly Piece.Types[] PromotionPieces = new[]
+        private static readonly Piece.Types[] PromotionPieces =
         {
             Piece.Types.Bishop,
             Piece.Types.King,
@@ -15,42 +15,38 @@ namespace Antichess.Core.Pieces
             Piece.Types.Queen
         };
 
-        private Pawn() { }
+        private static Pawn _instance;
 
-        public uint Value => 1;
+        private Pawn()
+        {
+        }
+
+        public static Pawn Instance => _instance ??= new Pawn();
+
+        public uint Value => 100;
 
         public GameObject WhiteModel => ObjectLoader.Instance.wPawn;
         public GameObject BlackModel => ObjectLoader.Instance.bPawn;
 
-        private void AddMoveAndCheckForPromotion(Move move, Board boardRef, LegalMoves legalMoves)
-        {
-            var isWhite = boardRef.PieceAt(move.From).IsWhite;
-            if (move.To.Y == (isWhite ? ObjectLoader.BoardSize - 1 : 0))
-                foreach (var piece in PromotionPieces)
-                    legalMoves.Add(new Promotion(move.From, move.To, new Piece(isWhite, piece)));
-            else
-                legalMoves.Add(move);
-        }
-
         public void AddLegalMoves(Position pos, Board boardRef, LegalMoves legalMoves, bool onlyCaptures)
         {
-            var isWhite = boardRef.PieceAt(pos).IsWhite;
-            var ahead = pos + Position.Ahead(isWhite);
+            bool isWhite = boardRef.PieceAt(pos).IsWhite;
+            Position ahead = pos + Position.Ahead(isWhite);
             if (ahead.Y > ObjectLoader.BoardSize) return;
 
             Position[] takesPositions = {ahead + new Position(1, 0), ahead + new Position(-1, 0)};
 
-            foreach (var takesPosition in takesPositions)
+            foreach (Position takesPosition in takesPositions)
                 if (takesPosition.X < ObjectLoader.BoardSize)
                 {
-                    var target = boardRef.PieceAt(takesPosition);
+                    Piece target = boardRef.PieceAt(takesPosition);
                     if (target != null && target.IsWhite != isWhite)
                     {
                         AddMoveAndCheckForPromotion(new Move(pos, takesPosition), boardRef, legalMoves);
                     }
                     else if (target == null && takesPosition == boardRef.EnPassantTargetSquare)
                     {
-                        var enPassantTakesSquare = boardRef.EnPassantTargetSquare - Position.Ahead(isWhite);
+                        Position enPassantTakesSquare = boardRef.EnPassantTargetSquare - Position.Ahead(isWhite);
 
                         legalMoves.Add(new Move(pos, takesPosition, Move.Flags.EnPassant));
                     }
@@ -60,16 +56,25 @@ namespace Antichess.Core.Pieces
 
             AddMoveAndCheckForPromotion(new Move(pos, ahead), boardRef, legalMoves);
 
-            var aheadAhead = ahead + Position.Ahead(isWhite);
+            Position aheadAhead = ahead + Position.Ahead(isWhite);
 
             if (pos.Y == (isWhite ? 1 : ObjectLoader.BoardSize - 2) && boardRef.PieceAt(aheadAhead) == null)
                 legalMoves.Add(new Move(pos, aheadAhead, Move.Flags.PawnDoubleMove));
         }
-        
-        public override string ToString() => "Pawn";
-        
-        private static Pawn _instance = null;
-        
-        public static Pawn Instance => _instance ??= new Pawn();
+
+        private static void AddMoveAndCheckForPromotion(Move move, Board boardRef, LegalMoves legalMoves)
+        {
+            bool isWhite = boardRef.PieceAt(move.From).IsWhite;
+            if (move.To.Y == (isWhite ? ObjectLoader.BoardSize - 1 : 0))
+                foreach (Piece.Types piece in PromotionPieces)
+                    legalMoves.Add(new Promotion(move.From, move.To, new Piece(isWhite, piece)));
+            else
+                legalMoves.Add(move);
+        }
+
+        public override string ToString()
+        {
+            return "Pawn";
+        }
     }
 }

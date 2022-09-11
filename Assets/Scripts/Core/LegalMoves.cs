@@ -1,9 +1,7 @@
 ﻿using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
-using UnityEngine;
 
 namespace Antichess.Core
 {
@@ -112,18 +110,12 @@ namespace Antichess.Core
             _legalMoves.Clear();
 
             // Find all of the possible captures, and if none are found, then search for non-capture moves.
-            Parallel.ForEach(_pieceLocations.ColourPositions(_board.WhitesMove), pos =>
-            {
-                _board.PieceAt(pos).AddLegalMoves(pos, _board, this, true);
-            });
+            Parallel.ForEach(_pieceLocations.ColourPositions(_board.WhitesMove),
+                pos => { _board.PieceAt(pos).AddLegalMoves(pos, _board, this, true); });
 
             if (_legalMoves.Count == 0)
-            {
-                Parallel.ForEach(_pieceLocations.ColourPositions(_board.WhitesMove), pos =>
-                {
-                    _board.PieceAt(pos).AddLegalMoves(pos, _board, this, false);
-                });
-            }
+                Parallel.ForEach(_pieceLocations.ColourPositions(_board.WhitesMove),
+                    pos => { _board.PieceAt(pos).AddLegalMoves(pos, _board, this, false); });
         }
     }
 }
