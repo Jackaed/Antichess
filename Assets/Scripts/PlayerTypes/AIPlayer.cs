@@ -21,7 +21,6 @@ namespace Antichess.PlayerTypes
             _hasReturnedMove = true;
         }
 
-
         public override Move SuggestMove()
         {
             // If we've returned a valid move, and we're being asked for another one, it's a new request, and we should 
@@ -32,7 +31,7 @@ namespace Antichess.PlayerTypes
                 _hasReturnedMove = false;
             }
 
-            Move move = _evaluator.BestMove;
+            var move = _evaluator.BestMove;
             if (move != null)
                 _hasReturnedMove = true;
             return move;

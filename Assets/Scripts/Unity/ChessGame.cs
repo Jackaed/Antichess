@@ -5,7 +5,6 @@ using Antichess.UI;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
-using Object = UnityEngine.Object;
 
 namespace Antichess.Unity
 {
@@ -45,8 +44,8 @@ namespace Antichess.Unity
                         _state = State.GameOver;
                     }
 
-                    Player currentPlayer = _board.WhitesMove ? _white : _black;
-                    Move attemptedMove = currentPlayer.SuggestMove();
+                    var currentPlayer = _board.WhitesMove ? _white : _black;
+                    var attemptedMove = currentPlayer.SuggestMove();
 
                     if (attemptedMove == null) return;
                     Debug.Log(attemptedMove);
@@ -65,7 +64,7 @@ namespace Antichess.Unity
 
         private void InitMainMenu()
         {
-            _mainMenu = Object.Instantiate(ObjectLoader.Instance.mainMenuUI);
+            _mainMenu = Instantiate(ObjectLoader.Instance.mainMenuUI);
             MainMenuComponent.startButton.onClick.AddListener(OnStartButtonPress);
         }
 

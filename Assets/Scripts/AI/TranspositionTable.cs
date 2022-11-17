@@ -12,12 +12,12 @@ namespace Antichess.AI
         public TranspositionTable(ulong size)
         {
             _size = size;
-            _table = Enumerable.Repeat(Entry.NotEvaluated, (int) _size).ToArray();
+            _table = Enumerable.Repeat(Entry.NotEvaluated, (int)_size).ToArray();
         }
 
         public Entry Lookup(ulong key)
         {
-            Entry val = _table[key % _size];
+            var val = _table[key % _size];
             return val.Key == key ? val : Entry.NotEvaluated;
         }
 
@@ -38,7 +38,7 @@ namespace Antichess.AI
             public readonly NodeType TtNodeType;
             public readonly Move RefutationMove;
 
-            public Entry(ulong key, int score, bool wasMate, ushort depth, NodeType nodeType, 
+            public Entry(ulong key, int score, bool wasMate, ushort depth, NodeType nodeType,
                 Move refutationMove)
             {
                 WasMate = wasMate;

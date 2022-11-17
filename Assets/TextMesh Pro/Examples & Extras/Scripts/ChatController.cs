@@ -1,37 +1,39 @@
-﻿using TMPro;
+﻿using System;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
 namespace Antichess.TextMesh_Pro.Examples___Extras.Scripts
 {
-    public class ChatController : MonoBehaviour {
+    public class ChatController : MonoBehaviour
+    {
+        public TMP_Text ChatDisplayOutput;
 
 
         public TMP_InputField ChatInputField;
 
-        public TMP_Text ChatDisplayOutput;
-
         public Scrollbar ChatScrollbar;
 
-        void OnEnable()
+        private void OnEnable()
         {
             ChatInputField.onSubmit.AddListener(AddToChatOutput);
         }
 
-        void OnDisable()
+        private void OnDisable()
         {
             ChatInputField.onSubmit.RemoveListener(AddToChatOutput);
         }
 
 
-        void AddToChatOutput(string newText)
+        private void AddToChatOutput(string newText)
         {
             // Clear Input Field
             ChatInputField.text = string.Empty;
 
-            var timeNow = System.DateTime.Now;
+            var timeNow = DateTime.Now;
 
-            string formattedInput = "[<#FFFF80>" + timeNow.Hour.ToString("d2") + ":" + timeNow.Minute.ToString("d2") + ":" + timeNow.Second.ToString("d2") + "</color>] " + newText;
+            var formattedInput = "[<#FFFF80>" + timeNow.Hour.ToString("d2") + ":" + timeNow.Minute.ToString("d2") +
+                                 ":" + timeNow.Second.ToString("d2") + "</color>] " + newText;
 
             if (ChatDisplayOutput != null)
             {
@@ -49,6 +51,5 @@ namespace Antichess.TextMesh_Pro.Examples___Extras.Scripts
             // Set the scrollbar to the bottom when next text is submitted.
             ChatScrollbar.value = 0;
         }
-
     }
 }

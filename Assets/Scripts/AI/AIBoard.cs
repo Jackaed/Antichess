@@ -15,7 +15,6 @@ namespace Antichess.AI
         private readonly TranspositionTable _transpositionTable;
         public bool FinishedPrematurely;
 
-
         public AIBoard(Board board, TranspositionTable transpositionTable, int heuristicValueMaxRandomOffset) :
             base(board)
         {
@@ -34,25 +33,23 @@ namespace Antichess.AI
             Winners.White => int.MaxValue - 200,
             Winners.Black => int.MinValue + 200,
             Winners.Stalemate => 0,
-            Winners.None => -PieceLocations.White.Sum(pos => (int) PieceAt(pos).Value) +
-                            PieceLocations.Black.Sum(pos => (int) PieceAt(pos).Value) +
+            Winners.None => -PieceLocations.White.Sum(pos => (int)PieceAt(pos).Value) +
+                            PieceLocations.Black.Sum(pos => (int)PieceAt(pos).Value) +
                             _random.Next(-_heuristicValueMaxRandomOffset, _heuristicValueMaxRandomOffset + 1),
             _ => throw new ArgumentOutOfRangeException()
         };
 
         // Looks at the subsequent moves beyond this point, and calls itself on those moves. If we have reached our max
         // depth, we stop looking forward, and return the value of the board, without looking any deeper. Uses the Alpha
-        // -Beta pruning optimisation, alongside the transposition table.
+        // -Beta pruning optimization, alongside the transposition table.
         private Result Negamax(uint depth, int alpha, int beta, CancellationToken token)
         {
-            if (token.IsCancellationRequested)
-                return new Result(false, 0, null);
+            if (token.IsCancellationRequested) return new Result(false, 0, null);
 
-            int origAlpha = alpha;
-
+            var origAlpha = alpha;
             // If this exact position has been evaluated before to the same or greater depth, simply return that value,
             // or use it for alpha-beta pruning.
-            TranspositionTable.Entry ttEntry = _transpositionTable.Lookup(ZobristHash);
+            var ttEntry = _transpositionTable.Lookup(ZobristHash);
             Move refutationMove = null;
             if (ttEntry.TtNodeType != NodeType.NotEvaluated)
             {
@@ -77,56 +74,35 @@ namespace Antichess.AI
                     if (alpha >= beta)
                         return new Result(ttEntry.WasMate, ttEntry.Score, ttEntry.RefutationMove);
                 }
+
                 refutationMove = ttEntry.RefutationMove;
             }
 
             // If we've reached a leaf node, stop and return.
-            if (depth <= 0 && !LegalMoves.CanTake)
-                return new Result(false, HeuristicValue * (WhitesMove ? 1 : -1), null);
-
-            if (Winner != Winners.None)
-                return new Result(true, HeuristicValue * (WhitesMove ? 1 : -1), null);
+            if ((depth <= 0 && !LegalMoves.CanTake) || Winner != Winners.None)
+                //return new Result(false, 5, null);
+                return new Result(Winner != Winners.None,
+                    HeuristicValue * (WhitesMove ? 1 : -1), null);
 
             Result score = new(false, int.MinValue, null);
-
-
             // Search all future positions, searching the best move calculated to a slightly lower depth first.
-            bool refutationMoveCausedCutoff = false;
 
-            if (refutationMove != null && LegalMoves.IsLegal(refutationMove))
+            foreach (var move in LegalMoves.OrderedMoves(refutationMove))
             {
-                UnsafeMove(refutationMove);
-                Result eval = -Negamax(depth - 1, -beta, -alpha, token);
+                UnsafeMove(move);
+                var eval = -Negamax(depth - 1, -beta, -alpha, token);
 
                 if (eval.Eval > score.Eval)
                 {
                     score = eval;
-                    score.BestMove = refutationMove;
+                    score.BestMove = move;
                 }
 
                 UndoLastMove();
 
                 alpha = Mathf.Max(score.Eval, alpha);
-                if (alpha >= beta) refutationMoveCausedCutoff = true;
+                if (alpha >= beta) break; // Cutoff, prevents further analysis
             }
-
-            if (!refutationMoveCausedCutoff)
-                foreach (Move move in LegalMoves.List.Where(move => move != refutationMove))
-                {
-                    UnsafeMove(move);
-                    Result eval = -Negamax(depth - 1, -beta, -alpha, token);
-
-                    if (eval.Eval > score.Eval)
-                    {
-                        score = eval;
-                        score.BestMove = move;
-                    }
-
-                    UndoLastMove();
-
-                    alpha = Mathf.Max(score.Eval, alpha);
-                    if (alpha >= beta) break; // Cutoff, prevents further analysis
-                }
 
             // Store data in transposition table
             NodeType nodeType;
@@ -137,7 +113,7 @@ namespace Antichess.AI
             else
                 nodeType = NodeType.Exact;
 
-            _transpositionTable.Store(ZobristHash, score.Eval, score.WasMate, (ushort) depth, nodeType, score.BestMove);
+            _transpositionTable.Store(ZobristHash, score.Eval, score.WasMate, (ushort)depth, nodeType, score.BestMove);
 
             return score;
         }
@@ -158,9 +134,13 @@ namespace Antichess.AI
                 for (uint i = 1; !token.IsCancellationRequested; i++)
                 {
                     Debug.Log("Finished eval to depth: " + (i - 1));
-                    Result result = Negamax(i, int.MinValue + 100, int.MaxValue - 100, token);
-                    BestMove = result.BestMove;
-                    FinishedPrematurely = FinishedPrematurely || result.WasMate;
+                    var result = Negamax(i, int.MinValue + 100, int.MaxValue - 100, token);
+                    if (!token.IsCancellationRequested)
+                        if (result.BestMove != null)
+                        {
+                            BestMove = result.BestMove;
+                            FinishedPrematurely = FinishedPrematurely || result.WasMate;
+                        }
                 }
         }
 

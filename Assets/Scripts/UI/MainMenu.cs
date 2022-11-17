@@ -2,21 +2,20 @@
 using Antichess.PlayerTypes;
 using TMPro;
 using UnityEngine;
-using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 namespace Antichess.UI
 {
     public class MainMenu : MonoBehaviour
     {
-        public TMP_Dropdown wDropdown;
         public TMP_Dropdown bDropdown;
-        public GameObject wSlider;
         public GameObject bSlider;
         public Button startButton;
+        public TMP_Dropdown wDropdown;
+        public GameObject wSlider;
 
-        public Player GetWhitePlayer (RenderedBoard board) {
-            
+        public Player GetWhitePlayer(RenderedBoard board)
+        {
             return wDropdown.value == 0
                 ? new User(board, true)
                 : new AIPlayer(board, true,
@@ -35,7 +34,7 @@ namespace Antichess.UI
         {
             wSlider.SetActive(val == 1);
         }
-        
+
         public void OnBDropdownChange(int val)
         {
             bSlider.SetActive(val == 0);

@@ -33,12 +33,12 @@ namespace Antichess.Core
         {
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
-            return obj.GetType() == GetType() && Equals((Move) obj);
+            return obj.GetType() == GetType() && Equals((Move)obj);
         }
 
         public override int GetHashCode()
         {
-            return HashCode.Combine((int) Flag, From, To);
+            return HashCode.Combine((int)Flag, From, To);
         }
 
         public static bool operator ==(Move left, Move right)

@@ -24,7 +24,7 @@ namespace Antichess.AI
             _maxSearchTimeMillis = Mathf.RoundToInt(500 + 3000 * playingStrength);
 
             // at a playing strength of 0, each position can be mis-evaluated by up to 2 Queen's worth in score. 
-            int heuristicValueMaxRandomOffset = Mathf.RoundToInt(5000 * (1 - playingStrength));
+            var heuristicValueMaxRandomOffset = Mathf.RoundToInt(5000 * (1 - playingStrength));
 
             _numCancellationChecks = _maxSearchTimeMillis / CancellationCheckFrequency;
 
@@ -32,7 +32,7 @@ namespace Antichess.AI
             _board = new AIBoard(board, transpositionTable, heuristicValueMaxRandomOffset);
             _isEvaluating = true;
             _timerTaskCancellationToken = new CancellationTokenSource();
-            CancellationToken token = _timerTaskCancellationToken.Token;
+            var token = _timerTaskCancellationToken.Token;
             Task.Run(() => IDEvalTimer(token), token);
         }
 
@@ -55,17 +55,16 @@ namespace Antichess.AI
             }
         }
 
-
         private void IDEvalTimer(CancellationToken finishedPrematurely)
         {
-            CancellationTokenSource tokenSource = new CancellationTokenSource();
-            CancellationToken token = tokenSource.Token;
+            CancellationTokenSource tokenSource = new();
+            var token = tokenSource.Token;
 
             Task.Run(() => _board.IDEval(token), token);
 
-            // A minimum wait time means that moves arent made instantly, even if they can be, to allow an observer to
+            // A minimum wait time means that moves aren't made instantly, even if they can be, to allow an observer to
             // process what has happened
-            for (int i = 0; i < _numCancellationChecks; i++)
+            for (var i = 0; i < _numCancellationChecks; i++)
             {
                 if (CancellationCheckFrequency * i >= MinMoveWaitTime) _hasExceededMinWaitTime = true;
                 if (finishedPrematurely.IsCancellationRequested)

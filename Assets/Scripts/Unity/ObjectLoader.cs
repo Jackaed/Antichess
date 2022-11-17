@@ -6,6 +6,7 @@ namespace Antichess.Unity
     internal class ObjectLoader : MonoBehaviour
     {
         public const byte BoardSize = 8;
+        public AudioSource audioSource;
 
         public GameObject bPawn,
             bBishop,
@@ -25,11 +26,11 @@ namespace Antichess.Unity
             gameOverUI,
             legalMoveIndicator;
 
-        public Material wBaseMaterial, wEmissiveMaterial, bBaseMaterial, bEmissiveMaterial;
         public AudioClip move, capture;
-        public AudioSource audioSource;
 
         public Random Rand;
+
+        public Material wBaseMaterial, wEmissiveMaterial, bBaseMaterial, bEmissiveMaterial;
 
 
         public static ObjectLoader Instance { get; private set; }

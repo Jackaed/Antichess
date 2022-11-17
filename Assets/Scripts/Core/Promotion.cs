@@ -21,7 +21,7 @@ namespace Antichess.Core
         {
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
-            return obj.GetType() == GetType() && Equals((Promotion) obj);
+            return obj.GetType() == GetType() && Equals((Promotion)obj);
         }
 
         public override int GetHashCode()

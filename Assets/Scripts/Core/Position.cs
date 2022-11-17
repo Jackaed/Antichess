@@ -20,14 +20,14 @@ namespace Antichess.Core
         // offsets for a piece's movement.
         public sbyte X
         {
-            get => (sbyte) (_data & 0x0F);
-            private set => _data = (byte) ((value & 0x0F) + Y);
+            get => (sbyte)(_data & 0x0F);
+            private set => _data = (byte)((value & 0x0F) + Y);
         }
 
         public sbyte Y
         {
-            get => (sbyte) ((_data & 0xF0) >> 4);
-            private set => _data = (byte) (((value & 0x0F) << 4) + X);
+            get => (sbyte)((_data & 0xF0) >> 4);
+            private set => _data = (byte)(((value & 0x0F) << 4) + X);
         }
 
         // Removes all information about promotion, en passant, etc.
@@ -42,12 +42,12 @@ namespace Antichess.Core
         // The following is operator overloads, facilitating the addition, subtraction and comparison of Positions.
         public static Position operator +(Position a, Position b)
         {
-            return new Position((sbyte) (a.X + b.X), (sbyte) (a.Y + b.Y));
+            return new Position((sbyte)(a.X + b.X), (sbyte)(a.Y + b.Y));
         }
 
         public static Position operator -(Position a, Position b)
         {
-            return new Position((sbyte) (a.X - b.X), (sbyte) (a.Y - b.Y));
+            return new Position((sbyte)(a.X - b.X), (sbyte)(a.Y - b.Y));
         }
 
         private bool Equals(Position other)
@@ -59,7 +59,7 @@ namespace Antichess.Core
         {
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
-            return obj.GetType() == GetType() && Equals((Position) obj);
+            return obj.GetType() == GetType() && Equals((Position)obj);
         }
 
         public override int GetHashCode()
@@ -84,7 +84,7 @@ namespace Antichess.Core
 
         public Position Clone()
         {
-            return (Position) MemberwiseClone();
+            return (Position)MemberwiseClone();
         }
     }
 }

@@ -30,23 +30,23 @@ namespace Antichess.Core.Pieces
 
         public void AddLegalMoves(Position pos, Board boardRef, LegalMoves legalMoves, bool onlyCaptures)
         {
-            bool isWhite = boardRef.PieceAt(pos).IsWhite;
-            Position ahead = pos + Position.Ahead(isWhite);
+            var isWhite = boardRef.PieceAt(pos).IsWhite;
+            var ahead = pos + Position.Ahead(isWhite);
             if (ahead.Y > ObjectLoader.BoardSize) return;
 
-            Position[] takesPositions = {ahead + new Position(1, 0), ahead + new Position(-1, 0)};
+            Position[] takesPositions = { ahead + new Position(1, 0), ahead + new Position(-1, 0) };
 
-            foreach (Position takesPosition in takesPositions)
+            foreach (var takesPosition in takesPositions)
                 if (takesPosition.X < ObjectLoader.BoardSize)
                 {
-                    Piece target = boardRef.PieceAt(takesPosition);
+                    var target = boardRef.PieceAt(takesPosition);
                     if (target != null && target.IsWhite != isWhite)
                     {
                         AddMoveAndCheckForPromotion(new Move(pos, takesPosition), boardRef, legalMoves);
                     }
                     else if (target == null && takesPosition == boardRef.EnPassantTargetSquare)
                     {
-                        Position enPassantTakesSquare = boardRef.EnPassantTargetSquare - Position.Ahead(isWhite);
+                        var enPassantTakesSquare = boardRef.EnPassantTargetSquare - Position.Ahead(isWhite);
 
                         legalMoves.Add(new Move(pos, takesPosition, Move.Flags.EnPassant));
                     }
@@ -56,7 +56,7 @@ namespace Antichess.Core.Pieces
 
             AddMoveAndCheckForPromotion(new Move(pos, ahead), boardRef, legalMoves);
 
-            Position aheadAhead = ahead + Position.Ahead(isWhite);
+            var aheadAhead = ahead + Position.Ahead(isWhite);
 
             if (pos.Y == (isWhite ? 1 : ObjectLoader.BoardSize - 2) && boardRef.PieceAt(aheadAhead) == null)
                 legalMoves.Add(new Move(pos, aheadAhead, Move.Flags.PawnDoubleMove));
@@ -64,9 +64,9 @@ namespace Antichess.Core.Pieces
 
         private static void AddMoveAndCheckForPromotion(Move move, Board boardRef, LegalMoves legalMoves)
         {
-            bool isWhite = boardRef.PieceAt(move.From).IsWhite;
+            var isWhite = boardRef.PieceAt(move.From).IsWhite;
             if (move.To.Y == (isWhite ? ObjectLoader.BoardSize - 1 : 0))
-                foreach (Piece.Types piece in PromotionPieces)
+                foreach (var piece in PromotionPieces)
                     legalMoves.Add(new Promotion(move.From, move.To, new Piece(isWhite, piece)));
             else
                 legalMoves.Add(move);

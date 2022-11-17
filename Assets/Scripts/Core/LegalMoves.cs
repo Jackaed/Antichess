@@ -77,6 +77,17 @@ namespace Antichess.Core
             }
         }
 
+        public List<Move> OrderedMoves(Move refutationMove)
+        {
+            var list = List;
+            var tagged = list.Select((item, i) => new { Item = item, Index = (int?)i });
+            var index = (from pair in tagged where pair.Item == refutationMove select pair.Index).FirstOrDefault();
+            if (index == null) return list;
+            var temp = list[0];
+            list[0] = list[(int)index];
+            return list;
+        }
+
         public override string ToString()
         {
             return string.Join(", ", Bag);
@@ -111,11 +122,11 @@ namespace Antichess.Core
 
             // Find all of the possible captures, and if none are found, then search for non-capture moves.
             Parallel.ForEach(_pieceLocations.ColourPositions(_board.WhitesMove),
-                pos => { _board.PieceAt(pos).AddLegalMoves(pos, _board, this, true); });
+                pos => _board.PieceAt(pos).AddLegalMoves(pos, _board, this, true));
 
             if (_legalMoves.Count == 0)
                 Parallel.ForEach(_pieceLocations.ColourPositions(_board.WhitesMove),
-                    pos => { _board.PieceAt(pos).AddLegalMoves(pos, _board, this, false); });
+                    pos => _board.PieceAt(pos).AddLegalMoves(pos, _board, this, false));
         }
     }
 }

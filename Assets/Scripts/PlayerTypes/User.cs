@@ -48,11 +48,11 @@ namespace Antichess.PlayerTypes
             _promotionUI = Object.Instantiate(IsWhite
                 ? ObjectLoader.Instance.wPromotionUI
                 : ObjectLoader.Instance.bPromotionUI);
-            Canvas canvas = _promotionUI.GetComponent<Canvas>();
+            var canvas = _promotionUI.GetComponent<Canvas>();
             canvas.worldCamera = _cam;
-            RectTransform transform = _promotionUI.GetComponent<RectTransform>();
+            var transform = _promotionUI.GetComponent<RectTransform>();
             transform.position = RenderedBoard.GetRealCoords(move.To) + 0.5f * Vector3.up;
-            Button[] promotionUIButtons = _promotionUI.GetComponentsInChildren<Button>();
+            var promotionUIButtons = _promotionUI.GetComponentsInChildren<Button>();
             promotionUIButtons[0].onClick.AddListener(OnBishopPromoteButtonClick);
             promotionUIButtons[1].onClick.AddListener(OnKnightPromoteButtonClick);
             promotionUIButtons[2].onClick.AddListener(OnQueenPromoteButtonClick);
@@ -64,8 +64,7 @@ namespace Antichess.PlayerTypes
         private Move ChoosePromotionPiece(Move move)
         {
             if (_promotionPiece == Piece.Types.None) return null;
-            Debug.Log(_promotionPiece.ToString());
-            Piece.Types temp = _promotionPiece;
+            var temp = _promotionPiece;
             _promotionPiece = Piece.Types.None;
             _userTryingToPromote = false;
             Object.Destroy(_promotionUI);
@@ -76,7 +75,6 @@ namespace Antichess.PlayerTypes
         private void OnKnightPromoteButtonClick()
         {
             _promotionPiece = Piece.Types.Knight;
-            Debug.Log("Knight");
         }
 
         private void OnBishopPromoteButtonClick()
@@ -169,8 +167,8 @@ namespace Antichess.PlayerTypes
         {
             if (_userTryingToPromote) return ChoosePromotionPiece(new Move(_from, _mouseClickPosition));
 
-            Ray mouseRay = _cam!.ScreenPointToRay(Input.mousePosition);
-            if (!Physics.Raycast(mouseRay, out RaycastHit hit)) return null;
+            var mouseRay = _cam!.ScreenPointToRay(Input.mousePosition);
+            if (!Physics.Raycast(mouseRay, out var hit)) return null;
 
             _mouseClickPosition = RenderedBoard.GetBoardCoords(hit.point);
 
@@ -191,7 +189,6 @@ namespace Antichess.PlayerTypes
 
             if (Input.GetMouseButton(0) && RenderedBoard.PieceAt(_mouseClickPosition) != null &&
                 RenderedBoard.PieceAt(_mouseClickPosition).IsWhite == IsWhite)
-
                 StartDragAndDrop(_mouseClickPosition);
 
             return null;
