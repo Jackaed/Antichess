@@ -1,6 +1,8 @@
-# Jetbrain Rider Cache
+# IDE
 .idea/
 Assets/Plugins/Editor/JetBrains*
+.vscode/
+
 ###
 # Unity folders and files
 ###
