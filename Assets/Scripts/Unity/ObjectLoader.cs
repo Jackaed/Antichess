@@ -32,7 +32,6 @@ namespace Antichess.Unity
 
         public Material wBaseMaterial, wEmissiveMaterial, bBaseMaterial, bEmissiveMaterial;
 
-
         public static ObjectLoader Instance { get; private set; }
 
         private void Awake()

@@ -25,9 +25,9 @@ namespace Antichess.AI
 
         public Move BestMove { get; private set; }
 
-        // Determines the heuristic value of the current board position, with no analysis of future positions. A positive
-        // value is better for white, and a negative is better for black. Subsequently, if white has won, infinity is
-        // given, as black should avoid this position if at all possible, and vice versa.
+        /// <summary>
+        /// Determines the heuristic value of the current board position, with no analysis of future positions. A positive value is better for white, and a negative is better for black. Subsequently, if white has won, infinity is given, as black should avoid this position if possible, and vice versa. Determines the heuristic value of the current board position, with no analysis of future positions.
+        /// </summary>
         private int HeuristicValue => Winner switch
         {
             Winners.White => int.MaxValue - 200,
@@ -39,40 +39,49 @@ namespace Antichess.AI
             _ => throw new ArgumentOutOfRangeException()
         };
 
-        // Looks at the subsequent moves beyond this point, and calls itself on those moves. If we have reached our max
-        // depth, we stop looking forward, and return the value of the board, without looking any deeper. Uses the Alpha
-        // -Beta pruning optimization, alongside the transposition table.
+        /// <summary>
+        /// Looks at the subsequent moves beyond this point, and calls itself on those moves. If we have reached our max depth, we stop looking forward, and return the value of the board, without looking any deeper. Uses the Alpha -Beta pruning optimization, alongside the transposition table. If the CancellationToken is cancelled, the function returns garbage in order to exit as soon as possible.
+        /// </summary>
+        /// <param name="depth"></param>
+        /// <param name="alpha"></param>
+        /// <param name="beta"></param>
+        /// <param name="token"></param>
+        /// <exception cref="ArgumentOutOfRangeException"></exception>
         private Result Negamax(uint depth, int alpha, int beta, CancellationToken token)
         {
-            if (token.IsCancellationRequested) return new Result(false, 0, null);
+            if (token.IsCancellationRequested)
+            {
+                return new Result(false, 0, null);
+            }
 
             var origAlpha = alpha;
-            // If this exact position has been evaluated before to the same or greater depth, simply return that value,
-            // or use it for alpha-beta pruning.
+            // If this exact position has been evaluated before to the same or greater depth, simply return that value, or use it for alpha-beta pruning.
             var ttEntry = _transpositionTable.Lookup(ZobristHash);
             Move refutationMove = null;
-            if (ttEntry.TtNodeType != NodeType.NotEvaluated)
+            if (ttEntry.TtNodeType != TranspositionTable.NodeType.NotEvaluated)
             {
                 if (ttEntry.Depth >= depth)
                 {
                     switch (ttEntry.TtNodeType)
                     {
-                        case NodeType.Exact:
+                        case TranspositionTable.NodeType.Exact:
                             return new Result(ttEntry.WasMate, ttEntry.Score, ttEntry.RefutationMove);
-                        case NodeType.LowerBound:
+                        case TranspositionTable.NodeType.LowerBound:
                             alpha = Math.Max(alpha, ttEntry.Score);
                             break;
-                        case NodeType.UpperBound:
+                        case TranspositionTable.NodeType.UpperBound:
                             beta = Math.Min(beta, ttEntry.Score);
                             break;
-                        case NodeType.NotEvaluated:
+                        case TranspositionTable.NodeType.NotEvaluated:
                             break;
                         default:
                             throw new ArgumentOutOfRangeException();
                     }
 
                     if (alpha >= beta)
+                    {
                         return new Result(ttEntry.WasMate, ttEntry.Score, ttEntry.RefutationMove);
+                    }
                 }
 
                 refutationMove = ttEntry.RefutationMove;
@@ -80,9 +89,9 @@ namespace Antichess.AI
 
             // If we've reached a leaf node, stop and return.
             if ((depth <= 0 && !LegalMoves.CanTake) || Winner != Winners.None)
-                //return new Result(false, 5, null);
-                return new Result(Winner != Winners.None,
-                    HeuristicValue * (WhitesMove ? 1 : -1), null);
+            {
+                return new Result(Winner != Winners.None, HeuristicValue * (WhitesMove ? 1 : -1), null);
+            }
 
             Result score = new(false, int.MinValue, null);
             // Search all future positions, searching the best move calculated to a slightly lower depth first.
@@ -92,7 +101,7 @@ namespace Antichess.AI
                 UnsafeMove(move);
                 var eval = -Negamax(depth - 1, -beta, -alpha, token);
 
-                if (eval.Eval > score.Eval)
+                if (eval.Eval > score.Eval || score.BestMove == null)
                 {
                     score = eval;
                     score.BestMove = move;
@@ -105,47 +114,50 @@ namespace Antichess.AI
             }
 
             // Store data in transposition table
-            NodeType nodeType;
+            TranspositionTable.NodeType NodeType;
             if (score.Eval <= origAlpha)
-                nodeType = NodeType.UpperBound;
+                NodeType = TranspositionTable.NodeType.UpperBound;
             else if (score.Eval >= beta)
-                nodeType = NodeType.LowerBound;
+                NodeType = TranspositionTable.NodeType.LowerBound;
             else
-                nodeType = NodeType.Exact;
+                NodeType = TranspositionTable.NodeType.Exact;
 
-            _transpositionTable.Store(ZobristHash, score.Eval, score.WasMate, (ushort)depth, nodeType, score.BestMove);
+            _transpositionTable.Store(ZobristHash, score.Eval, score.WasMate, (ushort)depth, NodeType, score.BestMove);
 
             return score;
         }
 
-        // Negamax call on the root node. This is the same as usual negamax, however it also sets the best move at the
-        // end, as well as setting alpha beta constraints for the root node.
-
-        // Iteratively performs a depth search on the current position, until the CancellationToken requests that it 
-        // stops. At the end of each eval, BestMove is updated with the best move that it has currently calculated.
+        /// <summary>
+        /// Iteratively performs a depth search on the current position, until the CancellationToken requests that it  stops. At the end of each eval, BestMove is updated with the best move that it has currently calculated.
+        /// </summary>
+        /// <param name="token"></param>
         public void IDEval(CancellationToken token)
         {
             FinishedPrematurely = false;
             if (LegalMoves.Count == 0) return;
             BestMove = LegalMoves.List[0];
             if (LegalMoves.List.Count == 1)
+            {
                 FinishedPrematurely = true;
+            }
             else
+            {
                 for (uint i = 1; !token.IsCancellationRequested; i++)
                 {
                     Debug.Log("Finished eval to depth: " + (i - 1));
                     var result = Negamax(i, int.MinValue + 100, int.MaxValue - 100, token);
-                    if (!token.IsCancellationRequested)
-                        if (result.BestMove != null)
-                        {
-                            BestMove = result.BestMove;
-                            FinishedPrematurely = FinishedPrematurely || result.WasMate;
-                        }
+                    if (!token.IsCancellationRequested && result.BestMove != null)
+                    {
+                        BestMove = result.BestMove;
+                        FinishedPrematurely = FinishedPrematurely || result.WasMate;
+                    }
                 }
+            }
         }
 
-        // Returns an evaluation, as well as telling us whether mate was found. Used to allow the evaluation to end
-        // early if a path to mate has been found.
+        /// <summary>
+        /// Returns an evaluation, as well as telling us whether mate was found. Used to allow the evaluation to end  early if a path to mate has been found.
+        /// </summary>
         private struct Result
         {
             public Result(bool wasMate, int eval, Move bestMove)

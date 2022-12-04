@@ -274,7 +274,6 @@ namespace Antichess.Core
 
         protected virtual void UpdateWinner()
         {
-            var count = 0;
             _winnerOutdated = false;
 
             //TODO: Fix and reimplement this, preferably making it not suck
@@ -288,12 +287,12 @@ namespace Antichess.Core
                             return;
                         } */
             // Enforces the 50 move rule
-            if (_halfMoveClock >= 100)
+/*            if (_halfMoveClock >= 100)
             {
                 _winner = Winners.Stalemate;
                 return;
             }
-
+*/
             _winner = LegalMoves.Count == 0 ? WhitesMove ? Winners.White : Winners.Black : Winners.None;
         }
 

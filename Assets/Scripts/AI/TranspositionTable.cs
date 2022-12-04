@@ -49,5 +49,12 @@ namespace Antichess.AI
                 RefutationMove = refutationMove;
             }
         }
+        public enum NodeType : byte
+        {
+            NotEvaluated,
+            Exact,
+            UpperBound,
+            LowerBound
+        }
     }
 }

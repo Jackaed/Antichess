@@ -17,11 +17,16 @@ namespace Antichess.AI
 
         private bool _isEvaluating;
 
-        // Evaluation begins as soon as the evaluator is created.
+        /// <summary>
+        /// Creates the Evaluator, and begins evaluation. Creates a new thread, which runs IDEvalTimer().
+        /// </summary>
+        /// <param name="board"></param>
+        /// <param name="transpositionTable"></param>
+        /// <param name="playingStrength"></param>
         public Evaluator(Board board, TranspositionTable transpositionTable, float playingStrength)
         {
             // the time spent searching scales from 0.5 second to 4 seconds as playing strength increases from 0 to 1.
-            _maxSearchTimeMillis = Mathf.RoundToInt(500 + 3000 * playingStrength);
+            _maxSearchTimeMillis = Mathf.RoundToInt(500 + (3000 * playingStrength));
 
             // at a playing strength of 0, each position can be mis-evaluated by up to 2 Queen's worth in score. 
             var heuristicValueMaxRandomOffset = Mathf.RoundToInt(5000 * (1 - playingStrength));
@@ -36,8 +41,9 @@ namespace Antichess.AI
             Task.Run(() => IDEvalTimer(token), token);
         }
 
-        // Returns the best move in the position, once it has been calculated for MaxSearchTimeMillis milliseconds. 
-        // Until that point, null is returned.
+        /// <summary>
+        /// Returns the best move in the position, once it has been calculated for MaxSearchTimeMillis milliseconds. Until that point, null is returned.
+        /// </summary>
         public Move BestMove
         {
             get
@@ -55,6 +61,10 @@ namespace Antichess.AI
             }
         }
 
+        /// <summary>
+        /// Runs the Iterative Deepening evaluation on a separate thread, using the current thread to repeatedly check if the time limit has been exceeded, and if it has, finishing the Eval, and storing it in BestMove.
+        /// </summary>
+        /// <param name="finishedPrematurely"></param>
         private void IDEvalTimer(CancellationToken finishedPrematurely)
         {
             CancellationTokenSource tokenSource = new();

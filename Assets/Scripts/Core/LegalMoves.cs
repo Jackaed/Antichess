@@ -60,10 +60,7 @@ namespace Antichess.Core
         {
             get
             {
-                if (_isOutdated)
-                    Update();
-
-                return _legalMoves.ToList();
+                return Bag.ToList();
             }
         }
 
@@ -112,7 +109,9 @@ namespace Antichess.Core
             _legalMoves.Add(move);
         }
 
-        // Updates the _legalMoves collection to represent the legal moves in the current position in the board.
+        /// <summary>
+        /// Updates the legal moves to reflect the legal moves of those in the current position. Works by retrieving the legal moves from each of the pieces on the board (of the colour of the current player’s turn to move) in parallel, and adding them to the _legalMoves concurrent bag.
+        /// </summary>
         private void Update()
         {
             _canTake = false;
@@ -125,8 +124,10 @@ namespace Antichess.Core
                 pos => _board.PieceAt(pos).AddLegalMoves(pos, _board, this, true));
 
             if (_legalMoves.Count == 0)
+            {
                 Parallel.ForEach(_pieceLocations.ColourPositions(_board.WhitesMove),
                     pos => _board.PieceAt(pos).AddLegalMoves(pos, _board, this, false));
+            }
         }
     }
 }
