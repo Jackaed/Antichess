@@ -673,15 +673,15 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 314451942}
-  m_LocalRotation: {x: 0, y: 0.8829476, z: -0.4694715, w: 0}
-  m_LocalPosition: {x: 0, y: 7.06, z: 5.39}
+  m_LocalRotation: {x: 0.4694715, y: 0, z: 0, w: 0.8829476}
+  m_LocalPosition: {x: 0, y: 7.06, z: -5.39}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1368223851}
   m_Father: {fileID: 0}
   m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 56, y: 180, z: 0}
+  m_LocalEulerAnglesHint: {x: 56, y: 0, z: 0}
 --- !u!115 &315320104
 MonoScript:
   m_ObjectHideFlags: 0
@@ -726,7 +726,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5eacdc5f620eea64a8af30d0d2d323dc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  cam: {fileID: 314451945}
   audioSource: {fileID: 1368223850}
+  WhiteCameraTransform: {fileID: 6472615242976365215, guid: bd7540b916d7e9448b1bb585b3be650b,
+    type: 3}
+  BlackCameraTransform: {fileID: 4741765603390006194, guid: 7624e496d86a7d643932d2d7359a597a,
+    type: 3}
   bPawn: {fileID: 2200449820126824947, guid: 15e60baf9e5dbc64fafcaf9ac4021e40, type: 3}
   bBishop: {fileID: 1873809714293684198, guid: a1aac1b0bc06b0e41bb760696c35b731, type: 3}
   bKnight: {fileID: 7299924000183548680, guid: 3f0fe39264bfe5740b191f02020e7a50, type: 3}

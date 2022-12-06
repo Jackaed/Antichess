@@ -119,7 +119,7 @@ namespace Antichess.Core
             foreach (var pos in PieceLocations.All) Destroy(pos);
         }
 
-        public void StartNewGame()
+        public virtual void StartNewGame()
         {
             if (_gameHasStarted && Winner == Winners.None) return;
             // cspell: disable-next-line
@@ -287,12 +287,12 @@ namespace Antichess.Core
                             return;
                         } */
             // Enforces the 50 move rule
-/*            if (_halfMoveClock >= 100)
-            {
-                _winner = Winners.Stalemate;
-                return;
-            }
-*/
+            /*            if (_halfMoveClock >= 100)
+                        {
+                            _winner = Winners.Stalemate;
+                            return;
+                        }
+            */
             _winner = LegalMoves.Count == 0 ? WhitesMove ? Winners.White : Winners.Black : Winners.None;
         }
 

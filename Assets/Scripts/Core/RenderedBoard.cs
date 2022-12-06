@@ -12,15 +12,16 @@ namespace Antichess.Core
     {
         private const float TimeToMove = 0.2f;
         private const float MoveSpeed = 1 / TimeToMove;
-
         private readonly List<RenderedPiece> _highlightedPieces = new();
         private readonly List<GameObject> _legalMoveIndicators = new();
-        private readonly Vector3 _origin;
         private readonly List<MovingPiece> _piecesToMove = new();
+        public delegate void OnMoveDelegate();
+        private readonly List<OnMoveDelegate> OnMove;
 
-        public RenderedBoard(Vector3 origin)
+        public RenderedBoard(List<OnMoveDelegate> onMoveDelegates)
         {
-            _origin = origin;
+            OnMove = onMoveDelegates;
+
         }
 
         /// <summary>
@@ -66,8 +67,17 @@ namespace Antichess.Core
             else
             {
                 var indicator = Object.Instantiate(ObjectLoader.Instance.legalMoveIndicator);
-                indicator.transform.position = GetRealCoords(pos) + new Vector3(0, _origin.y + 0.0001f, 0);
+                indicator.transform.position = GetRealCoords(pos) + new Vector3(0, 0.0001f, 0);
                 _legalMoveIndicators.Add(indicator);
+            }
+        }
+
+        public override void StartNewGame()
+        {
+            base.StartNewGame();
+            foreach (OnMoveDelegate del in OnMove)
+            {
+                del();
             }
         }
 
@@ -117,7 +127,7 @@ namespace Antichess.Core
         public void SnapPieceToCursor(Position originalPos, RaycastHit hit)
         {
             RenderedPieceAt(originalPos).GameObject.transform.position =
-                hit.point + new Vector3(0, _origin.y + 0.25f, 0);
+                hit.point + new Vector3(0, 0.25f, 0);
         }
 
         public void SnapPieceToPos(Position pos)
@@ -142,7 +152,7 @@ namespace Antichess.Core
         public void LowerPieceAt(Position pos)
         {
             var gamePos = RenderedPieceAt(pos).GameObject.transform.position;
-            RenderedPieceAt(pos).GameObject.transform.position = new Vector3(gamePos.x, _origin.y, gamePos.z);
+            RenderedPieceAt(pos).GameObject.transform.position = new Vector3(gamePos.x, 0, gamePos.z);
         }
 
         /// <summary>
@@ -152,7 +162,7 @@ namespace Antichess.Core
         public void LiftPieceAt(Position pos)
         {
             var gamePos = RenderedPieceAt(pos).GameObject.transform.position;
-            RenderedPieceAt(pos).GameObject.transform.position = new Vector3(gamePos.x, _origin.y + 0.25f, gamePos.z);
+            RenderedPieceAt(pos).GameObject.transform.position = new Vector3(gamePos.x, 0.25f, gamePos.z);
         }
 
         protected override void UpdateWinner()
@@ -208,7 +218,10 @@ namespace Antichess.Core
             if (pieceFrom != null)
                 _piecesToMove.Add(new MovingPiece(move.To, pieceFrom.GameObject, move.Distance));
 
-            if (pieceTo == null) return;
+            foreach (OnMoveDelegate del in OnMove)
+            {
+                del();
+            }
         }
 
         protected override void Destroy(Position pos)
@@ -220,7 +233,7 @@ namespace Antichess.Core
         /// <summary>
         /// Gets called once per frame by ChessGame. Used to update the locations of pieces smoothly over a number of frames, to allow for smooth piece movement.
         /// </summary>
-        public void FixedUpdate()
+        public void Update()
         {
             for (var x = 0; x < _piecesToMove.Count; x++)
             {
@@ -249,9 +262,9 @@ namespace Antichess.Core
         /// Returns the real location in 3d space in Unity from a given 2d board location, by calling GetRealCoord on each of the axes.
         /// </summary>
         /// <param name="boardCoords"></param>
-        public Vector3 GetRealCoords(Position boardCoords)
+        public static Vector3 GetRealCoords(Position boardCoords)
         {
-            return new Vector3(GetRealCoord(boardCoords.X), 0, GetRealCoord(boardCoords.Y)) + _origin;
+            return new Vector3(GetRealCoord(boardCoords.X), 0, GetRealCoord(boardCoords.Y));
         }
 
         private static sbyte GetBoardCoord(float num)
@@ -264,9 +277,8 @@ namespace Antichess.Core
         /// Returns a location on the board from a location in Unity’s 3d space.
         /// </summary>
         /// <param name="realCoords"></param>
-        public Position GetBoardCoords(Vector3 realCoords)
+        public static Position GetBoardCoords(Vector3 realCoords)
         {
-            realCoords -= _origin;
             return new Position(GetBoardCoord(realCoords.x), GetBoardCoord(realCoords.z));
         }
     }

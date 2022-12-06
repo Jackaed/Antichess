@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Antichess.Core;
 using Antichess.PlayerTypes;
 using Antichess.UI;
@@ -13,19 +14,25 @@ namespace Antichess.Unity
         private RenderedBoard _board;
         private GameObject _gameOverUI;
         private GameObject _mainMenu;
-        private bool _renderBoard;
         private State _state;
         private Player _white, _black;
-
         private MainMenu MainMenuComponent => _mainMenu.GetComponent<MainMenu>();
+
+        private void ControlCamera()
+        {
+            Debug.Log(typeof(User));
+            if ((_board.WhitesMove ? _white : _black).GetType() == typeof(User))
+            {
+                Transform desiredTransform = _board.WhitesMove ? ObjectLoader.Instance.WhiteCameraTransform : ObjectLoader.Instance.BlackCameraTransform;
+                ObjectLoader.Instance.cam.transform.SetPositionAndRotation(desiredTransform.position, desiredTransform.rotation);
+            }
+        }
 
         /// <summary>
         /// Unity function, gets called before the first frame is drawn. Used to initialize the chess game (is effectively a constructor).
         /// </summary>
         private void Start()
         {
-            _board = new RenderedBoard(new Vector3(0, 0, 0));
-            _state = State.MainMenu;
             InitMainMenu();
         }
 
@@ -35,6 +42,8 @@ namespace Antichess.Unity
         /// <exception cref="ArgumentOutOfRangeException"></exception>
         private void Update()
         {
+            if (_state != State.MainMenu)
+                _board.Update();
             switch (_state)
             {
                 case State.MainMenu:
@@ -64,19 +73,12 @@ namespace Antichess.Unity
         }
 
         /// <summary>
-        /// Gets called a fixed number of times per second. Used for piece movement.
-        /// </summary>
-        private void FixedUpdate()
-        {
-            if (_state != State.MainMenu)
-                _board.FixedUpdate();
-        }
-
-        /// <summary>
         /// Initializes main menu
         /// </summary>
         private void InitMainMenu()
         {
+            _state = State.MainMenu;
+            _board = new RenderedBoard(new List<RenderedBoard.OnMoveDelegate>() { ControlCamera });
             _mainMenu = Instantiate(ObjectLoader.Instance.mainMenuUI);
             MainMenuComponent.startButton.onClick.AddListener(OnStartButtonPress);
         }
@@ -86,9 +88,9 @@ namespace Antichess.Unity
         /// </summary>
         private void OnStartButtonPress()
         {
-            _board.StartNewGame();
             _white = MainMenuComponent.GetWhitePlayer(_board);
             _black = MainMenuComponent.GetBlackPlayer(_board);
+            _board.StartNewGame();
             _state = State.InGame;
             Destroy(_mainMenu);
         }
@@ -100,8 +102,6 @@ namespace Antichess.Unity
         {
             Destroy(_gameOverUI);
             _board.Destroy();
-            _board = new RenderedBoard(new Vector3(0, 0, 0));
-            _state = State.MainMenu;
             InitMainMenu();
         }
 

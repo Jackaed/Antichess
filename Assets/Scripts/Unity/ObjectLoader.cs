@@ -6,7 +6,10 @@ namespace Antichess.Unity
     internal class ObjectLoader : MonoBehaviour
     {
         public const byte BoardSize = 8;
+        public Camera cam;
         public AudioSource audioSource;
+        public Transform WhiteCameraTransform;
+        public Transform BlackCameraTransform;
 
         public GameObject bPawn,
             bBishop,
