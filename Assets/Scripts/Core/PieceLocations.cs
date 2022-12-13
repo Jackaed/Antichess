@@ -7,21 +7,19 @@ namespace Antichess.Core
 {
     public class PieceLocations
     {
-        private readonly Board _board;
-        public readonly List<Position> White, Black;
+        public readonly List<Position> White,
+            Black;
 
-        public PieceLocations(Board board)
+        public PieceLocations()
         {
-            _board = board;
             White = new List<Position>();
             Black = new List<Position>();
         }
 
-        public PieceLocations(PieceLocations other, Board board)
+        public PieceLocations(PieceLocations other)
         {
             White = new List<Position>(other.White);
             Black = new List<Position>(other.Black);
-            _board = board;
         }
 
         public List<Position> All => White.Concat(Black).ToList();
@@ -37,7 +35,8 @@ namespace Antichess.Core
 
         public void Remove(Position pos, Piece piece)
         {
-            if (piece == null) return;
+            if (piece == null)
+                return;
 
             pos = pos.Regular;
             if (piece.IsWhite)

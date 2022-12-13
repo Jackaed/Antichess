@@ -15,21 +15,27 @@ namespace Antichess.Unity
         private GameObject _gameOverUI;
         private GameObject _mainMenu;
         private State _state;
-        private Player _white, _black;
+        private Player _white,
+            _black;
         private MainMenu MainMenuComponent => _mainMenu.GetComponent<MainMenu>();
 
         private void ControlCamera()
         {
-            Debug.Log(typeof(User));
             if ((_board.WhitesMove ? _white : _black).GetType() == typeof(User))
             {
-                Transform desiredTransform = _board.WhitesMove ? ObjectLoader.Instance.WhiteCameraTransform : ObjectLoader.Instance.BlackCameraTransform;
-                ObjectLoader.Instance.cam.transform.SetPositionAndRotation(desiredTransform.position, desiredTransform.rotation);
+                Transform desiredTransform = _board.WhitesMove
+                    ? ObjectLoader.Instance.WhiteCameraTransform
+                    : ObjectLoader.Instance.BlackCameraTransform;
+                ObjectLoader.Instance.cam.transform.SetPositionAndRotation(
+                    desiredTransform.position,
+                    desiredTransform.rotation
+                );
             }
         }
 
         /// <summary>
-        /// Unity function, gets called before the first frame is drawn. Used to initialize the chess game (is effectively a constructor).
+        /// Unity function, gets called before the first frame is drawn. Used to initialize the
+        /// chess game (is effectively a constructor).
         /// </summary>
         private void Start()
         {
@@ -53,18 +59,22 @@ namespace Antichess.Unity
                     if (_board.Winner != Board.Winners.None)
                     {
                         _gameOverUI = Instantiate(ObjectLoader.Instance.gameOverUI);
-                        _gameOverUI.GetComponentInChildren<Button>().onClick.AddListener(OnNewGameButtonPress);
-                        _gameOverUI.GetComponentInChildren<TMP_Text>().text = _board.Winner == Board.Winners.Stalemate
-                            ? "Stalemate"
-                            : (_board.Winner == Board.Winners.White ? "White" : "Black") + " Wins";
+                        _gameOverUI
+                            .GetComponentInChildren<Button>()
+                            .onClick.AddListener(OnNewGameButtonPress);
+                        _gameOverUI.GetComponentInChildren<TMP_Text>().text =
+                            _board.Winner == Board.Winners.Stalemate
+                                ? "Stalemate"
+                                : (_board.Winner == Board.Winners.White ? "White" : "Black")
+                                    + " Wins";
                         _state = State.GameOver;
                     }
 
                     var currentPlayer = _board.WhitesMove ? _white : _black;
                     var attemptedMove = currentPlayer.SuggestMove();
 
-                    if (attemptedMove == null) return;
-                    Debug.Log(attemptedMove);
+                    if (attemptedMove == null)
+                        return;
                     _board.Move(attemptedMove);
                     break;
                 default:
@@ -84,7 +94,8 @@ namespace Antichess.Unity
         }
 
         /// <summary>
-        /// Function gets called once the Main Menu start button gets pressed. Initializes the board.
+        /// Function gets called once the Main Menu start button gets pressed. Initializes the
+        /// board.
         /// </summary>
         private void OnStartButtonPress()
         {

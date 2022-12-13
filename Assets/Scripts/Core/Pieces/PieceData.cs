@@ -10,6 +10,11 @@ namespace Antichess.Core.Pieces
 
         public uint Value { get; }
 
-        public void AddLegalMoves(Position pos, Board boardRef, LegalMoves legalMoves, bool onlyCaptures);
+        public void AddLegalMoves(
+            Position pos,
+            Board boardRef,
+            LegalMoves legalMoves,
+            bool onlyCaptures
+        );
     }
 }

@@ -21,11 +21,11 @@ namespace Antichess.Core
         public RenderedBoard(List<OnMoveDelegate> onMoveDelegates)
         {
             OnMove = onMoveDelegates;
-
         }
 
         /// <summary>
-        /// Override from Board.Create. Similar, except it creates a RenderedPiece, instead of a regular piece, and creates it’s GameObject.
+        /// Override from Board.Create. Similar, except it creates a RenderedPiece, instead of a
+        /// regular piece, and creates it’s GameObject.
         /// </summary>
         /// <param name="pos"></param>
         private RenderedPiece RenderedPieceAt(Position pos)
@@ -39,18 +39,25 @@ namespace Antichess.Core
         }
 
         /// <summary>
-        /// Override from Board.UndoMove. Similar, except it moves GameObjects and restores any GameObjects that were captured in the move.
+        /// Override from Board.UndoMove. Similar, except it moves GameObjects and restores any
+        /// GameObjects that were captured in the move.
         /// </summary>
         /// <param name="change"></param>
         protected override void UndoMove(BoardChange change)
         {
-            _piecesToMove.Add(new MovingPiece(change.Move.From, RenderedPieceAt(change.Move.To).GameObject,
-                change.Move.Distance));
+            _piecesToMove.Add(
+                new MovingPiece(
+                    change.Move.From,
+                    RenderedPieceAt(change.Move.To).GameObject,
+                    change.Move.Distance
+                )
+            );
             base.UndoMove(change);
         }
 
         /// <summary>
-        /// Override from Board.Create. Similar, except it creates a RenderedPiece, instead of a regular piece, and creates its GameObject.
+        /// Override from Board.Create. Similar, except it creates a RenderedPiece, instead of a
+        /// regular piece, and creates its GameObject.
         /// </summary>
         /// <param name="pos"></param>
         private void CreateLegalMoveIndicator(Position pos)
@@ -59,9 +66,10 @@ namespace Antichess.Core
             {
                 var highlightedPiece = RenderedPieceAt(pos);
                 var highlightedGameObject = highlightedPiece.GameObject;
-                highlightedGameObject.GetComponent<MeshRenderer>().material = highlightedPiece.IsWhite
-                    ? ObjectLoader.Instance.wEmissiveMaterial
-                    : ObjectLoader.Instance.bEmissiveMaterial;
+                highlightedGameObject.GetComponent<MeshRenderer>().material =
+                    highlightedPiece.IsWhite
+                        ? ObjectLoader.Instance.wEmissiveMaterial
+                        : ObjectLoader.Instance.bEmissiveMaterial;
                 _highlightedPieces.Add(highlightedPiece);
             }
             else
@@ -85,21 +93,29 @@ namespace Antichess.Core
         /// Tests if a move can promote.
         /// </summary>
         /// <param name="move"></param>
-        /// <returns>Returns true if the parameter passed can promote a piece, or false if it cannot.</returns>
+        /// <returns>Returns true if the parameter passed can promote a piece, or false if it
+        /// cannot.</returns>
         public bool MoveCanPromote(Move move)
         {
-            return LegalMoves.List.Any(legalPromotion => legalPromotion is Promotion && move.From == legalPromotion.From && move.To == legalPromotion.To);
+            return LegalMoves.List.Any(
+                legalPromotion =>
+                    legalPromotion is Promotion
+                    && move.From == legalPromotion.From
+                    && move.To == legalPromotion.To
+            );
         }
 
         public void ClearLegalMoveIndicators()
         {
-            foreach (var indicator in _legalMoveIndicators) Object.Destroy(indicator);
+            foreach (var indicator in _legalMoveIndicators)
+                Object.Destroy(indicator);
 
             foreach (var highlightedPiece in _highlightedPieces)
             {
-                highlightedPiece.GameObject.GetComponent<MeshRenderer>().material = highlightedPiece.IsWhite
-                    ? ObjectLoader.Instance.wBaseMaterial
-                    : ObjectLoader.Instance.bBaseMaterial;
+                highlightedPiece.GameObject.GetComponent<MeshRenderer>().material =
+                    highlightedPiece.IsWhite
+                        ? ObjectLoader.Instance.wBaseMaterial
+                        : ObjectLoader.Instance.bBaseMaterial;
             }
 
             _legalMoveIndicators.Clear();
@@ -107,7 +123,9 @@ namespace Antichess.Core
         }
 
         /// <summary>
-        /// Disables the mesh collider for the piece at a given position, allowing ray casts to travel through the piece. Used when dragging and dropping pieces, to prevent a piece from constantly traveling closer to the camera when being dragged.
+        /// Disables the mesh collider for the piece at a given position, allowing ray casts to
+        /// travel through the piece. Used when dragging and dropping pieces, to prevent a piece
+        /// from constantly traveling closer to the camera when being dragged.
         /// </summary>
         /// <param name="pos"></param>
         public void RemoveMeshCollider(Position pos)
@@ -116,7 +134,8 @@ namespace Antichess.Core
         }
 
         /// <summary>
-        /// Re-enables the mesh collider for the piece at a given position. Used for when a piece has stopped being dragged and dropped, and needs to be selectable again.
+        /// Re-enables the mesh collider for the piece at a given position. Used for when a piece
+        /// has stopped being dragged and dropped, and needs to be selectable again.
         /// </summary>
         /// <param name="pos"></param>
         public void EnableMeshCollider(Position pos)
@@ -136,33 +155,45 @@ namespace Antichess.Core
         }
 
         /// <summary>
-        /// Creates Legal Move indicators for the piece at a given location, allowing a user to see where a selected piece can move to.
+        /// Creates Legal Move indicators for the piece at a given location, allowing a user to see
+        /// where a selected piece can move to.
         /// </summary>
         /// <param name="pos"></param>
         public void ShowLegalMovesFor(Position pos)
         {
             ClearLegalMoveIndicators();
-            foreach (var move in LegalMoves.List.Where(move => move.From == pos)) CreateLegalMoveIndicator(move.To);
+            foreach (var move in LegalMoves.List.Where(move => move.From == pos))
+                CreateLegalMoveIndicator(move.To);
         }
 
         /// <summary>
-        /// Lowers the piece at a given position back down to regular height, allowing you to “deselect” that piece.
+        /// Lowers the piece at a given position back down to regular height, allowing you to
+        /// “deselect” that piece.
         /// </summary>
         /// <param name="pos"></param>
         public void LowerPieceAt(Position pos)
         {
             var gamePos = RenderedPieceAt(pos).GameObject.transform.position;
-            RenderedPieceAt(pos).GameObject.transform.position = new Vector3(gamePos.x, 0, gamePos.z);
+            RenderedPieceAt(pos).GameObject.transform.position = new Vector3(
+                gamePos.x,
+                0,
+                gamePos.z
+            );
         }
 
         /// <summary>
-        /// Elevates the piece at a given position, raising it vertically to show that the piece has been “selected” or highlighted in some way.
+        /// Elevates the piece at a given position, raising it vertically to show that the piece has
+        /// been “selected” or highlighted in some way.
         /// </summary>
         /// <param name="pos"></param>
         public void LiftPieceAt(Position pos)
         {
             var gamePos = RenderedPieceAt(pos).GameObject.transform.position;
-            RenderedPieceAt(pos).GameObject.transform.position = new Vector3(gamePos.x, 0.25f, gamePos.z);
+            RenderedPieceAt(pos).GameObject.transform.position = new Vector3(
+                gamePos.x,
+                0.25f,
+                gamePos.z
+            );
         }
 
         protected override void UpdateWinner()
@@ -187,14 +218,16 @@ namespace Antichess.Core
         }
 
         /// <summary>
-        /// Override from Board.Move. Identical, but calls RenderedBoard.UnsafeMove, so GameObjects get managed, and also deselects any selected pieces upon a move attempt being made (regardless of legality).
+        /// Override from Board.Move. Identical, but calls RenderedBoard.UnsafeMove, so GameObjects
+        /// get managed, and also deselects any selected pieces upon a move attempt being made
+        /// (regardless of legality).
         /// </summary>
         /// <param name="move"></param>
         public override bool Move(Move move)
         {
-            Debug.Log(LegalMoves);
             var wasLegal = base.Move(move);
-            if (wasLegal) return true;
+            if (wasLegal)
+                return true;
             LowerPieceAt(move.From);
             RenderedPieceAt(move.From).GameObject.transform.position = GetRealCoords(move.From);
             ClearLegalMoveIndicators();
@@ -226,12 +259,14 @@ namespace Antichess.Core
 
         protected override void Destroy(Position pos)
         {
-            if (RenderedPieceAt(pos) != null) Object.Destroy(RenderedPieceAt(pos).GameObject);
+            if (RenderedPieceAt(pos) != null)
+                Object.Destroy(RenderedPieceAt(pos).GameObject);
             base.Destroy(pos);
         }
 
         /// <summary>
-        /// Gets called once per frame by ChessGame. Used to update the locations of pieces smoothly over a number of frames, to allow for smooth piece movement.
+        /// Gets called once per frame by ChessGame. Used to update the locations of pieces smoothly
+        /// over a number of frames, to allow for smooth piece movement.
         /// </summary>
         public void Update()
         {
@@ -239,16 +274,20 @@ namespace Antichess.Core
             {
                 var pieceToMove = _piecesToMove[x];
 
-                if (pieceToMove.Piece == null ||
-                    pieceToMove.Piece.transform.position == GetRealCoords(pieceToMove.To))
+                if (
+                    pieceToMove.Piece == null
+                    || pieceToMove.Piece.transform.position == GetRealCoords(pieceToMove.To)
+                )
                 {
                     _piecesToMove.RemoveAt(x);
                 }
                 else
                 {
-                    pieceToMove.Piece.transform.position = Vector3.MoveTowards(pieceToMove.Piece.transform.position,
-                                        GetRealCoords(pieceToMove.To),
-                                        MoveSpeed * Time.deltaTime * pieceToMove.Distance);
+                    pieceToMove.Piece.transform.position = Vector3.MoveTowards(
+                        pieceToMove.Piece.transform.position,
+                        GetRealCoords(pieceToMove.To),
+                        MoveSpeed * Time.deltaTime * pieceToMove.Distance
+                    );
                 }
             }
         }
@@ -259,7 +298,8 @@ namespace Antichess.Core
         }
 
         /// <summary>
-        /// Returns the real location in 3d space in Unity from a given 2d board location, by calling GetRealCoord on each of the axes.
+        /// Returns the real location in 3d space in Unity from a given 2d board location, by
+        /// calling GetRealCoord on each of the axes.
         /// </summary>
         /// <param name="boardCoords"></param>
         public static Vector3 GetRealCoords(Position boardCoords)

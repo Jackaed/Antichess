@@ -1407,6 +1407,7 @@ MonoBehaviour:
   m_Script: {fileID: 932997271}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_Entries: []
 --- !u!4 &881663886
 Transform:
   m_ObjectHideFlags: 19
@@ -1756,6 +1757,10 @@ MonoBehaviour:
   m_Script: {fileID: 1669203423}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_Entries:
+  - id: 0
+    category: 0
+    gameObject: {fileID: 597889122}
 --- !u!4 &1507066935
 Transform:
   m_ObjectHideFlags: 19

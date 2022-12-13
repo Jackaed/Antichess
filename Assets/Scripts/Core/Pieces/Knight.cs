@@ -3,13 +3,11 @@ using UnityEngine;
 
 namespace Antichess.Core.Pieces
 {
-    public class Knight : IPieceData
+    public sealed class Knight : IPieceData
     {
         private static Knight _instance;
 
-        private Knight()
-        {
-        }
+        private Knight() { }
 
         public static Knight Instance => _instance ??= new Knight();
 
@@ -17,7 +15,12 @@ namespace Antichess.Core.Pieces
         public GameObject BlackModel => ObjectLoader.Instance.bKnight;
         public uint Value => 300;
 
-        public void AddLegalMoves(Position pos, Board boardRef, LegalMoves legalMoves, bool onlyCaptures)
+        public void AddLegalMoves(
+            Position pos,
+            Board boardRef,
+            LegalMoves legalMoves,
+            bool onlyCaptures
+        )
         {
             Position[] offsets =
             {
@@ -30,7 +33,13 @@ namespace Antichess.Core.Pieces
                 new(-2, 1),
                 new(-2, -1)
             };
-            GenericMoveLogic.AddLegalMovesAtOffsets(pos, offsets, boardRef, legalMoves, onlyCaptures);
+            GenericMoveLogic.AddLegalMovesAtOffsets(
+                pos,
+                offsets,
+                boardRef,
+                legalMoves,
+                onlyCaptures
+            );
         }
 
         public override string ToString()

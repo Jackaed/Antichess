@@ -18,16 +18,14 @@ namespace Antichess.UI
         {
             return wDropdown.value == 0
                 ? new User(board, true)
-                : new AIPlayer(board, true,
-                    wSlider.GetComponent<Slider>().value);
+                : new AIPlayer(board, true, wSlider.GetComponent<Slider>().value);
         }
 
         public Player GetBlackPlayer(RenderedBoard board)
         {
             return bDropdown.value == 1
                 ? new User(board, false)
-                : new AIPlayer(board, false,
-                    bSlider.GetComponent<Slider>().value);
+                : new AIPlayer(board, false, bSlider.GetComponent<Slider>().value);
         }
 
         public void OnWDropdownChange(int val)

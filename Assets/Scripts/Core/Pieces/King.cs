@@ -3,13 +3,11 @@ using UnityEngine;
 
 namespace Antichess.Core.Pieces
 {
-    public class King : IPieceData
+    public sealed class King : IPieceData
     {
         private static King _instance;
 
-        private King()
-        {
-        }
+        private King() { }
 
         public static King Instance => _instance ??= new King();
 
@@ -17,7 +15,12 @@ namespace Antichess.Core.Pieces
         public GameObject WhiteModel => ObjectLoader.Instance.wKing;
         public uint Value => 200;
 
-        public void AddLegalMoves(Position pos, Board boardRef, LegalMoves legalMoves, bool onlyCaptures)
+        public void AddLegalMoves(
+            Position pos,
+            Board boardRef,
+            LegalMoves legalMoves,
+            bool onlyCaptures
+        )
         {
             // The offsets of a King's potential movement options, from his current position "pos"
             Position[] offsets =
@@ -31,7 +34,13 @@ namespace Antichess.Core.Pieces
                 new(-1, 0),
                 new(-1, 1)
             };
-            GenericMoveLogic.AddLegalMovesAtOffsets(pos, offsets, boardRef, legalMoves, onlyCaptures);
+            GenericMoveLogic.AddLegalMovesAtOffsets(
+                pos,
+                offsets,
+                boardRef,
+                legalMoves,
+                onlyCaptures
+            );
         }
 
         public override string ToString()

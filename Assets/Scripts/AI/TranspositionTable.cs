@@ -21,15 +21,22 @@ namespace Antichess.AI
             return val.Key == key ? val : Entry.NotEvaluated;
         }
 
-        public void Store(ulong key, int score, bool wasMate, ushort depth, NodeType nodeType, Move refutationMove)
+        public void Store(
+            ulong key,
+            int score,
+            bool wasMate,
+            ushort depth,
+            NodeType nodeType,
+            Move refutationMove
+        )
         {
             _table[key % _size] = new Entry(key, score, wasMate, depth, nodeType, refutationMove);
         }
 
         public struct Entry
         {
-            public static readonly Entry NotEvaluated = new(ulong.MinValue, int.MinValue, false, 0,
-                NodeType.NotEvaluated, null);
+            public static readonly Entry NotEvaluated =
+                new(ulong.MinValue, int.MinValue, false, 0, NodeType.NotEvaluated, null);
 
             public readonly ushort Depth;
             public readonly ulong Key;
@@ -38,8 +45,14 @@ namespace Antichess.AI
             public readonly NodeType TtNodeType;
             public readonly Move RefutationMove;
 
-            public Entry(ulong key, int score, bool wasMate, ushort depth, NodeType nodeType,
-                Move refutationMove)
+            public Entry(
+                ulong key,
+                int score,
+                bool wasMate,
+                ushort depth,
+                NodeType nodeType,
+                Move refutationMove
+            )
             {
                 WasMate = wasMate;
                 Key = key;
@@ -49,6 +62,7 @@ namespace Antichess.AI
                 RefutationMove = refutationMove;
             }
         }
+
         public enum NodeType : byte
         {
             NotEvaluated,

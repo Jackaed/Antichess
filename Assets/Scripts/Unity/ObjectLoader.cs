@@ -29,18 +29,24 @@ namespace Antichess.Unity
             gameOverUI,
             legalMoveIndicator;
 
-        public AudioClip move, capture;
+        public AudioClip move,
+            capture;
 
         public Random Rand;
 
-        public Material wBaseMaterial, wEmissiveMaterial, bBaseMaterial, bEmissiveMaterial;
+        public Material wBaseMaterial,
+            wEmissiveMaterial,
+            bBaseMaterial,
+            bEmissiveMaterial;
 
         public static ObjectLoader Instance { get; private set; }
 
         private void Awake()
         {
-            if (Instance == null) Instance = this;
-            else Destroy(gameObject);
+            if (Instance == null)
+                Instance = this;
+            else
+                Destroy(gameObject);
             Rand = new Random();
         }
     }

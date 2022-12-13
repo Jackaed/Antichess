@@ -13,7 +13,8 @@ namespace Antichess.Core
         }
 
         public readonly Flags Flag;
-        public readonly Position From, To;
+        public readonly Position From;
+        public readonly Position To;
 
         public Move(Position from, Position to, Flags flag = Flags.None)
         {
@@ -22,17 +23,18 @@ namespace Antichess.Core
             Flag = flag;
         }
 
-        public float Distance => Mathf.Sqrt(Mathf.Pow(To.X - From.X, 2) + Mathf.Pow(To.Y - From.Y, 2));
+        public float Distance =>
+            Mathf.Sqrt(Mathf.Pow(To.X - From.X, 2) + Mathf.Pow(To.Y - From.Y, 2));
 
         protected bool Equals(Move other)
         {
-            return Flag == other.Flag && Equals(From, other.From) && Equals(To, other.To);
+            return Equals(Flag, other.Flag) && Equals(From, other.From) && Equals(To, other.To);
         }
 
         public override bool Equals(object obj)
         {
-            if (ReferenceEquals(null, obj)) return false;
-            if (ReferenceEquals(this, obj)) return true;
+            if (obj is null)
+                return false;
             return obj.GetType() == GetType() && Equals((Move)obj);
         }
 

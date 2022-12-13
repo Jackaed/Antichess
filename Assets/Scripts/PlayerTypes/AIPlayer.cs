@@ -11,9 +11,9 @@ namespace Antichess.PlayerTypes
 
         private Evaluator _evaluator;
         private bool _hasReturnedMove;
-        private int _numPositionsSearched;
 
-        public AIPlayer(Board board, bool isWhite, float playingStrength = 1.0f) : base(board, isWhite)
+        public AIPlayer(Board board, bool isWhite, float playingStrength = 1.0f)
+            : base(board, isWhite)
         {
             _playingStrength = playingStrength;
 
@@ -23,8 +23,8 @@ namespace Antichess.PlayerTypes
 
         public override Move SuggestMove()
         {
-            // If we've returned a valid move, and we're being asked for another one, it's a new request, and we should 
-            // start a new evaluator.
+            // If we've returned a valid move, and we're being asked for another one, it's a new
+            // request, and we should start a new evaluator.
             if (_hasReturnedMove)
             {
                 _evaluator = new Evaluator(BoardRef, _transpositionTable, _playingStrength);

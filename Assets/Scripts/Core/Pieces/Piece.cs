@@ -16,7 +16,14 @@ namespace Antichess.Core.Pieces
         }
 
         private static readonly IPieceData[] PieceDataArray =
-            { Pawn.Instance, Bishop.Instance, Knight.Instance, Rook.Instance, Queen.Instance, King.Instance };
+        {
+            Pawn.Instance,
+            Bishop.Instance,
+            Knight.Instance,
+            Rook.Instance,
+            Queen.Instance,
+            King.Instance
+        };
 
         public Piece(bool isWhite, Types type)
         {
@@ -40,14 +47,19 @@ namespace Antichess.Core.Pieces
         }
 
         /// <summary>
-        /// Adds a piece's legal move options to LegalMoves, when given the a reference to the board and the piece's
-        /// position.
+        /// Adds a piece's legal move options to LegalMoves, when given the a reference to the board
+        /// and the piece's position.
         /// </summary>
         /// <param name="pos"></param>
         /// <param name="boardRef"></param>
         /// <param name="legalMoves"></param>
         /// <param name="onlyCaptures"></param>
-        public void AddLegalMoves(Position pos, Board boardRef, LegalMoves legalMoves, bool onlyCaptures)
+        public void AddLegalMoves(
+            Position pos,
+            Board boardRef,
+            LegalMoves legalMoves,
+            bool onlyCaptures
+        )
         {
             PieceData.AddLegalMoves(pos, boardRef, legalMoves, onlyCaptures);
         }
@@ -59,8 +71,10 @@ namespace Antichess.Core.Pieces
 
         public override bool Equals(object obj)
         {
-            if (obj is null) return false;
-            if (ReferenceEquals(this, obj)) return true;
+            if (obj is null)
+                return false;
+            if (ReferenceEquals(this, obj))
+                return true;
             return obj.GetType() == GetType() && Equals((Piece)obj);
         }
 

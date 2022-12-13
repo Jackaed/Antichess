@@ -28,9 +28,6 @@ namespace Antichess.Core
         protected readonly PieceLocations PieceLocations;
         private bool _gameHasStarted;
         private ushort _halfMoveClock;
-
-        private ushort _moveCounter;
-
         private Winners _winner;
         private bool _winnerOutdated;
 
@@ -43,7 +40,7 @@ namespace Antichess.Core
         {
             _gameHasStarted = false;
             _data = new Piece[ObjectLoader.BoardSize, ObjectLoader.BoardSize];
-            PieceLocations = new PieceLocations(this);
+            PieceLocations = new PieceLocations();
             LegalMoves = new LegalMoves(this, PieceLocations);
             _moveHistory = new Stack<BoardChange>();
             InitZobrist();
@@ -61,7 +58,7 @@ namespace Antichess.Core
         protected Board(Board toClone)
         {
             _data = (Piece[,])toClone._data.Clone();
-            PieceLocations = new PieceLocations(toClone.PieceLocations, this);
+            PieceLocations = new PieceLocations(toClone.PieceLocations);
             _moveHistory = new Stack<BoardChange>(toClone._moveHistory);
             LegalMoves = new LegalMoves(toClone.LegalMoves, PieceLocations, this);
             _zobristTable = (ulong[,,])toClone._zobristTable.Clone();
@@ -96,7 +93,8 @@ namespace Antichess.Core
                     return _zobristHash;
 
                 _zobristHash = 0;
-                if (!WhitesMove) _zobristHash ^= _zobristBlacksMove;
+                if (!WhitesMove)
+                    _zobristHash ^= _zobristBlacksMove;
 
                 foreach (var pos in PieceLocations.All)
                 {
@@ -105,7 +103,13 @@ namespace Antichess.Core
                 }
 
                 if (LegalMoves.CanEnPassant && EnPassantTargetSquare != null)
-                    _zobristHash ^= _zobristTable[EnPassantTargetSquare.X, EnPassantTargetSquare.Y, 12];
+                {
+                    _zobristHash ^= _zobristTable[
+                        EnPassantTargetSquare.X,
+                        EnPassantTargetSquare.Y,
+                        12
+                    ];
+                }
 
                 _zobristOutdated = false;
                 return _zobristHash;
@@ -114,14 +118,17 @@ namespace Antichess.Core
 
         public void Destroy()
         {
-            if (_gameHasStarted && Winner == Winners.None) return;
+            if (_gameHasStarted && Winner == Winners.None)
+                return;
 
-            foreach (var pos in PieceLocations.All) Destroy(pos);
+            foreach (var pos in PieceLocations.All)
+                Destroy(pos);
         }
 
         public virtual void StartNewGame()
         {
-            if (_gameHasStarted && Winner == Winners.None) return;
+            if (_gameHasStarted && Winner == Winners.None)
+                return;
             // cspell: disable-next-line
             ProcessFenString("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
             // ProcessFenString("8/6P1/8/2k5/4K3/8/8/8 w - - 0 1");
@@ -157,7 +164,8 @@ namespace Antichess.Core
         {
             var piece = PieceAt(pos);
 
-            if (piece == null) return;
+            if (piece == null)
+                return;
 
             PieceLocations.Remove(pos, piece);
             _data[pos.X, pos.Y] = null;
@@ -166,8 +174,8 @@ namespace Antichess.Core
         }
 
         /// <summary>
-        ///     Whenever the board state changes, this makes various aspects of the program outdated, so they will be updated upon
-        ///     next access.
+        ///     Whenever the board state changes, this makes various aspects of the program
+        ///     outdated, so they will be updated upon next access.
         /// </summary>
         private void OnChange()
         {
@@ -185,9 +193,10 @@ namespace Antichess.Core
         }
 
         /// <summary>
-        ///     Destroys a piece at a given position. Similar to Remove(Piece, Position), but permanently destroys a piece, rather
-        ///     than being used for moving pieces. Used for RenderedBoard, as destroying pieces and moving them elsewhere are
-        ///     visually distinct operations.
+        ///     Destroys a piece at a given position. Similar to Remove(Piece, Position), but
+        ///     permanently destroys a piece, rather than being used for moving pieces. Used for
+        ///     RenderedBoard, as destroying pieces and moving them elsewhere are visually distinct
+        ///     operations.
         /// </summary>
         /// <param name="pos"></param>
         protected virtual void Destroy([NotNull] Position pos)
@@ -200,24 +209,31 @@ namespace Antichess.Core
         /// </summary>
         public virtual bool Move(Move move)
         {
-            if (!LegalMoves.IsLegal(move) || Winner != Winners.None) return false;
+            if (!LegalMoves.IsLegal(move) || Winner != Winners.None)
+                return false;
 
             UnsafeMove(move);
             return true;
         }
 
         /// <summary>
-        ///     Makes a move, but does not check if it is legal or not. Used in instances when we already know a move is legal,
-        ///     such as when suggesting moves by iterating over the LegalMoves dictionary.
+        ///     Makes a move, but does not check if it is legal or not. Used in instances when we
+        ///     already know a move is legal, such as when suggesting moves by iterating over the
+        ///     LegalMoves dictionary.
         /// </summary>
         /// <param name="move"></param>
         protected virtual void UnsafeMove(Move move)
         {
-            _moveCounter++;
             _halfMoveClock++;
 
-            _moveHistory.Push(new BoardChange(move, PieceAt(move.To),
-                EnPassantTargetSquare?.Clone(), _halfMoveClock));
+            _moveHistory.Push(
+                new BoardChange(
+                    move,
+                    PieceAt(move.To),
+                    EnPassantTargetSquare?.Clone(),
+                    _halfMoveClock
+                )
+            );
 
             EnPassantTargetSquare = null;
 
@@ -246,7 +262,8 @@ namespace Antichess.Core
 
         protected void UndoLastMove()
         {
-            if (_moveHistory.Count == 0) return;
+            if (_moveHistory.Count == 0)
+                return;
             UndoMove(_moveHistory.Pop());
             _repetitionHistory.RemoveAt(_repetitionHistory.Count - 1);
         }
@@ -258,17 +275,22 @@ namespace Antichess.Core
             Add(PieceAt(change.Move.To), change.Move.From);
             Remove(change.Move.To);
 
-            if (change.Taken != null) Create(change.Taken, change.Move.To);
+            if (change.Taken != null)
+                Create(change.Taken, change.Move.To);
 
             WhitesMove = !WhitesMove;
 
             if (change.Move.Flag == Core.Move.Flags.EnPassant)
-                Create(new Piece(!WhitesMove, Piece.Types.Pawn), change.Move.To - Position.Ahead(WhitesMove));
+            {
+                Create(
+                    new Piece(!WhitesMove, Piece.Types.Pawn),
+                    change.Move.To - Position.Ahead(WhitesMove)
+                );
+            }
 
             if (change.Move is Promotion)
                 Create(new Piece(WhitesMove, Piece.Types.Pawn), change.Move.From);
 
-            _moveCounter--;
             _halfMoveClock = change.HalfMoveClock;
         }
 
@@ -276,24 +298,13 @@ namespace Antichess.Core
         {
             _winnerOutdated = false;
 
-            //TODO: Fix and reimplement this, preferably making it not suck
-            /*             // Enforces repetition - if a position has occurred 3 or more times, it is a draw
-                        for (int i = _repetitionHistory.Count - 5; i >= _repetitionHistory.Count - 1 - _halfMoveClock; i -= 2)
-                        {
-                            if (_repetitionHistory[_moveCounter] == _repetitionHistory[i])
-                                count++;
-                            if (count < 2) continue;
-                            _winner = Winners.Stalemate;
-                            return;
-                        } */
-            // Enforces the 50 move rule
-            /*            if (_halfMoveClock >= 100)
-                        {
-                            _winner = Winners.Stalemate;
-                            return;
-                        }
-            */
-            _winner = LegalMoves.Count == 0 ? WhitesMove ? Winners.White : Winners.Black : Winners.None;
+            // TODO: Implement draw by repetition and the fifty move rule
+            _winner =
+                LegalMoves.Count == 0
+                    ? WhitesMove
+                        ? Winners.White
+                        : Winners.Black
+                    : Winners.None;
         }
 
         private void InitZobrist()
@@ -317,7 +328,8 @@ namespace Antichess.Core
         }
 
         /// <summary>
-        /// Sets board's data to the data fed in from a FEN string. Useful for making boards from standard positions, e.g. the board's starting position.
+        /// Sets board's data to the data fed in from a FEN string. Useful for making boards from
+        /// standard positions, e.g. the board's starting position.
         /// </summary>
         /// <param name="fenString"></param>
         private void ProcessFenString(string fenString)

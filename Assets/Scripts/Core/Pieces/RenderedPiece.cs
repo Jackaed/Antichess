@@ -2,7 +2,7 @@
 
 namespace Antichess.Core.Pieces
 {
-    public class RenderedPiece : Piece
+    public sealed class RenderedPiece : Piece
     {
         public GameObject GameObject;
 

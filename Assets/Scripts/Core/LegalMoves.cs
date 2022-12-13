@@ -58,10 +58,7 @@ namespace Antichess.Core
 
         public List<Move> List
         {
-            get
-            {
-                return Bag.ToList();
-            }
+            get { return Bag.ToList(); }
         }
 
         private ConcurrentBag<Move> Bag
@@ -78,8 +75,13 @@ namespace Antichess.Core
         {
             var list = List;
             var tagged = list.Select((item, i) => new { Item = item, Index = (int?)i });
-            var index = (from pair in tagged where pair.Item == refutationMove select pair.Index).FirstOrDefault();
-            if (index == null) return list;
+            var index = (
+                from pair in tagged
+                where pair.Item == refutationMove
+                select pair.Index
+            ).FirstOrDefault();
+            if (index == null)
+                return list;
             var temp = list[0];
             list[0] = list[(int)index];
             return list;
@@ -102,15 +104,20 @@ namespace Antichess.Core
 
         public void Add(Move move)
         {
-            if (_board.PieceAt(move.From) == null) return;
+            if (_board.PieceAt(move.From) == null)
+                return;
 
-            if (move.Flag == Move.Flags.EnPassant) _canEnPassant = true;
+            if (move.Flag == Move.Flags.EnPassant)
+                _canEnPassant = true;
 
             _legalMoves.Add(move);
         }
 
         /// <summary>
-        /// Updates the legal moves to reflect the legal moves of those in the current position. Works by retrieving the legal moves from each of the pieces on the board (of the colour of the current player’s turn to move) in parallel, and adding them to the _legalMoves concurrent bag.
+        /// Updates the legal moves to reflect the legal moves of those in the current position.
+        /// Works by retrieving the legal moves from each of the pieces on the board (of the colour
+        /// of the current player’s turn to move) in parallel, and adding them to the _legalMoves
+        /// concurrent bag.
         /// </summary>
         private void Update()
         {
@@ -119,14 +126,19 @@ namespace Antichess.Core
             _isOutdated = false;
             _legalMoves.Clear();
 
-            // Find all of the possible captures, and if none are found, then search for non-capture moves.
-            Parallel.ForEach(_pieceLocations.ColourPositions(_board.WhitesMove),
-                pos => _board.PieceAt(pos).AddLegalMoves(pos, _board, this, true));
+            // Find all of the possible captures, and if none are found, then search for non-capture
+            // moves.
+            Parallel.ForEach(
+                _pieceLocations.ColourPositions(_board.WhitesMove),
+                pos => _board.PieceAt(pos).AddLegalMoves(pos, _board, this, true)
+            );
 
             if (_legalMoves.Count == 0)
             {
-                Parallel.ForEach(_pieceLocations.ColourPositions(_board.WhitesMove),
-                    pos => _board.PieceAt(pos).AddLegalMoves(pos, _board, this, false));
+                Parallel.ForEach(
+                    _pieceLocations.ColourPositions(_board.WhitesMove),
+                    pos => _board.PieceAt(pos).AddLegalMoves(pos, _board, this, false)
+                );
             }
         }
     }
