@@ -1,5 +1,6 @@
 ﻿using Antichess.Core;
 using Antichess.Core.Pieces;
+using Antichess.UI;
 using Antichess.Unity;
 using UnityEngine;
 using UnityEngine.UI;
@@ -14,15 +15,14 @@ namespace Antichess.PlayerTypes
         private bool _isClickAndDrag;
 
         private Position _mouseClickPosition;
-        private Piece.Types _promotionPiece;
-        private GameObject _promotionUI;
+        private PromotionUI _promotionUI;
         private Position _selectedPiecePos;
         private bool _userTryingToPromote;
 
         public User(RenderedBoard board, bool isWhite) : base(board, isWhite)
         {
+            
             _cam = Camera.main;
-            _promotionPiece = Piece.Types.None;
             _userTryingToPromote = false;
         }
 
@@ -46,52 +46,33 @@ namespace Antichess.PlayerTypes
                 return move;
 
             _userTryingToPromote = true;
-            _promotionUI = Object.Instantiate(
-                IsWhite ? ObjectLoader.Instance.wPromotionUI : ObjectLoader.Instance.bPromotionUI
-            );
-            var canvas = _promotionUI.GetComponent<Canvas>();
-            canvas.worldCamera = _cam;
-            var transform = _promotionUI.GetComponent<RectTransform>();
-            transform.position = RenderedBoard.GetRealCoords(move.To) + (0.5f * Vector3.up);
-            var promotionUIButtons = _promotionUI.GetComponentsInChildren<Button>();
-            promotionUIButtons[0].onClick.AddListener(OnBishopPromoteButtonClick);
-            promotionUIButtons[1].onClick.AddListener(OnKnightPromoteButtonClick);
-            promotionUIButtons[2].onClick.AddListener(OnQueenPromoteButtonClick);
-            promotionUIButtons[3].onClick.AddListener(OnRookPromoteButtonClick);
-
+            _promotionUI = new PromotionUI(IsWhite, _cam, move);
             return null;
         }
 
         private Move ChoosePromotionPiece(Move move)
         {
-            if (_promotionPiece == Piece.Types.None)
+            // If x button is pressed, promotion UI is destroyed, so null comparison passes.
+            if (_promotionUI.IsCancelled)
+            {
+                CancelledPromotion();
                 return null;
-            var temp = _promotionPiece;
-            _promotionPiece = Piece.Types.None;
+            }
+
+            Piece.Types selection = _promotionUI.Selection;
+            if (selection == Piece.Types.None)
+                return null;
+
             _userTryingToPromote = false;
-            Object.Destroy(_promotionUI);
             _promotionUI = null;
-            return new Promotion(move.From, move.To, new Piece(IsWhite, temp));
+            return new Promotion(move.From, move.To, new Piece(IsWhite, selection));
         }
 
-        private void OnKnightPromoteButtonClick()
+        private void CancelledPromotion()
         {
-            _promotionPiece = Piece.Types.Knight;
-        }
-
-        private void OnBishopPromoteButtonClick()
-        {
-            _promotionPiece = Piece.Types.Bishop;
-        }
-
-        private void OnQueenPromoteButtonClick()
-        {
-            _promotionPiece = Piece.Types.Queen;
-        }
-
-        private void OnRookPromoteButtonClick()
-        {
-            _promotionPiece = Piece.Types.Rook;
+            _userTryingToPromote = false;
+            RenderedBoard.SnapPieceToPos(_from);
+            _from = null;
         }
 
         private void SelectPiece(Position pos)
