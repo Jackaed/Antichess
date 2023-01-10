@@ -224,7 +224,7 @@ namespace Antichess.Core
         /// <param name="move"></param>
         protected virtual void UnsafeMove(Move move)
         {
-            _halfMoveClock++;
+            _repetitionHistory.Add(ZobristHash);
 
             _moveHistory.Push(
                 new BoardChange(
@@ -234,6 +234,12 @@ namespace Antichess.Core
                     _halfMoveClock
                 )
             );
+
+            _halfMoveClock++;
+
+            // Reset Halfmove clock if there is a capture or a pawn move.
+            if (PieceAt(move.To) != null || PieceAt(move.From).Type == Piece.Types.Pawn)
+                _halfMoveClock = 0;
 
             EnPassantTargetSquare = null;
 
@@ -249,15 +255,10 @@ namespace Antichess.Core
                 Create(promotion.PromotionPiece, move.From);
             }
 
-            if (PieceAt(move.To) != null || PieceAt(move.From).Type == Piece.Types.Pawn)
-                _halfMoveClock = 0;
-
             Destroy(move.To);
             Add(PieceAt(move.From), move.To);
             Remove(move.From);
             WhitesMove = !WhitesMove;
-
-            _repetitionHistory.Add(ZobristHash);
         }
 
         protected void UndoLastMove()
@@ -298,13 +299,42 @@ namespace Antichess.Core
         {
             _winnerOutdated = false;
 
-            // TODO: Implement draw by repetition and the fifty move rule
             _winner =
                 LegalMoves.Count == 0
                     ? WhitesMove
                         ? Winners.White
                         : Winners.Black
-                    : Winners.None;
+                    : (_winner == Winners.None && _halfMoveClock >= 50)
+                    || CalculateDrawByRepetition()
+                        ? _winner = Winners.Stalemate
+                        : Winners.None;
+        }
+
+        private bool CalculateDrawByRepetition()
+        {
+            ulong currentZobrist = ZobristHash;
+
+            int numIrreversibleMoves = _halfMoveClock - 2;
+            int count = 0;
+
+            while (numIrreversibleMoves >= 0)
+            {
+                if (
+                    _repetitionHistory[
+                        _repetitionHistory.Count - _halfMoveClock + numIrreversibleMoves
+                    ] == currentZobrist
+                )
+                {
+                    count++;
+                }
+
+                if (count >= 2)
+                    return true;
+
+                numIrreversibleMoves -= 2;
+            }
+
+            return false;
         }
 
         private void InitZobrist()

@@ -308,19 +308,35 @@ namespace Antichess.Core
             return new Vector3(GetRealCoord(boardCoords.X), 0, GetRealCoord(boardCoords.Y));
         }
 
-        private static sbyte GetBoardCoord(float num)
+        private static sbyte? GetBoardCoord(float num)
         {
             var coord = Math.Round((num / 0.6f) + 3.5f);
-            return (sbyte)Math.Clamp(coord, 0, Size - 1);
+            if (coord < 0 || coord > Board.Size - 1)
+            {
+                return null;
+            }
+            return (sbyte?)coord;
         }
 
         /// <summary>
-        /// Returns a location on the board from a location in Unity’s 3d space.
+        /// Returns a location on the board from a location in Unity’s 3d space. Returns null if the
+        /// location is off of the board.
         /// </summary>
         /// <param name="realCoords"></param>
         public static Position GetBoardCoords(Vector3 realCoords)
         {
-            return new Position(GetBoardCoord(realCoords.x), GetBoardCoord(realCoords.z));
+            sbyte? x = GetBoardCoord(realCoords.x);
+            sbyte? y = GetBoardCoord(realCoords.z);
+
+            if (!x.HasValue || !y.HasValue)
+            {
+                return null;
+            }
+
+            return new Position(
+                (sbyte)GetBoardCoord(realCoords.x),
+                (sbyte)GetBoardCoord(realCoords.z)
+            );
         }
     }
 }

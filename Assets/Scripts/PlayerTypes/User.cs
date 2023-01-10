@@ -157,6 +157,9 @@ namespace Antichess.PlayerTypes
             if (!Physics.Raycast(mouseRay, out var hit))
                 return null;
 
+            if (RenderedBoard.GetBoardCoords(hit.point) is null)
+                return null;
+
             _mouseClickPosition = RenderedBoard.GetBoardCoords(hit.point);
 
             if (_hasFrom)
