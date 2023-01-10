@@ -1,8 +1,8 @@
-using Antichess.UI;
 using Antichess.Core;
 using Antichess.Core.Pieces;
 using UnityEngine;
 using Antichess.Unity;
+using Antichess.Unity.UIMonoBehaviour;
 
 namespace Antichess.UI
 {

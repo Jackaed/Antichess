@@ -21,7 +21,6 @@ namespace Antichess.PlayerTypes
 
         public User(RenderedBoard board, bool isWhite) : base(board, isWhite)
         {
-            
             _cam = Camera.main;
             _userTryingToPromote = false;
         }
@@ -46,6 +45,7 @@ namespace Antichess.PlayerTypes
                 return move;
 
             _userTryingToPromote = true;
+            RenderedBoard.SnapPieceToPos(_from);
             _promotionUI = new PromotionUI(IsWhite, _cam, move);
             return null;
         }
@@ -65,13 +65,13 @@ namespace Antichess.PlayerTypes
 
             _userTryingToPromote = false;
             _promotionUI = null;
-            return new Promotion(move.From, move.To, new Piece(IsWhite, selection));
+            return new Core.Promotion(move.From, move.To, new Piece(IsWhite, selection));
         }
 
         private void CancelledPromotion()
         {
             _userTryingToPromote = false;
-            RenderedBoard.SnapPieceToPos(_from);
+            DeselectPiece(_from);
             _from = null;
         }
 

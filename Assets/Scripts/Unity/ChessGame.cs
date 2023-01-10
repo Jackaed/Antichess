@@ -6,18 +6,19 @@ using Antichess.UI;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using Antichess.Unity.UIMonoBehaviour;
 
 namespace Antichess.Unity
 {
     public class ChessGame : MonoBehaviour
     {
         private RenderedBoard _board;
-        private GameObject _gameOverUI;
+        private GameOverUI _gameOverUI;
         private GameObject _mainMenu;
         private State _state;
         private Player _white,
             _black;
-        private MainMenu MainMenuComponent => _mainMenu.GetComponent<MainMenu>();
+        private MainMenuMB MainMenuComponent => _mainMenu.GetComponent<MainMenuMB>();
 
         private void ControlCamera()
         {
@@ -58,15 +59,8 @@ namespace Antichess.Unity
                 case State.InGame:
                     if (_board.Winner != Board.Winners.None)
                     {
-                        _gameOverUI = Instantiate(ObjectLoader.Instance.gameOverUI);
-                        _gameOverUI
-                            .GetComponentInChildren<Button>()
-                            .onClick.AddListener(OnNewGameButtonPress);
-                        _gameOverUI.GetComponentInChildren<TMP_Text>().text =
-                            _board.Winner == Board.Winners.Stalemate
-                                ? "Stalemate"
-                                : (_board.Winner == Board.Winners.White ? "White" : "Black")
-                                    + " Wins";
+                        _gameOverUI = new GameOverUI(_board.Winner);
+                        _gameOverUI.PlayAgain.AddListener(OnNewGameButtonPress);
                         _state = State.GameOver;
                     }
 
@@ -111,7 +105,7 @@ namespace Antichess.Unity
         /// </summary>
         private void OnNewGameButtonPress()
         {
-            Destroy(_gameOverUI);
+            _gameOverUI = null;
             _board.Destroy();
             InitMainMenu();
         }

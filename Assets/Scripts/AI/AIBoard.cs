@@ -11,9 +11,9 @@ namespace Antichess.AI
     public class AIBoard : Board
     {
         private readonly int _heuristicValueMaxRandomOffset;
-        private readonly Random _random;
         private readonly TranspositionTable _transpositionTable;
         public bool FinishedPrematurely;
+        private Random _random;
 
         public AIBoard(
             Board board,
@@ -43,13 +43,18 @@ namespace Antichess.AI
                 Winners.Stalemate => 0,
                 Winners.None
                     => -PieceLocations.White.Sum(pos => (int)PieceAt(pos).Value)
-                        + PieceLocations.Black.Sum(pos => (int)PieceAt(pos).Value)
-                        + _random.Next(
-                            -_heuristicValueMaxRandomOffset,
-                            _heuristicValueMaxRandomOffset + 1
-                        ),
+                        + PieceLocations.Black.Sum(pos => (int)PieceAt(pos).Value),
                 _ => throw new ArgumentOutOfRangeException()
             };
+
+        private int GetRandomOffset()
+        {
+            int temp = _random.Next(
+                -_heuristicValueMaxRandomOffset,
+                _heuristicValueMaxRandomOffset
+            );
+            return temp;
+        }
 
         /// <summary>
         /// Looks at the subsequent moves beyond this point, and calls itself on those moves. If we
@@ -126,6 +131,7 @@ namespace Antichess.AI
             {
                 UnsafeMove(move);
                 var eval = -Negamax(depth - 1, -beta, -alpha, token);
+                eval.Eval += GetRandomOffset();
 
                 if (eval.Eval > score.Eval || score.BestMove == null)
                 {
@@ -206,7 +212,7 @@ namespace Antichess.AI
             }
 
             public readonly bool WasMate;
-            public readonly int Eval;
+            public int Eval;
             public Move BestMove;
 
             public static Result operator -(Result result)

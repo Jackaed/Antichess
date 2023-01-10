@@ -225,6 +225,7 @@ namespace Antichess.Core
         /// <param name="move"></param>
         public override bool Move(Move move)
         {
+            Debug.Log(move);
             var wasLegal = base.Move(move);
             if (wasLegal)
                 return true;

@@ -615,6 +615,7 @@ GameObject:
   - component: {fileID: 773267621854098817}
   - component: {fileID: 7370646437007349089}
   - component: {fileID: 4732219668039060926}
+  - component: {fileID: 8384290722140841702}
   m_Layer: 5
   m_Name: Game Over Menu
   m_TagString: Untagged
@@ -639,7 +640,7 @@ RectTransform:
   - {fileID: 5117239683323340837}
   - {fileID: 1229503735367783260}
   m_Father: {fileID: 0}
-  m_RootOrder: 12
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
@@ -708,6 +709,21 @@ MonoBehaviour:
   m_BlockingMask:
     serializedVersion: 2
     m_Bits: 4294967295
+--- !u!114 &8384290722140841702
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6350659226410102607}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cec746083915de9469e5c49f46ecaf0b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  PlayAgain: {fileID: 7997607101948283231}
+  Exit: {fileID: 1607051736722226046}
+  GameOverText: {fileID: 7443245639655914471}
 --- !u!1 &6867228533073815342
 GameObject:
   m_ObjectHideFlags: 0

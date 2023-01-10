@@ -10,7 +10,6 @@ namespace Antichess.Core.Pieces
             Piece.Types.Bishop,
             Piece.Types.King,
             Piece.Types.Knight,
-            Piece.Types.Pawn,
             Piece.Types.Rook,
             Piece.Types.Queen
         };

@@ -32,7 +32,7 @@ namespace Antichess.AI
 
             // at a playing strength of 0, each position can be mis-evaluated by up to 2 Queen's
             // worth in score.
-            var heuristicValueMaxRandomOffset = Mathf.RoundToInt(5000 * (1 - playingStrength));
+            var heuristicValueMaxRandomOffset = Mathf.RoundToInt(900 * (1 - playingStrength));
 
             _numCancellationChecks = _maxSearchTimeMillis / CancellationCheckFrequency;
 
