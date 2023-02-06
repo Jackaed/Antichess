@@ -8,6 +8,10 @@ using Object = UnityEngine.Object;
 
 namespace Antichess.Core
 {
+    /// <summary>
+    /// A variant of a regular board which displays the current state of the board in 3d, including
+    /// showing potential moves, and playing audio when required.
+    /// </summary>
     public class RenderedBoard : Board
     {
         private const float TimeToMove = 0.2f;
@@ -238,7 +242,7 @@ namespace Antichess.Core
         protected override void UnsafeMove(Move move)
         {
             ClearLegalMoveIndicators();
-            if (LegalMoves.CanTake)
+            if (PieceAt(move.To) != null || move.Flag == Core.Move.Flags.EnPassant)
                 ObjectLoader.Instance.audioSource.PlayOneShot(ObjectLoader.Instance.capture, 1);
             else
                 ObjectLoader.Instance.audioSource.PlayOneShot(ObjectLoader.Instance.move, 1);

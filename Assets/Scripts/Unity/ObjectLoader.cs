@@ -3,6 +3,10 @@ using Random = System.Random;
 
 namespace Antichess.Unity
 {
+    /// <summary>
+    /// Loads in references to various unity assets, including those in the current scene, such as
+    /// the 3d camera, the 3d models for all of the pieces, etc.
+    /// </summary>
     internal class ObjectLoader : MonoBehaviour
     {
         public const byte BoardSize = 8;

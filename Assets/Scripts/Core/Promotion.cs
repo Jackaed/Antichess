@@ -3,6 +3,9 @@ using Antichess.Core.Pieces;
 
 namespace Antichess.Core
 {
+    /// <summary>
+    /// An override of the move class which represents a pawn promotion move.
+    /// </summary>
     public class Promotion : Move
     {
         public readonly Piece PromotionPiece;

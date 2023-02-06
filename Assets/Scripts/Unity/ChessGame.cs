@@ -10,6 +10,12 @@ using Antichess.Unity.UIMonoBehaviour;
 
 namespace Antichess.Unity
 {
+    /// <summary>
+    /// Represents two players playing a game of Antichess, meaning that it stores a chess board and two
+    /// players, and provides the players with the state of the game, and the board the suggested
+    /// moves of the chess players. This class is a MonoBehaviour, meaning that this script is what
+    /// gets ran directly within Unity.
+    /// </summary>
     public class ChessGame : MonoBehaviour
     {
         private RenderedBoard _board;
@@ -95,6 +101,14 @@ namespace Antichess.Unity
         {
             _white = MainMenuComponent.GetWhitePlayer(_board);
             _black = MainMenuComponent.GetBlackPlayer(_board);
+            if (_black.GetType() == typeof(User))
+            {
+                var blackTransform = ObjectLoader.Instance.BlackCameraTransform;
+                ObjectLoader.Instance.cam.transform.SetPositionAndRotation(
+                    blackTransform.position,
+                    blackTransform.rotation
+                );
+            }
             _board.StartNewGame();
             _state = State.InGame;
             Destroy(_mainMenu);
