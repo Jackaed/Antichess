@@ -3,8 +3,14 @@ using Antichess.Core;
 
 namespace Antichess.PlayerTypes
 {
+    /// <summary>
+    /// The player class for an AI player.
+    /// </summary>
     public class AIPlayer : Player
     {
+        /// <summary>
+        /// Transposition table size
+        /// </summary>
         private const ulong TtSize = 16777216;
         private readonly float _playingStrength;
         private readonly TranspositionTable _transpositionTable;

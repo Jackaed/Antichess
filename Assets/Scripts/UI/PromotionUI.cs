@@ -23,6 +23,10 @@ namespace Antichess.UI
             _promotionMB = _promotionGO.GetComponent<PromotionMB>();
         }
 
+        /// <summary>
+        /// Gives the piece type that has been selected to promote to
+        /// </summary>
+        /// <value></value>
         public Piece.Types Selection {
             get {
                 Piece.Types selection = _promotionMB.Selection;

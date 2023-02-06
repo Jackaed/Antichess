@@ -5,6 +5,10 @@ using UnityEngine;
 
 namespace Antichess.AI
 {
+    /// <summary>
+    /// Creates an AI board and begins to evaluate the best move in a given position. Used by
+    /// AIPlayer to calculate moves to play against.
+    /// </summary>
     public class Evaluator
     {
         private const int CancellationCheckFrequency = 100;

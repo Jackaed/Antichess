@@ -8,6 +8,9 @@ using Object = UnityEngine.Object;
 
 namespace Antichess.Core
 {
+    /// <summary>
+    /// A version of the Board class, where the board is displayed and it's moves are shown in 3D space.
+    /// </summary>
     public class RenderedBoard : Board
     {
         private const float TimeToMove = 0.2f;

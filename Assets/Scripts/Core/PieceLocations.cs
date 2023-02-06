@@ -5,6 +5,9 @@ using JetBrains.Annotations;
 
 namespace Antichess.Core
 {
+    /// <summary>
+    /// 
+    /// </summary>
     public class PieceLocations
     {
         public readonly List<Position> White,

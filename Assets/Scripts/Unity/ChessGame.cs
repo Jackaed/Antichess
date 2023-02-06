@@ -10,6 +10,9 @@ using Antichess.Unity.UIMonoBehaviour;
 
 namespace Antichess.Unity
 {
+    /// <summary>
+    ///
+    /// </summary>
     public class ChessGame : MonoBehaviour
     {
         private RenderedBoard _board;
@@ -20,6 +23,9 @@ namespace Antichess.Unity
             _black;
         private MainMenuMB MainMenuComponent => _mainMenu.GetComponent<MainMenuMB>();
 
+        /// <summary>
+        /// Sets the location of the camera to whichever user is currently to play.
+        /// </summary>
         private void ControlCamera()
         {
             if ((_board.WhitesMove ? _white : _black).GetType() == typeof(User))
@@ -77,7 +83,7 @@ namespace Antichess.Unity
         }
 
         /// <summary>
-        /// Initializes main menu
+        /// Initializes the main menu, alongside the board.
         /// </summary>
         private void InitMainMenu()
         {
@@ -110,6 +116,9 @@ namespace Antichess.Unity
             InitMainMenu();
         }
 
+        /// <summary>
+        /// Controls the current state of the game.
+        /// </summary>
         private enum State
         {
             MainMenu,

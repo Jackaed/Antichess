@@ -7,13 +7,16 @@ using Random = System.Random;
 
 namespace Antichess.AI
 {
-    // A version of the board used for calculating the best move in a given situation.
+    /// <summary>
+    /// Used for the AI to make moves and test their effectiveness, then unmake those moves and try
+    /// alternatives. 
+    /// </summary>
     public class AIBoard : Board
     {
         private readonly int _heuristicValueMaxRandomOffset;
         private readonly TranspositionTable _transpositionTable;
         public bool FinishedPrematurely;
-        private Random _random;
+        private readonly Random _random;
 
         public AIBoard(
             Board board,
@@ -25,7 +28,7 @@ namespace Antichess.AI
             _transpositionTable = transpositionTable;
             _heuristicValueMaxRandomOffset = heuristicValueMaxRandomOffset;
         }
-
+        
         public Move BestMove { get; private set; }
 
         /// <summary>
@@ -46,7 +49,7 @@ namespace Antichess.AI
                         + PieceLocations.Black.Sum(pos => (int)PieceAt(pos).Value),
                 _ => throw new ArgumentOutOfRangeException()
             };
-
+        
         private int GetRandomOffset()
         {
             int temp = _random.Next(

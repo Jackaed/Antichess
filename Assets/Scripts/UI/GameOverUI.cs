@@ -10,6 +10,10 @@ namespace Antichess.UI
     {
         private readonly GameOverMB _gameOverMB;
 
+        /// <summary>
+        /// Sets the game over UI text to the appropriate winner of the game.
+        /// </summary>
+        /// <param name="winner"></param>
         public GameOverUI(Board.Winners winner)
         {
             _gameOverMB = Object

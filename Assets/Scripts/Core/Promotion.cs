@@ -3,6 +3,9 @@ using Antichess.Core.Pieces;
 
 namespace Antichess.Core
 {
+    /// <summary>
+    /// A type of move where a pawn is promoted to another type of piece.
+    /// </summary>
     public class Promotion : Move
     {
         public readonly Piece PromotionPiece;

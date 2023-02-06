@@ -6,6 +6,9 @@ using JetBrains.Annotations;
 
 namespace Antichess.Core
 {
+    /// <summary>
+    /// Represents the data stored in a game of chess.
+    /// </summary>
     public class Board
     {
         public enum Winners : byte
@@ -52,7 +55,7 @@ namespace Antichess.Core
         }
 
         /// <summary>
-        ///     Copy constructor, returns a copy of the board toClone
+        /// Copy constructor, returns a copy of the board toClone
         /// </summary>
         /// <param name="toClone"></param>
         protected Board(Board toClone)
@@ -74,6 +77,10 @@ namespace Antichess.Core
 
         public Position EnPassantTargetSquare { get; private set; }
 
+        /// <summary>
+        /// Returns the winner of the game, or None if there is no winner.
+        /// </summary>
+        /// <value></value>
         public Winners Winner
         {
             get
@@ -85,6 +92,10 @@ namespace Antichess.Core
             }
         }
 
+        /// <summary>
+        /// Returns the Zobrist hash of the current board position.
+        /// </summary>
+        /// <value></value>
         protected ulong ZobristHash
         {
             get
@@ -116,6 +127,9 @@ namespace Antichess.Core
             }
         }
 
+        /// <summary>
+        /// Deletes this current board, destroying all pieces on the board.
+        /// </summary>
         public void Destroy()
         {
             if (_gameHasStarted && Winner == Winners.None)
@@ -157,7 +171,7 @@ namespace Antichess.Core
         }
 
         /// <summary>
-        ///     Removes a piece at the given position
+        /// Removes a piece at the given position
         /// </summary>
         /// <param name="pos"></param>
         private void Remove(Position pos)
@@ -174,8 +188,8 @@ namespace Antichess.Core
         }
 
         /// <summary>
-        ///     Whenever the board state changes, this makes various aspects of the program
-        ///     outdated, so they will be updated upon next access.
+        /// Whenever the board state changes, this makes various aspects of the program
+        /// outdated, so they will be updated upon next access.
         /// </summary>
         private void OnChange()
         {
@@ -185,7 +199,7 @@ namespace Antichess.Core
         }
 
         /// <summary>
-        ///     Equivalents of Add() but creates a new GameObject if this is a RenderedBoard.
+        /// Equivalents of Add() but creates a new GameObject if this is a RenderedBoard.
         /// </summary>
         protected virtual void Create(Piece piece, Position pos)
         {
@@ -193,10 +207,10 @@ namespace Antichess.Core
         }
 
         /// <summary>
-        ///     Destroys a piece at a given position. Similar to Remove(Piece, Position), but
-        ///     permanently destroys a piece, rather than being used for moving pieces. Used for
-        ///     RenderedBoard, as destroying pieces and moving them elsewhere are visually distinct
-        ///     operations.
+        /// Destroys a piece at a given position. Similar to Remove(Piece, Position), but
+        /// permanently destroys a piece, rather than being used for moving pieces. Used for
+        /// RenderedBoard, as destroying pieces and moving them elsewhere are visually distinct
+        /// operations.
         /// </summary>
         /// <param name="pos"></param>
         protected virtual void Destroy([NotNull] Position pos)
@@ -205,7 +219,7 @@ namespace Antichess.Core
         }
 
         /// <summary>
-        ///     Checks if the provided move is legal, and if it is, makes the move.
+        /// Checks if the provided move is legal, and if it is, makes the move.
         /// </summary>
         public virtual bool Move(Move move)
         {
@@ -217,9 +231,9 @@ namespace Antichess.Core
         }
 
         /// <summary>
-        ///     Makes a move, but does not check if it is legal or not. Used in instances when we
-        ///     already know a move is legal, such as when suggesting moves by iterating over the
-        ///     LegalMoves dictionary.
+        /// Makes a move, but does not check if it is legal or not. Used in instances when we
+        /// already know a move is legal, such as when suggesting moves by iterating over the
+        /// LegalMoves dictionary.
         /// </summary>
         /// <param name="move"></param>
         protected virtual void UnsafeMove(Move move)
@@ -261,6 +275,9 @@ namespace Antichess.Core
             WhitesMove = !WhitesMove;
         }
 
+        /// <summary>
+        /// Pops the last move off the history stack, and undoes it.
+        /// </summary>
         protected void UndoLastMove()
         {
             if (_moveHistory.Count == 0)
@@ -269,6 +286,11 @@ namespace Antichess.Core
             _repetitionHistory.RemoveAt(_repetitionHistory.Count - 1);
         }
 
+        /// <summary>
+        /// Undoes a given BoardChange, including reverting the Halfmove clock to it's previous
+        /// state, and changing the en passant square to it's previous location.
+        /// </summary>
+        /// <param name="change"></param>
         protected virtual void UndoMove(BoardChange change)
         {
             EnPassantTargetSquare = change.OldEnPassantTarget;
@@ -295,6 +317,9 @@ namespace Antichess.Core
             _halfMoveClock = change.HalfMoveClock;
         }
 
+        /// <summary>
+        /// Sets the winner equal to the winner in the current position.
+        /// </summary>
         protected virtual void UpdateWinner()
         {
             _winnerOutdated = false;
@@ -310,6 +335,10 @@ namespace Antichess.Core
                         : Winners.None;
         }
 
+        /// <summary>
+        /// Calculates if the current position is a draw by repetition, returning True if it is.
+        /// </summary>
+        /// <returns></returns>
         private bool CalculateDrawByRepetition()
         {
             ulong currentZobrist = ZobristHash;
@@ -337,6 +366,9 @@ namespace Antichess.Core
             return false;
         }
 
+        /// <summary>
+        /// Initializes the table of random numbers used for zobrist hashing.
+        /// </summary>
         private void InitZobrist()
         {
             var buffer = new byte[sizeof(ulong)];
@@ -392,6 +424,11 @@ namespace Antichess.Core
             WhitesMove = fenString[i] == 'w';
         }
 
+        /// <summary>
+        /// Gets a piece from a given character. Used in FEN strings.
+        /// </summary>
+        /// <param name="character"></param>
+        /// <returns></returns>
         private static Piece GetPieceFromChar(char character)
         {
             var isWhite = char.IsUpper(character);
