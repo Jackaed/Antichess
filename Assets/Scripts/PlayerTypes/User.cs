@@ -7,6 +7,9 @@ using UnityEngine.UI;
 
 namespace Antichess.PlayerTypes
 {
+    /// <summary>
+    /// The Player type for a user, i.e. someone actually interacting with the program.
+    /// </summary>
     public class User : Player
     {
         private readonly Camera _cam;
@@ -25,8 +28,20 @@ namespace Antichess.PlayerTypes
             _userTryingToPromote = false;
         }
 
+        /// <summary>
+        /// Since we know that the board reference has been passed as a rendered board (in the
+        /// constructor), this is always a valid conversion, allowing us to get rendering
+        /// information about the board.
+        /// </summary>
         private RenderedBoard RenderedBoard => BoardRef as RenderedBoard;
 
+        /// <summary>
+        /// Attempts to interpret user input into a possible move that they could make. For example,
+        /// if the user has suggested pushing a pawn onto the final rank, this interprets this as
+        /// the user attempting to promote.
+        /// </summary>
+        /// <param name="move"></param>
+        /// <returns></returns>
         private Move GetPossibleMove(Move move)
         {
             if (BoardRef.PieceAt(move.From).Type != Piece.Types.Pawn)
@@ -50,6 +65,12 @@ namespace Antichess.PlayerTypes
             return null;
         }
 
+        /// <summary>
+        /// Returns null if the user has not selected a piece to promote to, or returns the
+        /// promotion move if the user has made that selection.
+        /// </summary>
+        /// <param name="move"></param>
+        /// <returns></returns>
         private Move ChoosePromotionPiece(Move move)
         {
             // If x button is pressed, promotion UI is destroyed, so null comparison passes.
@@ -68,6 +89,9 @@ namespace Antichess.PlayerTypes
             return new Core.Promotion(move.From, move.To, new Piece(IsWhite, selection));
         }
 
+        /// <summary>
+        /// Called when the user presses the "cancel" button when promoting.
+        /// </summary>
         private void CancelledPromotion()
         {
             _userTryingToPromote = false;
@@ -75,6 +99,10 @@ namespace Antichess.PlayerTypes
             _from = null;
         }
 
+        /// <summary>
+        /// Visually selects a piece, lifting it up and showing it's legal moves.
+        /// </summary>
+        /// <param name="pos"></param>
         private void SelectPiece(Position pos)
         {
             if (_selectedPiecePos == pos)
@@ -94,6 +122,10 @@ namespace Antichess.PlayerTypes
             RenderedBoard.ShowLegalMovesFor(pos);
         }
 
+        /// <summary>
+        /// Unselects the piece at the given position. Does the opposite of SelectPiece.
+        /// </summary>
+        /// <param name="pos"></param>
         private void DeselectPiece(Position pos)
         {
             _isClickAndDrag = false;
@@ -104,6 +136,11 @@ namespace Antichess.PlayerTypes
             RenderedBoard.ClearLegalMoveIndicators();
         }
 
+        /// <summary>
+        /// Gets called whenever the user clicks for the second time when moving a piece by clicking twice.
+        /// </summary>
+        /// <param name="pos"></param>
+        /// <returns></returns>
         private Move OnDCSecondClick(Position pos)
         {
             if (pos is null || _from == pos)
@@ -126,6 +163,10 @@ namespace Antichess.PlayerTypes
             return GetPossibleMove(new Move(_from, pos));
         }
 
+        /// <summary>
+        /// Gets called whenever the user begins a drag and drop piece movement.
+        /// </summary>
+        /// <param name="pos"></param>
         private void StartDragAndDrop(Position pos)
         {
             RenderedBoard.ShowLegalMovesFor(pos);
@@ -135,6 +176,11 @@ namespace Antichess.PlayerTypes
             _from = pos;
         }
 
+        /// <summary>
+        /// Gets called whenever the user finishes dragging and dropping a piece.
+        /// </summary>
+        /// <param name="pos"></param>
+        /// <returns></returns>
         private Move DragAndDropRelease(Position pos)
         {
             if (pos is null)
@@ -159,6 +205,11 @@ namespace Antichess.PlayerTypes
             return GetPossibleMove(new Move(_from, pos));
         }
 
+        /// <summary>
+        /// The actual function override for a player, which returns null until the player has
+        /// actually finished suggesting a move, at which point it returns the move that player suggested.
+        /// </summary>
+        /// <returns></returns>
         public override Move SuggestMove()
         {
             if (_userTryingToPromote)

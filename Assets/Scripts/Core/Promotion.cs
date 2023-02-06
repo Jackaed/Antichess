@@ -4,7 +4,7 @@ using Antichess.Core.Pieces;
 namespace Antichess.Core
 {
     /// <summary>
-    /// An override of the move class which represents a pawn promotion move.
+    /// A type of move where a pawn is promoted to another type of piece.
     /// </summary>
     public class Promotion : Move
     {

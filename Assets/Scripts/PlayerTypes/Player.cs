@@ -2,6 +2,9 @@
 
 namespace Antichess.PlayerTypes
 {
+    /// <summary>
+    /// The abstract type used to represent a player in a chess game.
+    /// </summary>
     public abstract class Player
     {
         protected readonly Board BoardRef;

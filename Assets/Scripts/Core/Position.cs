@@ -2,6 +2,9 @@
 
 namespace Antichess.Core
 {
+    /// <summary>
+    /// Used to store a position on an 8 by 8 chessboard.
+    /// </summary>
     public class Position
     {
         private static readonly Position Up = new(0, 1);
