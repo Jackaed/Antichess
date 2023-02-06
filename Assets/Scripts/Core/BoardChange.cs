@@ -2,8 +2,10 @@ using Antichess.Core.Pieces;
 
 namespace Antichess.Core
 {
-    // This class is used for storing all the data that is required to "undo" a move on a
-    // chessboard.
+    /// <summary>
+    /// This class is used for storing all the data that is required to "undo" a move on a
+    /// chessboard.
+    /// </summary>
     public class BoardChange
     {
         public readonly ushort HalfMoveClock;

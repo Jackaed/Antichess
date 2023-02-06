@@ -96,6 +96,7 @@ namespace Antichess.PlayerTypes
 
         private void DeselectPiece(Position pos)
         {
+            _isClickAndDrag = false;
             _hasFrom = false;
             RenderedBoard.SnapPieceToPos(pos);
             RenderedBoard.LowerPieceAt(pos);
@@ -105,7 +106,7 @@ namespace Antichess.PlayerTypes
 
         private Move OnDCSecondClick(Position pos)
         {
-            if (_from == pos)
+            if (pos is null || _from == pos)
             {
                 DeselectPiece(_from);
                 return null;
@@ -136,6 +137,16 @@ namespace Antichess.PlayerTypes
 
         private Move DragAndDropRelease(Position pos)
         {
+            if (pos is null)
+            {
+                if (_hasFrom)
+                {
+                    DeselectPiece(_from);
+                }
+
+                return null;
+            }
+
             _hasFrom = false;
 
             if (pos == _from)
@@ -157,9 +168,6 @@ namespace Antichess.PlayerTypes
             if (!Physics.Raycast(mouseRay, out var hit))
                 return null;
 
-            if (RenderedBoard.GetBoardCoords(hit.point) is null)
-                return null;
-
             _mouseClickPosition = RenderedBoard.GetBoardCoords(hit.point);
 
             if (_hasFrom)
@@ -168,6 +176,7 @@ namespace Antichess.PlayerTypes
                 {
                     if (!_isClickAndDrag)
                         return OnDCSecondClick(_mouseClickPosition);
+
                     RenderedBoard.SnapPieceToCursor(_from, hit);
                 }
                 else if (_isClickAndDrag)
@@ -177,6 +186,9 @@ namespace Antichess.PlayerTypes
 
                 return null;
             }
+
+            if (_mouseClickPosition is null)
+                return null;
 
             if (
                 Input.GetMouseButton(0)

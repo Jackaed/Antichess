@@ -6,6 +6,10 @@ using JetBrains.Annotations;
 
 namespace Antichess.Core
 {
+    /// <summary>
+    /// Used to store and represent a chessboard, including methods to locate pieces, make moves,
+    /// and overall interact with the chessboard.
+    /// </summary>
     public class Board
     {
         public enum Winners : byte

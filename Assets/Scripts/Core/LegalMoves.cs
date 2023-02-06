@@ -5,7 +5,9 @@ using System.Threading.Tasks;
 
 namespace Antichess.Core
 {
-    // A self-sustaining Legal Move collection, that updates itself if required.
+    /// <summary>
+    /// A self-sustaining Legal Move collection, that updates itself if required.
+    /// </summary>
     public class LegalMoves
     {
         private readonly Board _board;
