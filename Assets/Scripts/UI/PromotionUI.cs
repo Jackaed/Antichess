@@ -6,6 +6,10 @@ using Antichess.Unity.UIMonoBehaviour;
 
 namespace Antichess.UI
 {
+    /// <summary>
+    /// Creates and manages the elements within a PromotionMB, allowing a programmer to create a
+    /// Promotion UI cleanly and obviously within code.
+    /// </summary>
     public class PromotionUI
     {
         private readonly GameObject _promotionGO;
@@ -27,18 +31,20 @@ namespace Antichess.UI
         /// Gives the piece type that has been selected to promote to
         /// </summary>
         /// <value></value>
-        public Piece.Types Selection {
-            get {
+        public Piece.Types Selection
+        {
+            get
+            {
                 Piece.Types selection = _promotionMB.Selection;
 
-                if(selection == Piece.Types.None) {
+                if (selection == Piece.Types.None)
+                {
                     return Piece.Types.None;
                 }
 
                 Object.Destroy(_promotionGO);
 
                 return selection;
-
             }
         }
         public bool IsCancelled => _promotionMB == null;

@@ -8,7 +8,9 @@ using UnityEngine.UI;
 namespace Antichess.PlayerTypes
 {
     /// <summary>
-    /// The Player type for a user, i.e. someone actually interacting with the program.
+    /// The Player type for a user, i.e. someone actually interacting with the program. Must be
+    /// created with a RenderedBoard, rather than a regular board, as the user needs to be able to
+    /// interact with the RenderedBoard's UI related Methods.
     /// </summary>
     public class User : Player
     {

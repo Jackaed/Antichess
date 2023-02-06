@@ -6,6 +6,10 @@ using Antichess.Unity;
 
 namespace Antichess.UI
 {
+    /// <summary>
+    /// Represents an abstraction of the Game Over UI menu, allowing a user to create and destroy a
+    /// game over UI menu without manually managing the MonoBehaviour script attatched to the GameObject.
+    /// </summary>
     public class GameOverUI
     {
         private readonly GameOverMB _gameOverMB;
