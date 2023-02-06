@@ -1,7 +1,7 @@
 using System.Linq;
 using Antichess.Core;
 
-namespace Antichess.AI
+namespace Antichess.Evaluation
 {
     /// <summary>
     /// Represents a transposition table, which is a hash table of previously evaluated positions in

@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using Antichess.Core;
 using UnityEngine;
 
-namespace Antichess.AI
+namespace Antichess.Evaluation
 {
     /// <summary>
     /// Creates an AI board and begins to evaluate the best move in a given position. Used by
@@ -13,7 +13,7 @@ namespace Antichess.AI
     {
         private const int CancellationCheckFrequency = 100;
         private const int MinMoveWaitTime = 400;
-        private readonly AIBoard _board;
+        private readonly EvaluationBoard _board;
         private readonly int _maxSearchTimeMillis;
         private readonly int _numCancellationChecks;
         private readonly CancellationTokenSource _timerTaskCancellationToken;
@@ -41,7 +41,7 @@ namespace Antichess.AI
             _numCancellationChecks = _maxSearchTimeMillis / CancellationCheckFrequency;
 
             _hasExceededMinWaitTime = false;
-            _board = new AIBoard(board, transpositionTable, heuristicValueMaxRandomOffset);
+            _board = new EvaluationBoard(board, transpositionTable, heuristicValueMaxRandomOffset);
             _isEvaluating = true;
             _timerTaskCancellationToken = new CancellationTokenSource();
             var token = _timerTaskCancellationToken.Token;

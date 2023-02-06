@@ -1,12 +1,13 @@
-using Antichess.AI;
+using Antichess.Evaluation;
 using Antichess.Core;
 
 namespace Antichess.PlayerTypes
 {
     /// <summary>
-    /// The player class for an AI player.
+    /// The player class for a computer controlled player. The AI Evaluates positions and suggests the position with
+    /// the highest evaluation score to make a move within a set period of analysis time.
     /// </summary>
-    public class AIPlayer : Player
+    public class Computer : Player
     {
         /// <summary>
         /// Transposition table size
@@ -18,7 +19,7 @@ namespace Antichess.PlayerTypes
         private Evaluator _evaluator;
         private bool _hasReturnedMove;
 
-        public AIPlayer(Board board, bool isWhite, float playingStrength = 1.0f)
+        public Computer(Board board, bool isWhite, float playingStrength = 1.0f)
             : base(board, isWhite)
         {
             _playingStrength = playingStrength;

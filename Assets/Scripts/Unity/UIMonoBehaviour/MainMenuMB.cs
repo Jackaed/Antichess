@@ -30,7 +30,7 @@ namespace Antichess.Unity.UIMonoBehaviour
         {
             return wDropdown.value == 0
                 ? new User(board, true)
-                : new AIPlayer(board, true, wSlider.GetComponent<Slider>().value);
+                : new Computer(board, true, wSlider.GetComponent<Slider>().value);
         }
 
         /// <summary>
@@ -42,7 +42,7 @@ namespace Antichess.Unity.UIMonoBehaviour
         {
             return bDropdown.value == 1
                 ? new User(board, false)
-                : new AIPlayer(board, false, bSlider.GetComponent<Slider>().value);
+                : new Computer(board, false, bSlider.GetComponent<Slider>().value);
         }
 
         /// <summary>

@@ -5,20 +5,20 @@ using Antichess.Core;
 using UnityEngine;
 using Random = System.Random;
 
-namespace Antichess.AI
+namespace Antichess.Evaluation
 {
     /// <summary>
     /// Used for the AI to make moves and test their effectiveness, then unmake those moves and try
-    /// alternatives. 
+    /// alternatives.
     /// </summary>
-    public class AIBoard : Board
+    public class EvaluationBoard : Board
     {
         private readonly int _heuristicValueMaxRandomOffset;
         private readonly TranspositionTable _transpositionTable;
         public bool FinishedPrematurely;
         private readonly Random _random;
 
-        public AIBoard(
+        public EvaluationBoard(
             Board board,
             TranspositionTable transpositionTable,
             int heuristicValueMaxRandomOffset
@@ -28,7 +28,7 @@ namespace Antichess.AI
             _transpositionTable = transpositionTable;
             _heuristicValueMaxRandomOffset = heuristicValueMaxRandomOffset;
         }
-        
+
         public Move BestMove { get; private set; }
 
         /// <summary>
@@ -49,7 +49,7 @@ namespace Antichess.AI
                         + PieceLocations.Black.Sum(pos => (int)PieceAt(pos).Value),
                 _ => throw new ArgumentOutOfRangeException()
             };
-        
+
         private int GetRandomOffset()
         {
             int temp = _random.Next(
