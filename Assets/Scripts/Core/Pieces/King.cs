@@ -4,7 +4,7 @@ using UnityEngine;
 namespace Antichess.Core.Pieces
 {
     /// <summary>
-    /// The PieceData implementation for a bishop. Defines how a king can move and generally acts
+    /// The PieceData implementation for a king. Defines how a king can move and generally acts
     /// in the game.
     /// <summary>
     public sealed class King : IPieceData
