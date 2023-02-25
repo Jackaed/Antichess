@@ -2,6 +2,9 @@
 
 namespace Antichess.Core.Pieces
 {
+    /// <summary>
+    /// Represents how a type of piece can act in a given situation, and how it generally acts.
+    /// </summary>
     public interface IPieceData
     {
         public GameObject BlackModel { get; }
