@@ -3,6 +3,10 @@ using UnityEngine;
 
 namespace Antichess.Core
 {
+    /// <summary>
+    /// Represents a move in a chess game, moving a piece from a position "From" to a position "To",
+    /// with extra data stored as a Flag, e.g. the data that a move is an En Passant.
+    /// </summary>
     public class Move
     {
         public enum Flags : byte

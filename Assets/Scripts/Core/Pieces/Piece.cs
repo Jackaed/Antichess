@@ -3,7 +3,9 @@
 namespace Antichess.Core.Pieces
 {
     /// <summary>
-    /// Represents all of the data surrounding a piece, including it's type, it's colour, etc.
+    /// Represents all the data associated with a piece. Distinct with PieceData, which is an
+    /// abstract type which stores the information regarding how a piece should act in a given
+    /// scenario, rather than the data pertaining to a particular piece itself.
     /// </summary>
     public class Piece
     {
