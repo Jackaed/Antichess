@@ -4,7 +4,7 @@ namespace Antichess.Core
 {
     /// <summary>
     /// To allow pieces to move gradually over time rather than instantaneously, this struct allows
-    /// the board to store pieces that have been.
+    /// the board to store pieces that are currently moving between two locations on the chessboard.
     /// </summary>
     public readonly struct MovingPiece
     {

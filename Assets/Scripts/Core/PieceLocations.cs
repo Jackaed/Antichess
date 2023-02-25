@@ -6,7 +6,8 @@ using JetBrains.Annotations;
 namespace Antichess.Core
 {
     /// <summary>
-    /// 
+    /// A self-maintaining list of locations of pieces, making it faster to iterate over every piece
+    /// on a chess board.
     /// </summary>
     public class PieceLocations
     {
