@@ -2,6 +2,9 @@
 
 namespace Antichess.Core.Pieces
 {
+    /// <summary>
+    /// Represents a piece, with a 3d model on the board.
+    /// </summary>
     public sealed class RenderedPiece : Piece
     {
         public GameObject GameObject;

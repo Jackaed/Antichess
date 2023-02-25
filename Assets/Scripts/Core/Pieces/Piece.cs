@@ -2,6 +2,9 @@
 
 namespace Antichess.Core.Pieces
 {
+    /// <summary>
+    /// Represents all of the data surrounding a piece, including it's type, it's colour, etc.
+    /// </summary>
     public class Piece
     {
         public enum Types : byte

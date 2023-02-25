@@ -6,8 +6,9 @@ using UnityEngine;
 namespace Antichess.Evaluation
 {
     /// <summary>
-    /// Creates an AI board and begins to evaluate the best move in a given position. Used by
-    /// AIPlayer to calculate moves to play against.
+    /// Creates an Evaluation Board board and begins to evaluate the best move in a given position.
+    /// Used by computer players to try out various moves, and test potential responses to said
+    /// moves. 
     /// </summary>
     public class Evaluator
     {

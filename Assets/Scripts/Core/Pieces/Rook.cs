@@ -3,6 +3,10 @@ using UnityEngine;
 
 namespace Antichess.Core.Pieces
 {
+    /// <summary>
+    /// The PieceData implementation for a rook. Defines how a bishop can move and generally acts
+    /// in the game.
+    /// </summary>
     public sealed class Rook : IPieceData
     {
         private static Rook _instance;

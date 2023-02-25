@@ -3,6 +3,10 @@ using UnityEngine;
 
 namespace Antichess.Core.Pieces
 {
+    /// <summary>
+    /// The PieceData implementation for a bishop. Defines how a bishop can move and generally acts
+    /// in the game.
+    /// </summary>
     public sealed class Pawn : IPieceData
     {
         private static readonly Piece.Types[] PromotionPieces =
